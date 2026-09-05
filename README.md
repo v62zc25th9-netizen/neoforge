@@ -50,6 +50,16 @@ immediately designing a flash cartridge.
 
 The project is currently in the research and simulation phase. Open source flash cart final destination with intermediary stops at hello world cart.  
 
+## Documentation
+
+- [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the
+  serializer, connectors, protection hardware
+- [Prior art directory](docs/prior-art.md) — existing open and commercial work,
+  and an explicit list of what does *not* yet exist
+- [Hello World cart](hello-world.md) — the first hardware target
+- [Contributing](contributing.md) — including the evidence convention
+
 ## Contributing
 
 NeoForge is intended to be a community project.
