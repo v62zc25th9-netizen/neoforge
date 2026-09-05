@@ -1,7 +1,7 @@
 
 # NeoForge
 
-### An open-source Neo Geo AES cartridge research and development platform.
+### A vibe coded open-source Neo Geo AES cartridge research and development platform.
 
 NeoForge is an open-source project dedicated to understanding, simulating, and
 eventually implementing modern cartridge hardware for the original SNK Neo Geo
