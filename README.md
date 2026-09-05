@@ -48,9 +48,7 @@ immediately designing a flash cartridge.
 
 🚧 **Early research / development**
 
-The project is currently in the research and simulation phase.
-
-No functional Neo Geo AES flash cartridge has been produced yet.
+The project is currently in the research and simulation phase. Open source flash cart final destination with intermediary stops at hello world cart.  
 
 ## Contributing
 
