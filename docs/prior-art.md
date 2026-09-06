@@ -69,7 +69,8 @@ should write a ROM with these tools, not write tools.
 | [dciabrin/ngdevkit-examples](https://github.com/dciabrin/ngdevkit-examples) | Homebrew ROMs built with ngdevkit. | Working code to build and boot on day one, before writing anything original. `[VERIFIED: repo listing]` |
 | [dciabrin/ngdevkit-toolchain](https://github.com/dciabrin/ngdevkit-toolchain) | The prebuilt toolchain component. | Saves a source build of GCC. `[VERIFIED: repo listing]` |
 | [neogeodev/NGAcidTests](https://github.com/neogeodev/NGAcidTests) | NeoGeo accuracy tests, assembly. Folders: LagTest, MemEdit, SpriteTest, VideoDump. **Unlicense** (public domain). | The emulator-validation milestone in one repo. Establishes which emulator we can trust before we trust it about hardware. Public domain means we can vendor and extend freely. `[VERIFIED: repo listing, license]` |
-| [neogeodev/neopenbios](https://github.com/neogeodev/neopenbios) | Open-source BIOS for the NeoGeo, assembly. | Matters more than it looks: a cart that boots depends on BIOS behaviour, and an open BIOS is a readable specification of what the BIOS expects a cart to provide. `[VERIFIED: repo listing]` |
+| [neogeodev/neopenbios](https://github.com/neogeodev/neopenbios) | Open-source BIOS for the NeoGeo, assembly. Related: ngdevkit ships its own `nullbios`, confirmed in use — every example build copies `aes.zip`/`neogeo.zip` from the ngdevkit share dir, so the whole toolchain runs with no copyrighted BIOS. `[VERIFIED: build output, 2026-09-05]` | Matters more than it looks: a cart that boots depends on BIOS behaviour, and an open BIOS is a readable specification of what the BIOS expects a cart to provide. `[VERIFIED: repo listing]` |
+| **`romtool.py`** (ships with ngdevkit) | Assembles P/C/S/M/V components into a cartridge zip and emits both MAME and GnGeo ROM descriptions. LGPL. | **Directly overlaps roadmap Phase 2.** It already models a Neo Geo cartridge as its component ROMs — the write direction of what `neoforge-rominfo` was going to do from scratch. Read it before writing our own tool; Phase 2 may reduce to adding an inspect mode. `[VERIFIED: observed in ngdevkit-examples build output, 2026-09-05]` |
 | [neogeodev/GFXCodec](https://github.com/neogeodev/GFXCodec) | Tile and pixel conversion for NeoGeo graphics. C. | Needed to produce C-ROM data, which is what the serializer serializes. `[VERIFIED: repo listing]` |
 | [neogeodev/NeoADPCMEx](https://github.com/neogeodev/NeoADPCMEx) | GUI tool for extracting ADPCM samples from V ROMs. Python. | Prior art for the ROM-analysis tooling in roadmap Phase 2. `[VERIFIED: repo listing]` |
 | [neogeodev/IDANeoGeo](https://github.com/neogeodev/IDANeoGeo) | NeoGeo binary loader and helper for IDA. Python. | Useful if we ever need to read a commercial cart's behaviour to understand a mapper. `[VERIFIED: repo listing]` |
@@ -177,5 +178,8 @@ worth more to the community than a marginally cheaper flash cart.
 Add an entry the moment a project is discovered, even if it is only skimmed —
 an `[UNVERIFIED]` line is more useful than a missing one. Promote it to
 `[VERIFIED]` only after actually reading the repository.
+
+See also `docs/open-questions.md` for unresolved technical questions that
+this directory surfaced.
 
 Last full pass: 2026-09-05.

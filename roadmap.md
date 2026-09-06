@@ -70,15 +70,32 @@ hardware will engage with it.
 
 Prove the software half of the chain end to end before spending a dollar.
 
-- [ ] Stand up `dciabrin/ngdevkit` and build `ngdevkit-examples` unmodified
+- [x] Stand up `dciabrin/ngdevkit` and build `ngdevkit-examples` unmodified
+      `[MEASURED: 2026-09-05]` macOS 14.1.1 arm64, Homebrew tap, all 18
+      examples built clean; `01-helloworld` runs in GnGeo in AES mode
 - [ ] Write the NeoForge hello ROM (see `hello-world.md`)
 - [ ] Run it under GnGeo with GDB attached
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
 - [ ] Run `neogeodev/NGAcidTests` and record which emulator passes what
+- [ ] Document the macOS setup as a reproducible script (see notes below)
 - [ ] Commit a reproducible build (`make` → ROM, no manual steps)
 
 **Exit:** a ROM we wrote, booting in two independent emulators, buildable from
 a clean checkout by a stranger.
+
+**macOS setup notes** `[MEASURED: 2026-09-05]` — gotchas hit during the first
+real install, worth capturing before they are forgotten:
+
+- Homebrew now refuses third-party taps until `brew trust dciabrin/ngdevkit`.
+- Bottles exist for `arm64_sonoma` and `arm64_sequoia`; nothing compiles from
+  source on those. Older macOS will build GCC and SDCC locally.
+- `sdl2` was removed from homebrew-core and is now an alias for `sdl2-compat`.
+  This resolves cleanly and is not a problem, but the deletion notice is alarming.
+- The examples need build tooling that bottles do not pull in:
+  `make autoconf automake autoconf-archive pkg-config rsync zip imagemagick sox`.
+  `make` is what provides `gmake`.
+- Build with `gmake`, not `make` — Apple ships GNU Make 3.81 and the build needs 4.x.
+- Put brew's python ahead of Apple's: `export PATH=$HOMEBREW_PREFIX/opt/python3/bin:$PATH`.
 
 **Note on what this does and does not prove.** An emulator models the cartridge
 we describe to it. Passing here proves the ROM is well-formed. It proves

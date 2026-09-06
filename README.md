@@ -55,6 +55,8 @@ The project is currently in the research and simulation phase. Open source flash
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the
   serializer, connectors, protection hardware
+- [Open questions](docs/open-questions.md) — unresolved decisions, what would
+  settle each, and what changes either way
 - [Prior art directory](docs/prior-art.md) — existing open and commercial work,
   and an explicit list of what does *not* yet exist
 - [Hello World cart](hello-world.md) — the first hardware target
