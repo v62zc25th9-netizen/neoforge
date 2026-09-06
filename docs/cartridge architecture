@@ -34,7 +34,7 @@ LOAD from the LSPC, returning DOTA/DOTB pixel opacity to it.
 
 ### Consequence for NeoForge
 
-There is no such thing as a dumb ROM-only AES cartridge. Even a single-game
+There is no such thing as a dumb ROM-only AES cartridge that uses sprites. Even a single-game
 EPROM board must contain a serializer, whether a harvested donor chip or
 programmable logic. This is the project's first hard requirement.
 
