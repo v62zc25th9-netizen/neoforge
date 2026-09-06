@@ -51,10 +51,11 @@ Establish the project, documentation structure, and contribution workflow.
 - [x] Establish the evidence convention (`CLAUDE.md`)
 - [x] Initial cartridge architecture research notes
 - [x] Prior art directory (`docs/prior-art.md`)
-- [ ] Split licensing: code vs. hardware (MIT is wrong for PCB files —
-      CERN-OHL-S or CERN-OHL-W is the norm). Do this **before** accepting any
-      hardware contribution.
-- [ ] Write `contributing.md` (currently empty)
+- [x] Split licensing per directory: CERN-OHL-S-2.0 hardware, GPL-3.0-or-later
+      HDL, MIT software, CC-BY-SA-4.0 docs. See `LICENSE.md`. The HDL choice is
+      forced by NeoGeoFPGA-sim's GPL-3.0; NeoChips' GPL-2.0-only is
+      incompatible with it and must be used as a component, never derived from.
+- [x] Write `contributing.md`
 - [ ] Fix `docs/cartridge-architecture.md` filename → `docs/cartridge-architecture.md`
       (`CLAUDE.md` already references the corrected name)
 - [ ] Establish issue and milestone structure mirroring this roadmap

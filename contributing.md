@@ -50,13 +50,27 @@ See `CLAUDE.md` for the full convention.
   current license. Flag the origin and license of anything you derive from, and
   we will sort out compatibility before merging rather than after.
 
-## Licensing note
+## Licensing
 
-The repository is currently MIT. That is appropriate for HDL, firmware and
-tooling, and a poor fit for PCB files, where CERN-OHL-S or CERN-OHL-W is the
-norm. **This split has not been made yet.** If you intend to contribute
-hardware design files, open an issue first so we resolve licensing before your
-work lands.
+The repository is licensed **per directory** — hardware under CERN-OHL-S-2.0,
+HDL under GPL-3.0-or-later, software under MIT, documentation under
+CC-BY-SA-4.0. See [`LICENSE.md`](LICENSE.md) before contributing; it explains
+why each one, and it is short.
+
+Two things to know before writing code:
+
+1. **Put an SPDX header on new files.** `// SPDX-License-Identifier: ...`
+   matching the directory. Where location and header disagree, the header wins.
+2. **The two open serializer implementations are under incompatible licences.**
+   NeoGeoFPGA-sim is GPL-3.0-or-later; NeoChips is GPL-2.0 with no "or later"
+   grant. They cannot be combined. NeoForge follows the NeoGeoFPGA-sim lineage,
+   so do not read NeoChips' HDL into ours — use it as a component instead. If
+   you have read those sources and then write serializer logic, say so in the
+   pull request. Catching contamination early is cheap; catching it late means
+   rewriting.
+
+Flag the origin and licence of anything you derive from, and we will sort out
+compatibility before merging rather than after.
 
 ## Workflow
 

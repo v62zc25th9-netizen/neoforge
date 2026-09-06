@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // NeoForge — self-checking testbench for the AES sprite serializer datapath.
 //
 // Device under test: zmc2_dot, the pixel-serializing core of NEO-ZMC2 /
