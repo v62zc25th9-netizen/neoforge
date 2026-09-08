@@ -13,7 +13,7 @@ against real hardware.
 
 ## Phase 0 — Project Foundation
 
-**Status: 🟢 In Progress**
+**Status: ✅ Complete**
 
 Establish the project, development environment, documentation structure, and
 contribution workflow.
@@ -36,7 +36,7 @@ A clean public repository ready for research and collaboration.
 
 # Phase 1 — AES Cartridge Research
 
-**Status: 🔵 Next**
+**Status: 🟢 In Progress**
 
 Develop a detailed understanding of the Neo Geo AES cartridge interface and
 architecture.
