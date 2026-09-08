@@ -53,7 +53,10 @@ from general knowledge. General knowledge about this platform is unreliable.
 **How does the first physical cartridge get its sprite serializer?**
 
 On AES the serializer (PRO-CT0 / NEO-ZMC2) lives *in the cartridge*, not on the
-board. There is no such thing as a dumb EPROM-only AES cart that has sprites. Two paths:
+board. There is no such thing as a dumb EPROM-only AES cart that has sprites. (From ChatGPT A ROM-only AES cartridge can potentially be sufficient for a program that does not use cartridge-based sprite graphics. A cartridge intended to provide normal C-ROM sprite graphics requires the appropriate cartridge-side graphics serialization logic (such as PRO-CT0 or NEO-ZMC2).
+The NeoForge Hello Cart intentionally avoids sprite graphics, so determining whether a minimal P-ROM-only cartridge can boot is an early hardware experiment.)
+
+Two paths:
 
 1. **Donor chip** — harvest a PRO-CT0 or NEO-ZMC2 from a dead/cheap AES cart.
    Fastest to something that boots. Isolates ROM mapping work from serializer
