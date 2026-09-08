@@ -43,11 +43,11 @@ architecture.
 
 ### Goals
 
-- [ ] Document the AES cartridge connector
+- [x] Document the AES cartridge connector
 - [ ] Document cartridge address and data buses
 - [ ] Document cartridge control signals
 - [ ] Document P ROM architecture
-- [ ] Document C ROM architecture
+- [ ] Document C ROM architecture 
 - [ ] Document S ROM architecture
 - [ ] Document M ROM architecture
 - [ ] Document V ROM architecture
