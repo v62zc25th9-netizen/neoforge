@@ -82,8 +82,8 @@ Establish the project, documentation structure, and contribution workflow.
       forced by NeoGeoFPGA-sim's GPL-3.0; NeoChips' GPL-2.0-only is
       incompatible with it and must be used as a component, never derived from.
 - [x] Write `contributing.md`
-- [ ] Fix `docs/cartridge-architecture.md` filename → `docs/cartridge-architecture.md`
-      (`CLAUDE.md` already references the corrected name)
+- [x] Fix `docs/cartridge architecture` filename → `docs/cartridge-architecture.md`
+      (done in 5bf733a; the checkbox was left stale)
 - [ ] Establish issue and milestone structure mirroring this roadmap
 
 **Exit:** a repository credible enough that someone who actually knows this

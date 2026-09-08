@@ -7,9 +7,10 @@
 #   brew install gtkwave   /   apt install gtkwave
 #
 # The device under test is NOT vendored into this repository. zmc2_dot.v is
-# GPL-3.0 and NeoForge is currently MIT; copying it in would create a licence
-# conflict we have not resolved. This Makefile fetches it instead, so the
-# GPL source stays in its own tree under its own terms.
+# GPL-3.0; keeping foreign sources in their own tree under their own terms
+# keeps our licensing statements true. See LICENSE.md.
+#
+# .reference/ is gitignored at the repository root. Do not commit it.
 
 REF_DIR  ?= ../.reference
 NGFPGA   := $(REF_DIR)/NeoGeoFPGA-sim
@@ -21,12 +22,16 @@ VVP      ?= vvp
 
 all: run
 
-$(NGFPGA):
+# Depend on the source file, not the directory. An empty or half-fetched
+# .reference/NeoGeoFPGA-sim would otherwise satisfy a directory target and
+# produce a confusing compile error instead of re-fetching.
+$(DUT):
 	@echo "==> fetching NeoGeoFPGA-sim (GPL-3.0, not vendored)"
+	@rm -rf $(NGFPGA)
 	@mkdir -p $(REF_DIR)
 	git clone --depth 1 https://github.com/neogeodev/NeoGeoFPGA-sim.git $(NGFPGA)
 
-zmc2_tb: zmc2_dot_tb.v $(NGFPGA)
+zmc2_tb: zmc2_dot_tb.v $(DUT)
 	$(IVERILOG) -g2012 -o $@ zmc2_dot_tb.v $(DUT)
 
 run: zmc2_tb

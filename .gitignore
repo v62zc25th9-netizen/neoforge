@@ -1,0 +1,6 @@
+# Reference sources are fetched, never vendored. See LICENSE.md.
+.reference/
+
+# Simulation build artefacts
+sim/zmc2_tb
+*.vcd
