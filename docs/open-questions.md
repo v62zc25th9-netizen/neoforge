@@ -136,6 +136,43 @@ output mux, comfortably inside a small CPLD. That does not make path 2 easy
 unaddressed), but it does make it a bounded task rather than an open question,
 which weakens the case for path 1.
 
+**Update 2026-09-08 — the licensing picture, and a much better option.**
+
+Both synthesizable references were checked. `FusionConverter` also ships a bare
+GPL-2.0 licence, so paths 2 and 3 sit on the same footing, and Q2's original
+wording — "derived from FusionConverter *and* NeoGeoFPGA-sim" — was never
+possible as written if either is v2-only, because GPL-2.0-only and GPL-3.0
+cannot be combined.
+
+Neither project states a version anywhere but the licence file, which under
+GPLv2 section 9 arguably lets a recipient choose any version. See `LICENSE.md`.
+`[UNVERIFIED]` — **ask Furrtek rather than assume.** This is the single cheapest
+action that could unblock the whole serializer path.
+
+**And NeoChips is more complete than we thought.** `NEO-ZMC2/neo-zmc2.v` is the
+*whole* chip, not just the pixel datapath:
+
+```verilog
+module zmc2(
+    input CLK_12M, EVEN, LOAD, H,
+    input [31:0] CR,
+    output reg [3:0] GAD, GBD,
+    output reg DOTA, DOTB,
+    input nSDRD0, input [1:0] SDA_L, input [15:8] SDA_U,
+    output [21:11] MA,              // <- the ZMC bankswitching half
+    input CS, CSDOT
+);
+```
+
+It includes the M1 bankswitching half (`MA[21:11]`) that this question lists as
+unaddressed, it is marked "Tested ok :)", and it ships with a `.jed` — a
+working, synthesised, shipped implementation. `NeoGeoFPGA-sim` by contrast
+comments its bankswitching half out entirely (`// Not used here //zmc2_zmc`).
+
+So if the licence question resolves favourably, path 2 gets substantially
+easier and path 3 becomes buildable from published sources rather than only
+purchasable.
+
 **Dependent on Q1.** If a fix-only cart needs no serializer, this question stops
 blocking the first PCB and becomes a Phase 8 concern instead.
 

@@ -84,8 +84,41 @@ so in your pull request. This is not an accusation; it is how contamination
 gets caught early instead of at the point where the project has to be
 rewritten.
 
-`FusionConverter`'s licence has not been checked yet. **`[UNVERIFIED]`** — do
-that before deriving from it.
+### Checked 2026-09-08 — and it is less settled than it looked
+
+`FusionConverter` was checked: it also ships a bare **GPL-2.0** LICENSE file.
+So both of the synthesizable serializer references are GPL-2.0, not just
+NeoChips.
+
+But **neither project states a version number anywhere except in the licence
+text itself.** No per-file headers, no statement in either README:
+
+- `NeoChips/NEO-ZMC2/neo-zmc2.v` begins `// NEO-ZMC2 repro / furrtek 2019 /
+  Tested ok :)` — no licence header.
+- `FusionConverter/fusion_vsense_top.v` begins `// Fusion converter / For CHA8
+  (rev. H) and up...` — no licence header.
+
+That matters, because **section 9 of the GPLv2 text both repositories ship**
+says:
+
+> If the Program does not specify a version number of this License, you may
+> choose any version ever published by the Free Software Foundation.
+
+On that reading, a recipient may take either project under GPL-3.0, which would
+make both **compatible** with NeoForge's GPL-3.0-or-later HDL after all.
+
+**We are not treating that as settled.** `[UNVERIFIED]` It is an interpretation
+of licence text by people who are not lawyers, the presence of a v2 LICENSE file
+is itself arguably "specifying a version", and the FSF advises per-file version
+statements precisely because bare-LICENSE cases are ambiguous.
+
+**The cheap, correct fix is to ask.** Both projects are Furrtek's. An issue on
+each asking whether the intent is "v2 only" or "v2 or later" costs nothing and
+settles it permanently — for us and for everyone else who wants to build on
+them.
+
+**Until that answer arrives, the conservative rule below stands:** use them as
+components, do not read them into NeoForge's HDL.
 
 ---
 

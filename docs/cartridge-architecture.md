@@ -34,9 +34,18 @@ LOAD from the LSPC, returning DOTA/DOTB pixel opacity to it.
 
 ### Consequence for NeoForge
 
-There is no such thing as a dumb ROM-only AES cartridge. Even a single-game
-EPROM board must contain a serializer, whether a harvested donor chip or
-programmable logic. This is the project's first hard requirement.
+There is no such thing as a dumb ROM-only AES cartridge **that can display
+sprites**. `[ANSWERED IN SIMULATION — 2026-09-06]`
+
+The unqualified version of that claim drove this project's original plan and is
+wrong. The serializer's outputs are gated by DOTA/DOTB, and the line-buffer
+clearing path ignores them entirely, so a cartridge that holds **DOTA and DOTB
+low** needs no serializer at all — it simply cannot draw sprites. A fix-layer
+only development cartridge is a plain EPROM board plus two grounded pins. See
+`open-questions.md` Q1 for the full trace through the HDL.
+
+A cartridge that runs *games* still needs a serializer. That remains the
+project's first hard requirement for anything beyond a text-mode dev cart.
 
 ---
 
