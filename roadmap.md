@@ -17,11 +17,20 @@ Three constraints shape the sequence, and it is worth stating them before the
 milestone list, because they are what makes this roadmap different from the
 obvious one.
 
-**1. There is no dumb AES cartridge.** On AES the sprite serializer
-(PRO-CT0 / NEO-ZMC2) lives inside the cartridge, not on the motherboard. A
-plain EPROM board will not boot. This means "simple fixed-ROM cart" cannot come
-before "programmable logic" the way it would on most consoles — the serializer
-has to be solved first, or borrowed. See `docs/cartridge-architecture.md` §1.
+**1. There is no dumb AES cartridge — that can display sprites.** On AES the
+sprite serializer (PRO-CT0 / NEO-ZMC2) lives inside the cartridge, not on the
+motherboard. `[VERIFIED: wiki AES cartridge]`
+
+The unqualified version of that claim drove the original ordering, and it is
+wrong. `[ANSWERED IN SIMULATION — 2026-09-06]` The serializer's outputs are
+gated by DOTA/DOTB, and the line-buffer clearing path ignores them entirely, so
+a cartridge that holds DOTA and DOTB low needs no serializer at all — it simply
+cannot draw sprites. See `docs/open-questions.md` Q1.
+
+So the constraint is narrower than it looked: **a text-only development
+cartridge is a plain EPROM board plus two grounded pins. A cartridge that runs
+games needs the serializer.** Those are now two separate milestones rather than
+one.
 
 **2. Nobody has published measured AES bus timing.** Everything available is
 derived from schematics. Building hardware to a specification nobody has
@@ -38,6 +47,23 @@ than introducing a new one.
 The consequence: **the first cart NeoForge boots on real hardware is a modified
 original cartridge, not a NeoForge PCB.** The PCB comes after the electrical
 behaviour it must reproduce has been measured on a board known to work.
+
+### Revision, 2026-09-06
+
+Q1's answer changes the back half of this roadmap and the phases below have not
+been renumbered — renumbering would break every reference in the commit history
+and the docs. Read them with these amendments:
+
+- **Phase 7 (first PCB) no longer depends on Phase 6 (serializer).** A fix-only
+  board needs P/S/M/V ROMs, address decoding, and DOTA/DOTB tied low. It is
+  buildable without a CPLD, a donor chip, or any custom silicon.
+- **Phase 6 moves after Phase 7** in practice, and becomes the step that turns a
+  development cartridge into one that can run games.
+- **Phase 2 is smaller than written.** See its revised goals below.
+
+What did *not* change, and is now the real critical path: measured bus timing
+(Phase 5), 5V tolerance across a 200-pin connector, and the wait-state question
+in `docs/open-questions.md` Q3. The logic got easier. The electronics did not.
 
 ---
 
@@ -111,14 +137,27 @@ emulator create false confidence about hardware.
 
 Software that pays off in every later phase.
 
+**Revised 2026-09-06 — this phase is smaller than originally written.**
+ngdevkit's `romtool.py` (609 lines, LGPL) already carries `Cartridge` and `ROM`
+data models and emits MAME, GnGeo **and** NeoSD `.neo` output. That is the
+*write* direction of most of what was scoped here. The honest remaining work is
+the *read* direction against a model that already exists.
+
+- [ ] Read `romtool.py` properly and decide: extend it upstream with an inspect
+      mode, or build a reader that reuses its model. Upstreaming is probably
+      better for everyone and costs us less.
 - [ ] `neoforge-rominfo`: ROM set → machine-readable cartridge description
 - [ ] Identify P/C/S/M/V components and sizes
 - [ ] Identify cartridge configuration and mapper
 - [ ] Validation and test-ROM support
 - [ ] Document ROM formats and assumptions
 
-Read `neogeodev/NeoADPCMEx` and `city41/neosdconv` first — both solve adjacent
-problems, and neosdconv documents a competitor's on-card format in working code.
+Also read `neogeodev/NeoADPCMEx` and `city41/neosdconv` — the latter documents
+a competitor's on-card format in working code.
+
+**Priority note.** This phase serves loading *commercial* ROM sets, which is a
+Phase 9 concern. It does nothing to help build the fix-only board that Q1 just
+unblocked. Worth doing, but not next.
 
 **Exit:**
 
@@ -137,9 +176,15 @@ problems, and neosdconv documents a competitor's on-card format in working code.
 
 Everything that can be learned without hardware, learned before buying any.
 
-- [ ] `docs/aes-pinout.md`, cross-checked against the wiki, the AES 3.5
-      schematics, and the arcade-collector PROG/CHA scans — three sources, and
-      note every disagreement rather than picking a favourite
+- [x] `docs/aes-connector.md` — **done 2026-09-07.** All 200 pins with
+      authoritative numbering, cross-checked against three independent sources:
+      the wiki images, `aes_cart.v`'s port list, and the AES 3.5 motherboard
+      schematic (public domain KiCad, nets machine-extracted). Found that the
+      wiki's *top-face* images are drawn reversed relative to real pin
+      numbering — a trap for anyone transcribing them, and not stated upstream.
+- [x] Machine-readable pinout — `docs/data/aes-cartridge-pinout.csv`, including
+      which pins the AES 3.5 leaves unconnected. No text or CSV version appears
+      to exist upstream; the wiki publishes images only.
 - [ ] `docs/serializer.md`: how the serializer actually works, derived from
       `neo_zmc2.v` / `zmc2_dot.v` and the FusionConverter CPLD sources
 - [ ] Document AES vs. MVS cartridge differences (started)
@@ -219,7 +264,7 @@ worth doing.
 
 ## Phase 6 — Serializer in Programmable Logic
 
-**Status: ⚪ Planned** · Cost: ~$100–200 · Skills: HDL, CPLD toolchain · the
+**Status: ⚪ Planned — now follows Phase 7, see Revision above** · Cost: ~$100–200 · Skills: HDL, CPLD toolchain · the
 hard problem
 
 Replace the donor cart's SNK serializer with logic we can publish.
@@ -245,7 +290,7 @@ it unblocks Phases 7–9 while the serializer work continues in parallel.
 
 ## Phase 7 — NeoForge Cartridge v0.1
 
-**Status: ⚪ Planned** · Cost: ~$200–500 per revision · Skills: KiCad, SMD assembly
+**Status: ⚪ Planned — no longer blocked by Phase 6** · Cost: ~$200–500 per revision · Skills: KiCad, SMD assembly
 
 Only now does a PCB make sense: every function on it has already been proven on
 a board that works.

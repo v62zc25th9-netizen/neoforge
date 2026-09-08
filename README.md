@@ -53,6 +53,8 @@ The project is currently in the research and simulation phase. Open source flash
 ## Documentation
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [AES cartridge connector](docs/aes-connector.md) — the pinout as text, plus
+  [machine-readable CSV](docs/data/aes-cartridge-pinout.csv)
 - [Why the serializer moved](docs/why-the-split.md) — why AES puts it in the
   cartridge and MVS on the board, and why we don't think it was anti-piracy
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the
