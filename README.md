@@ -53,6 +53,9 @@ The project is currently in the research and simulation phase. Open source flash
 ## Documentation
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [P ROM banking and cartridge families](docs/prom-banking.md) — the memory
+  map, how banking works, and why a board must copy SNK's mapper rather than
+  invent one
 - [AES cartridge connector](docs/aes-connector.md) — the pinout as text, plus
   [machine-readable CSV](docs/data/aes-cartridge-pinout.csv)
 - [Why the serializer moved](docs/why-the-split.md) — why AES puts it in the

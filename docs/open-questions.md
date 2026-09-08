@@ -166,6 +166,32 @@ On this model — a Joy Joy Kid cartridge — all four are tied high: **zero add
 wait states.** A cartridge whose memory cannot meet the original access time
 must assert them.
 
+### Partial answer — the numbers `[VERIFIED: wiki 68k memory map, 2026-09-08]`
+
+The wiki's 68k memory map states the wait-cycle ranges per address region:
+
+| Range | Wait cycles | Controlled by |
+|---|---|---|
+| `$000000`–`$0FFFFF` (P1) | **0 or 1** (4 or 5 clocks) | `ROMWAIT` |
+| `$200000`–`$2FFFFF` (P2 / PORT) | **0 to 3** (4 to 7 clocks) | `PWAIT0`/`PWAIT1` |
+| Memory card | 2 (6 clocks) | fixed |
+| Everything else | 0 (4 clocks) | fixed |
+
+So the baseline is **four clocks per access with zero added wait states**, and a
+cartridge can request up to +1 on the fixed P1 range and up to +3 on the banked
+P2 range.
+
+This resolves an uncertainty in the best open model of the hardware.
+`System/c1_wait.v` in NeoGeoFPGA-sim carries the comments `0~1 or 1~2 wait
+cycles ?` and `Needs checking` against exactly these signals. The answer for
+`ROMWAIT` is **0 or 1**, and `PWAIT0`/`PWAIT1` together select 0–3 — which is
+what two bits should do. Worth reporting upstream.
+
+**What is still unknown** is the part that actually gates the design: the
+*access time* a cartridge must meet to be read at zero added wait states. That
+is a nanosecond figure nobody has published, and it stays `[UNVERIFIED]` until
+Phase 5 measures it.
+
 ### Why it matters more than it looks
 
 A cart running with extra wait states does not crash, corrupt, or glitch. It
