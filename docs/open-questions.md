@@ -222,6 +222,118 @@ NeoForge hardware, and compare elapsed time. Identical means identical feel.
 
 ---
 
+## Q4 — What is inside a NEOGEO AES+ cartridge?
+
+**Status:** `[ANSWERED — 2026-09-08]` · **The new cartridges run on original AES
+hardware, so they must contain a serializer.** Affects Phases 2, 6, 7, 11.
+
+> The ten re-released games "are confirmed to be compatible with original Neo
+> Geo AES systems, too." `[VERIFIED: Time Extension, 2026]`
+
+Compatibility runs both ways. PLAION describes the console as using "legacy
+ASIC chips, re-engineered by modern standards" — and the same must be true of
+the cartridges, because original AES hardware has no serializer and cannot
+supply one.
+
+**SNK has re-manufactured a sprite serializer and is shipping it in volume from
+12 November 2026.**
+
+### What this changes
+
+**Q2 needs revisiting.** The donor-chip path was discounted partly because every
+unit consumes an original cartridge. A new AES+ cartridge at $90 is a *newly
+manufactured* board containing a modern serializer — in production, purchasable,
+and destroying nothing vintage. That is a materially better donor than a
+harvested 1990 cart, and it did not exist as an option a week ago.
+
+**Phase 6 has a commercial existence proof.** Whatever the serializer costs to
+reimplement, it is evidently cheap enough to put in a $90 cartridge in 2026.
+
+**A teardown is now high-value to this project specifically.** The first
+photographs of a new AES+ cartridge PCB show how someone solved, in production,
+the exact problem roadmap Phase 6 describes.
+
+**Prediction logged and wrong.** This file guessed the opposite — that the
+console ASIC would serialize board-side and the carts would be dumb ROM boards,
+by analogy with MVS and with the cost argument in `why-the-split.md`. That
+reasoning ignored the obvious commercial point: compatibility with thirty years
+of installed hardware is worth more than a chip per cartridge. Recorded rather
+than deleted.
+
+### Original framing, retained for the record
+
+Answerable at retail on 12 November 2026.
+
+### Context
+
+SNK and PLAION announced the **NEOGEO AES+**, shipping 12 November 2026. $249
+console, ten launch cartridges at $90, a $1000 ultimate edition. It uses
+**custom ASICs rather than software emulation**, and is stated to be
+**backward-compatible with original AES cartridges**.
+`[VERIFIED: PLAION/SNK announcement as reported by multiple outlets, 2026]`
+
+### The question
+
+**Do the new AES+ cartridges also run on original 1990 AES hardware?** Nobody
+has said, and the answer determines what is inside them.
+
+**If yes** — every new cartridge must contain a sprite serializer, because
+original AES hardware has none. PRO-CT0 and NEO-ZMC2 have not been manufactured
+in decades, so SNK would need a modern reimplementation in CPLD, FPGA or their
+own silicon. That is roadmap Phase 6, solved commercially and shipped in volume.
+
+**If no** — the console ASIC can serialize on the board side exactly as an MVS
+motherboard does, and the cartridges can be plain ROM boards. Cheaper per
+cartridge, and the same cost logic SNK applied in 1990, running the other way.
+See `why-the-split.md`.
+
+**Current guess: the second.** `[UNVERIFIED]` One chip in the console beats one
+in every cartridge when you expect to sell many cartridges — which is the whole
+argument in `why-the-split.md`, applied to a company that now sells the console
+at $249 and the software at $90.
+
+### Why NeoForge cares
+
+1. **A second target platform.** If the AES+ genuinely accepts original
+   cartridges, NeoForge hardware should run on it. That is a second test
+   machine, and a new one rather than a 36-year-old one.
+2. **The compatibility matrix gains a row.** Phase 11 now has a modern ASIC
+   reimplementation to test against, not only original board revisions.
+3. **Connectors and shells are being manufactured again.** Somebody is making
+   200-pin AES edge connectors and cartridge shells in 2026 for the first time
+   in thirty years. That may matter to NeoForge's BOM and sourcing.
+4. **`Q3` gains a live example.** The AES+ advertises overclocking, which by
+   definition departs from original bus timing. How it handles cartridge
+   wait-state signalling is worth measuring.
+5. **If new carts are serializer-less**, they are mass-produced modern
+   AES-form-factor cartridge PCBs — potentially the cheapest donor boards that
+   have ever existed for this platform.
+
+### The licensing question
+
+Press coverage reports that the AES+ ASICs are "based on existing code from FPGA
+developers like Furrtek and Jotego", with one developer quoted describing the
+result as a fragmented version of open FPGA designs.
+`[ANECDOTAL: press reporting of third-party comment, 2026]`
+
+**This is an allegation, not a finding.** NeoForge has not examined the silicon
+and has no evidence about its provenance. Recorded because if it holds up it is
+directly relevant: `neogeodev/NeoGeoFPGA-sim` is Furrtek's and is GPL-3.0, and
+it is the source NeoForge derives from. This project did its licensing work
+specifically so it could build on that lineage properly — see `LICENSE.md`.
+
+Do not repeat the allegation as fact. Do watch how it resolves.
+
+### How to settle it
+
+1. Wait for launch and for the first teardown. Somebody will open a cartridge
+   within days.
+2. Photographs of the new cartridge PCBs answer the chip question directly.
+3. Anyone with both an AES+ and an original AES can test cross-compatibility in
+   both directions in about a minute.
+
+---
+
 ## Adding a question
 
 Open one when a decision is being made on an assumption nobody has checked.
