@@ -12,31 +12,56 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
-## The trap: the wiki's top-face images are drawn reversed
+## Orientation: the top-face images run the other way
 
-**If you read the pinout off the wiki images, half of it is backwards.**
-
-The wiki publishes four images, one per board face. Transcribing them top to
-bottom and comparing against the AES 3.5 schematic's pin numbering:
+The wiki publishes four images, one per board face. Transcribe them top to
+bottom and compare against the AES 3.5 schematic's pin numbering:
 
 | Face | Wiki image order vs. schematic pin order |
 |---|---|
-| PROG top (`a1`–`a50`) | **reversed** |
+| PROG top (`a1`–`a50`) | **opposite** |
 | PROG bottom (`b1`–`b50`) | same |
-| CHA top (`a1`–`a50`) | **reversed** |
+| CHA top (`a1`–`a50`) | **opposite** |
 | CHA bottom (`b1`–`b50`) | same |
 
-Consistent and physically sensible — flip a board over and its contacts run the
-other way — but it is not stated on the wiki page, and every face begins and
-ends with `GND`, so the images are symmetric and give no clue on their own.
-
-Detected by scoring both orientations against the schematic: PROG top matched 6
-signals forward and 24 reversed; CHA top 6 forward, 18 reversed; both bottom
-faces matched forward (20 and 17) and barely reversed (6 each). Not ambiguous.
+Detected by scoring both directions against machine-extracted schematic nets:
+PROG top matched 6 signals forward and 24 reversed; CHA top 6 and 18; both
+bottom faces matched forward (20 and 17) against 6 reversed. Not ambiguous.
 `[VERIFIED: cross-check, 2026-09-07]`
 
-**The pin numbers in this document are the schematic's, not the wiki's reading
-order.** They are the ones to lay out from.
+The comparison is fair, because rows `a` and `b` are numbered from the same
+physical end. From Board-Folk's footprint: `[VERIFIED: NeoGeoAES3_5.kicad_pcb, 2026-09-08]`
+
+```
+a1  x=-62.65  y=-11.94       b1  x=-62.65  y=-6.48
+a50 x=+61.81  y=-11.94       b50 x=+61.81  y=-6.48
+```
+
+Same x positions, different y — the two faces of one slot — both running in the
+same direction.
+
+### This is almost certainly not an error upstream
+
+**Correction, 2026-09-08.** An earlier revision of this document called the wiki
+images "drawn reversed" and described it as a trap "not stated upstream". That
+framing was wrong and is retracted.
+
+Draw each face of a board as you would see it while looking at that face, and
+left and right swap when you turn the board over. Per-face viewing orientation
+is the natural convention for a reader holding a cartridge, and it is very
+likely what the wiki images use. Nothing is broken.
+
+The trap is real but it belongs to the *transcriber*, not the source: flattening
+four per-face drawings into one linear numbering without noticing the viewpoint
+change silently mirrors half the connector. That is exactly what happened here,
+and it is why this document numbers from the schematic rather than from reading
+order.
+
+**What is still not established** is which physical end SNK's own numbering
+calls pin 1. This document uses Board-Folk's, which is internally consistent and
+tied to a real footprint, but that is a reproduction's convention and not
+necessarily SNK's. `[UNVERIFIED]` It does not affect wiring — the signal at each
+physical position is what matters — but do not assume our `a1` is SNK's `a1`.
 
 ---
 
