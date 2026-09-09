@@ -101,12 +101,19 @@ tied to ground.**
 
 - [ ] Update `docs/cartridge-architecture.md` §1, which currently states the
       unqualified version.
-- [x] **Test ROM built and running** `[MEASURED: GnGeo AES mode, 2026-09-09]` —
-      see `rom/`. An opaque fix field with one transparent window; the window
-      resolves to backdrop green, so nothing is writing the sprite line buffers.
-      Expected in an emulator, which models the sprite path correctly, so this
-      confirms the ROM rather than the hypothesis. The result that matters is
-      the same ROM on hardware with no serializer and DOTA/DOTB low.
+- [x] **Test ROM built, running, and validated by a positive control**
+      `[MEASURED: GnGeo AES mode, 2026-09-09]` — see `rom/`. An opaque fix field
+      with one transparent window onto the sprite line buffer, alternating a
+      screen-filling sprite on and off every two seconds. **The window
+      alternates green and red as designed**, which is the point: it
+      demonstrates the window can register sprite activity, so a green reading
+      is evidence rather than an artifact of a test that cannot fail. Without
+      that control, "the sprite path is quiet" and "this ROM cannot see the
+      sprite path" would have looked identical.
+      The emulator models the sprite path correctly and therefore cannot fail
+      this test; what it confirms is the instrument. The results that matter are
+      on silicon — see the two listed in `rom/README.md`, one of which needs no
+      hardware work at all.
 - [x] **Font glyph backgrounds are transparent** — found the hard way when the
       first build rendered backdrop green behind every character. Strengthens
       the point above: in a stock text ROM, the inside of every letter is a
