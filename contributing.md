@@ -40,10 +40,16 @@ See `CLAUDE.md` for the full convention.
 
 ## What we cannot accept
 
-- **ROM data of any kind.** No copyrighted ROMs, no fragments, no encrypted
-  blobs, no "just for testing." Development uses homebrew, public-domain
-  software, or contributors' own legally obtained dumps, and none of it lives
-  in this repository.
+- **Copyrighted ROM data, in any amount or form.** No commercial game ROMs, no
+  fragments, no encrypted blobs, no BIOS dumps, no "just for testing."
+  Development uses homebrew, public-domain software, or contributors' own
+  legally obtained dumps, and none of that lives in this repository.
+
+  **This does not mean "no binaries."** ROMs NeoForge builds from its own
+  sources are ours, and publishing them is a goal, not a risk — a built test
+  ROM is what lets somebody with an AES help without installing a toolchain.
+  They belong in **tagged releases**, not in the source tree; generated output
+  is kept out of git for hygiene, not for licensing.
 - **Code copied from closed products** or from decompiled commercial firmware.
 - **Reused open-source code without license review.** Much relevant work is
   GPL-2.0 or GPL-3.0, which is not automatically compatible with this repo's
