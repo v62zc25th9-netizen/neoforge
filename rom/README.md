@@ -20,56 +20,68 @@ ngdevkit's stock hello world calls `ng_cls()`, which fills the screen with tile
 case that still depends on the sprite path. Booting that on a serializer-less
 cartridge would tell you very little, and could easily mislead.
 
-This ROM inverts that:
+This ROM inverts that. The screen is opaque fix everywhere — background *and*
+text cells — except one orange-framed rectangle of transparent fix. That
+rectangle is a controlled window onto the sprite line buffer, and the backdrop
+(palette entry `0xFFF`) is set to green.
 
-1. **The whole screen is an opaque fix tile, including the text cells.**
-   Everything legible is proof the fix path works with no sprite involvement.
-2. **One deliberate rectangle is transparent fix**, framed in orange. That is a
-   controlled window onto the sprite line buffer.
+### The alternation is the point
 
-### The first run got this wrong, instructively
+Every two seconds the ROM enables and disables a screen-filling sprite:
 
-`[MEASURED: GnGeo, 2026-09-09]` The glyphs were originally encoded with
-`bg=0` — colour 0, which on the Neo Geo is **transparent**. So every character
-cell was white strokes on transparent fix, and every one of them fell through to
-the sprite path. The first screenshot showed backdrop green behind all the text,
-with the intended blue background visible only in the gaps between lines.
-
-The ROM was behaving correctly; the design was wrong. Fixed by drawing glyphs on
-an opaque background (`bg=1`), so a text cell is now genuinely opaque fix.
-
-Two things worth keeping from that:
-
-- It was a **stronger** pass than intended. Dozens of independent transparent
-  regions scattered across the screen all resolved to backdrop, not merely one
-  rectangle. Nothing was writing the line buffers anywhere.
-- **Font glyph backgrounds are transparent by default**, in our font and in
-  ngdevkit's. That makes stock hello world even more sprite-path-dependent than
-  Q1 first noted: not just the cleared background, but the inside of every
-  letter. Anyone testing a serializer-less cartridge with a stock text ROM is
-  looking at the sprite path almost everywhere they think they are looking at
-  the fix layer.
-
-`linebuffer.v` forces the palette address to all ones during clearing writes,
-ignoring `GAD`/`GBD` entirely, so a quiet sprite path resolves to palette entry
-`0xFFF` — the backdrop. We set that to bright green.
-
-| Window shows | Meaning |
+| Phase | Expected on an ordinary AES |
 |---|---|
-| **Green** | Line buffer holds only backdrop. Q1's reasoning holds. |
-| **Anything else** | Something is writing the line buffers. Q1 does not hold here. |
+| `SPRITES: OFF` | Window **green** — nothing has written the line buffer |
+| `SPRITES: ON` | Window **red** — the sprite path is writing it |
 
-**There is no sprite data in this cartridge.** The C ROMs are zero-filled. It is
-a genuinely sprite-free cartridge image.
+**That alternation is the positive control**, and without it the test would be
+close to worthless. A green window on its own cannot distinguish *"the sprite
+path is quiet"* from *"this ROM is incapable of seeing the sprite path."* Watch
+it go red and you know the window has teeth.
+
+**On a cartridge with no serializer and `DOTA`/`DOTB` tied low, the window
+should stay green in both phases.** The difference between alternating and
+staying green is exactly Q1's answer.
+
+The sprite state is also set explicitly at boot — all 448 `SCB3` slots zeroed —
+so the test runs from a known state rather than inheriting whatever the BIOS
+left in VRAM.
+
+### The one tile of sprite data
+
+The C ROMs hold exactly one solid 16×16 tile, the minimum the control needs;
+everything else in them is zero. An earlier revision had them entirely blank,
+which was tidier but made a positive control impossible — a sprite pointing at
+zeroed C ROM produces transparent pixels and writes nothing, so it would have
+looked identical to no sprite at all.
+
+Like the fix tiles, it needs no image tooling: for a tile of one colour the
+block and row interleave cancels out, so C1 and C2 are each 64 bytes of two
+repeating values. `[VERIFIED: wiki Sprite graphics format]`
 
 ## What a green window does and does not prove
 
-In an emulator the sprite path is modelled correctly, so green is expected and
-proves only that the ROM does what it claims — a useful check, and no more.
+In an emulator the sprite path is modelled correctly, so **alternating green and
+red is the expected result** and proves only that the ROM works — which is
+exactly what a positive control is for.
 
-The result that matters is on real AES hardware with no serializer fitted and
-`DOTA`/`DOTB` tied low. That is roadmap Phase 4, and it is the point of building
-this now rather than later.
+Two hardware results are worth having, and only one of them needs a donor cart:
+
+**On an ordinary AES with any flash cart** — NeoSD, Darksoft, anything that can
+load a homebrew `.zip`. The C ROMs here are all but empty, so with sprites off
+the serializer is fed zeros and outputs `GAD`/`GBD` = 0 with `DOTA`/`DOTB` low:
+the same end state a missing serializer with those pins grounded would produce.
+That tests most of Q1 on real silicon with no soldering at all. **If you have an
+AES and a flash cart, this is the single most useful thing you can contribute to
+this project right now.**
+
+**On a serializer-less cartridge** with `DOTA`/`DOTB` tied low — roadmap Phase 4.
+Here the window should stay green through both phases. That is the result the
+whole question turns on.
+
+The remaining untested difference between the two is `GAD`/`GBD` floating rather
+than driven to zero, and Q1's fourth finding is the reason to expect that not to
+matter.
 
 ## Files
 

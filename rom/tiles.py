@@ -134,11 +134,42 @@ def build() -> bytes:
     ], fg=1, bg=3))
     return b"".join(tiles)
 
+# --- sprite tile, for the positive control -----------------------------------
+# Per the wiki (Sprite graphics format): 16x16, 4bpp planar, 128 bytes, stored
+# as four 8x8 blocks with each row planar. Bitplanes 0 and 1 go in the odd C
+# ROMs (C1), bitplanes 2 and 3 in the even ones (C2). For a tile of one colour
+# every byte in a plane is 0x00 or 0xFF, so - as with the fix tiles - the block
+# and row ordering cancels out and no image tooling is needed.
+# [VERIFIED: wiki Sprite graphics format, read 2026-09-09]
+
+SPRITE_TILE_BYTES = 128
+
+def sprite_solid(colour: int):
+    """Return (c1_bytes, c2_bytes) for one solid 16x16 sprite tile."""
+    bp = [(colour >> n) & 1 for n in range(4)]
+    f = lambda bit: 0xFF if bit else 0x00
+    c1 = bytes([f(bp[0]), f(bp[1])] * 32)   # 64 bytes: bp0, bp1 interleaved
+    c2 = bytes([f(bp[2]), f(bp[3])] * 32)   # 64 bytes: bp2, bp3 interleaved
+    assert len(c1) == len(c2) == SPRITE_TILE_BYTES // 2
+    return c1, c2
+
+SPRITE_COLOUR = 4        # opaque; main.c paints palette entry 4 bright red
+
+
 if __name__ == "__main__":
-    data = build()
     out = sys.argv[1] if len(sys.argv) > 1 else "neoforge.fix"
+    data = build()
     with open(out, "wb") as f:
         f.write(data)
+
+    # C ROMs: exactly one solid sprite tile, everything else left zero.
+    # Written alongside the .fix, named <out-stem>.c1 / .c2
+    if len(sys.argv) > 2:
+        c1_path, c2_path = sys.argv[2], sys.argv[3]
+        c1, c2 = sprite_solid(SPRITE_COLOUR)
+        open(c1_path, "wb").write(c1)
+        open(c2_path, "wb").write(c2)
+        print(f"{c1_path}, {c2_path}: one solid sprite tile, colour {SPRITE_COLOUR}")
     print(f"{out}: {len(data)} bytes, {len(data)//TILE_BYTES} tiles "
           f"(ASCII 0x00-0x7F, then BG=0x{TILE_BG:02X} WINDOW=0x{TILE_WINDOW:02X} "
           f"BORDER=0x{TILE_BORDER:02X} CHECK=0x{TILE_CHECK:02X})")

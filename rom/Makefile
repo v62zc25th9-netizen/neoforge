@@ -65,9 +65,11 @@ all: $(CART)
 $(ROM):
 	@mkdir -p $(ROM)
 
-# --- fix tiles and font, generated, no image tooling needed ------------------
-$(BUILD)/neoforge.fix: tiles.py | $(ROM)
-	$(PYTHON) tiles.py $@
+# --- fix tiles, font and the one sprite tile, all generated ------------------
+# tiles.py emits the S ROM plus a single solid sprite tile split across C1/C2.
+# No image tooling: for a tile of one colour the block/row interleave cancels.
+$(BUILD)/neoforge.fix $(BUILD)/neoforge.c1 $(BUILD)/neoforge.c2: tiles.py | $(ROM)
+	$(PYTHON) tiles.py $(BUILD)/neoforge.fix $(BUILD)/neoforge.c1 $(BUILD)/neoforge.c2
 
 $(SROM): $(BUILD)/neoforge.fix
 	cp $< $@
@@ -92,9 +94,14 @@ $(MROM): | $(ROM)
 	  echo "       SOUND_DRIVER=/path/to/base-sound-driver.ihx"; exit 1; }
 	$(Z80OBJCOPY) -I ihex -O binary "$(SOUND_DRIVER)" $@ --pad-to $(M_SIZE)
 
-# --- no sprites, no samples --------------------------------------------------
-$(CROM1) $(CROM2): | $(ROM)
-	: > $@
+# --- C ROMs: exactly one solid sprite tile, the rest zero --------------------
+# The tile exists only so the positive control has something opaque to draw.
+$(CROM1): $(BUILD)/neoforge.c1
+	cp $< $@
+	$(call pad,$@,$(C_SIZE))
+
+$(CROM2): $(BUILD)/neoforge.c2
+	cp $< $@
 	$(call pad,$@,$(C_SIZE))
 
 $(VROM): | $(ROM)
