@@ -1,6 +1,20 @@
 # Reference sources are fetched, never vendored. See LICENSE.md.
 .reference/
 
-# Simulation build artefacts
+# Build outputs. Nothing generated belongs in the repository - including
+# built cartridge images and the BIOS zips the ROM build copies in from
+# ngdevkit's share directory.
+build/
+rom/build/
 sim/zmc2_tb
 *.vcd
+
+# ROM components, in case one is ever produced outside a build directory.
+# contributing.md: no ROM data of any kind lives here.
+*.p1
+*.s1
+*.m1
+*.c1
+*.c2
+*.v1
+*.fix
