@@ -101,6 +101,18 @@ tied to ground.**
 
 - [ ] Update `docs/cartridge-architecture.md` §1, which currently states the
       unqualified version.
+- [x] **Test ROM built and running** `[MEASURED: GnGeo AES mode, 2026-09-09]` —
+      see `rom/`. An opaque fix field with one transparent window; the window
+      resolves to backdrop green, so nothing is writing the sprite line buffers.
+      Expected in an emulator, which models the sprite path correctly, so this
+      confirms the ROM rather than the hypothesis. The result that matters is
+      the same ROM on hardware with no serializer and DOTA/DOTB low.
+- [x] **Font glyph backgrounds are transparent** — found the hard way when the
+      first build rendered backdrop green behind every character. Strengthens
+      the point above: in a stock text ROM, the inside of every letter is a
+      window onto the sprite path, not just the cleared background. Anyone
+      testing a serializer-less cart with stock hello world is mostly looking at
+      the sprite path while believing they are looking at the fix layer.
 - [ ] Check whether `nullbios` touches sprite registers during boot.
 - [ ] Simulate `aes_cha.v` with `neo_zmc2` removed, `GAD`/`GBD` driven to `x`
       and DOTA/DOTB low, and confirm the palette address bus stays clean.

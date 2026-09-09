@@ -115,9 +115,16 @@ TILE_CHECK  = 0x83   # opaque checkerboard    (colours 1/3)
 
 def build() -> bytes:
     tiles = []
+    # Glyphs are drawn on an OPAQUE background (colour 1), not a transparent
+    # one. This matters: a transparent glyph background is a fix pixel that
+    # falls through to the sprite line buffer, so text cells would show the
+    # sprite path rather than the fix path - which is the opposite of what
+    # this ROM is trying to demonstrate. Observed on hardware^Wemulator
+    # 2026-09-09: with bg=0 every character cell rendered backdrop green.
     for code in range(0x80):
         spec = GLYPHS.get(chr(code).upper())
-        tiles.append(encode(spec.split()) if spec else bytes(TILE_BYTES))
+        tiles.append(encode(spec.split(), fg=15, bg=1) if spec
+                     else solid(1))
     tiles.append(solid(1))   # TILE_BG
     tiles.append(solid(0))   # TILE_WINDOW - colour 0 is transparent
     tiles.append(solid(2))   # TILE_BORDER
