@@ -317,8 +317,16 @@ ASIC chips, re-engineered by modern standards" — and the same must be true of
 the cartridges, because original AES hardware has no serializer and cannot
 supply one.
 
-**SNK has re-manufactured a sprite serializer and is shipping it in volume from
-12 November 2026.**
+**SNK has re-manufactured a sprite serializer and will ship it in volume.**
+
+**Delayed 2026-09-09.** The worldwide release moved from 12 November 2026 to
+**16 September 2027** — nearly a year — which PLAION attribute to a component
+shortage while expanding manufacturing. `[VERIFIED: PLAION press release, 2026]`
+
+This does not change the answer, only the timing: the teardown that would show
+how a modern serializer was implemented in production is now a year further
+out. Anything in this project that was quietly waiting on that should stop
+waiting.
 
 ### What this changes
 
