@@ -65,6 +65,18 @@ What did *not* change, and is now the real critical path: measured bus timing
 (Phase 5), 5V tolerance across a 200-pin connector, and the wait-state question
 in `docs/open-questions.md` Q3. The logic got easier. The electronics did not.
 
+### Revision, 2026-09-09 — checkbox audit
+
+Phases 1 and 3 had drifted out of date. Corrected above: the hello ROM, the
+AES/MVS split document and the banking document are done; `docs/serializer.md`
+exists in substance under `sim/README.md`; the connector entry's "wiki images
+are drawn reversed" claim is retracted to match `docs/aes-connector.md`.
+
+Unrelated to the audit, one dated claim in `docs/open-questions.md` Q4 and
+`docs/prior-art.md` had become false: the AES+ release slipped from 12 November
+2026 to **16 September 2027**, which PLAION attribute to a component shortage.
+`[VERIFIED: PLAION press release, 2026]`
+
 ---
 
 ## Phase 0 — Project Foundation
@@ -100,12 +112,22 @@ Prove the software half of the chain end to end before spending a dollar.
 - [x] Stand up `dciabrin/ngdevkit` and build `ngdevkit-examples` unmodified
       `[MEASURED: 2026-09-05]` macOS 14.1.1 arm64, Homebrew tap, all 18
       examples built clean; `01-helloworld` runs in GnGeo in AES mode
-- [ ] Write the NeoForge hello ROM (see `hello-world.md`)
+- [x] Write the NeoForge hello ROM (see `hello-world.md`) — `[MEASURED:
+      2026-09-08]` It outgrew the name: `rom/` is a fix-layer test with a
+      positive control (a framed window that alternates green and red as
+      sprites are toggled), not just text on screen. Boots in GnGeo in AES mode.
+- [x] Publish it so other people can run it — release `fixtest-v1`, results
+      collected in `rom/RESULTS.md`. Anyone with an AES and any flash cart can
+      test most of Q1 with no soldering.
 - [ ] Run it under GnGeo with GDB attached
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
 - [ ] Run `neogeodev/NGAcidTests` and record which emulator passes what
 - [ ] Document the macOS setup as a reproducible script (see notes below)
-- [ ] Commit a reproducible build (`make` → ROM, no manual steps)
+- [ ] Commit a reproducible build (`make` → ROM, no manual steps) — **almost.**
+      Builds from a clean checkout except for the borrowed Z80 M ROM, so
+      `make NGDEVKIT_EXAMPLES=...` is still required. Linking a minimal driver
+      against `nullsound-aes.lib` closes it. This is what blocks asking a
+      stranger to build the ROM rather than download it.
 
 **Exit:** a ROM we wrote, booting in two independent emulators, buildable from
 a clean checkout by a stranger.
@@ -179,17 +201,35 @@ Everything that can be learned without hardware, learned before buying any.
 - [x] `docs/aes-connector.md` — **done 2026-09-07.** All 200 pins with
       authoritative numbering, cross-checked against three independent sources:
       the wiki images, `aes_cart.v`'s port list, and the AES 3.5 motherboard
-      schematic (public domain KiCad, nets machine-extracted). Found that the
-      wiki's *top-face* images are drawn reversed relative to real pin
-      numbering — a trap for anyone transcribing them, and not stated upstream.
+      schematic (public domain KiCad, nets machine-extracted). An earlier
+      version of this line claimed the wiki's top-face images are "drawn
+      reversed" and that this is a trap. **Retracted** — the reversal is real
+      but is the ordinary per-face viewing convention, which is the natural way
+      to draw a connector. See the retraction in `docs/aes-connector.md`.
 - [x] Machine-readable pinout — `docs/data/aes-cartridge-pinout.csv`, including
       which pins the AES 3.5 leaves unconnected. No text or CSV version appears
       to exist upstream; the wiki publishes images only.
-- [ ] `docs/serializer.md`: how the serializer actually works, derived from
-      `neo_zmc2.v` / `zmc2_dot.v` and the FusionConverter CPLD sources
-- [ ] Document AES vs. MVS cartridge differences (started)
-- [ ] Document banking, address decoding, and known cartridge configurations
-- [ ] Catalogue AES hardware revisions and identify which one the maintainer owns
+- [ ] `docs/serializer.md`: how the serializer actually works — **half done in
+      the wrong file.** `sim/README.md` documents the `zmc2_dot` datapath from
+      simulation: bitplane layout, `H` as shift direction rather than a separate
+      path, `DOTA`/`DOTB` as opacity only. `[MEASURED: 2026-09-05]` Remaining:
+      the `zmc2_zmc` bankswitching half, and FusionConverter's CPLD sources —
+      whose licence is still unchecked, see `LICENSE.md`.
+- [x] Document AES vs. MVS cartridge differences — `docs/why-the-split.md`.
+      The mechanism is verified (32 lines in, 10 out; a 40-pin connector
+      difference of which the serializer accounts for 22). The *motive* is
+      explicitly marked inference, with a "what would change our minds" section.
+- [x] Document banking, address decoding, and known cartridge configurations —
+      `docs/prom-banking.md`. The `$200000`–`$2FFFFF` banking window, PROGBK1's
+      implementation in three 74-series parts, the cartridge families, and the
+      27C322 V ROM trap.
+- [ ] Catalogue AES hardware revisions and identify which one the maintainer
+      owns — **unblocking soon.** A Fatal Fury Special AES cart is in transit.
+      The wiki's AES entry for that title lists PROG board, CHA board and
+      protection chip as **Unknown** (its MVS counterpart is PROGGSC /
+      CHA42G-3B / no protection), so photographing the boards and reading the
+      chip markings fills three blanks upstream as well as inventorying the
+      Phase 4 donor.
 - [ ] **Resolve the serializer decision** — donor chip, NeoChips NEO-ZMC2
       replacement, or own CPLD implementation
 
@@ -218,7 +258,9 @@ PROGGS / NEO-AEG CHA42G-4 boards. `[VERIFIED: yAronet dev cart thread]`
 - [ ] Acquire an EPROM programmer with **42-pin** support (M27C800 / M27C160
       class parts) plus adapters
 - [ ] Acquire a donor AES cartridge — a common, low-value, ideally already
-      damaged title
+      damaged title. Fatal Fury Special acquired 2026-09-09, in transit. Open
+      and document before deciding whether it becomes the donor; it may be
+      worth more as a documented reference than as a sacrifice.
 - [ ] Document the donor board fully before modifying it: photos, chip list,
       trace the serializer
 - [ ] Desolder mask ROMs, fit pin receptacles (lower profile than sockets, so
