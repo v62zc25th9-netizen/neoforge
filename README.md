@@ -66,8 +66,25 @@ The project is currently in the research and simulation phase. Open source flash
   settle each, and what changes either way
 - [Prior art directory](docs/prior-art.md) — existing open and commercial work,
   and an explicit list of what does *not* yet exist
+- [Fix-layer test ROM](rom/README.md) — a ROM we wrote, with a positive
+  control, that tests Q1 on real hardware. Results land in
+  [`rom/RESULTS.md`](rom/RESULTS.md)
+- [Sprite serializer simulation](sim/README.md) — what `zmc2_dot` actually does,
+  from a passing testbench
 - [Hello World cart](hello-world.md) — the first hardware target
 - [Contributing](contributing.md) — including the evidence convention
+
+## If you have an AES and a flash cart
+
+There is one thing anyone can do today that would help more than anything else:
+**run the [fix-layer test ROM](rom/README.md) and tell us what you see.** It
+needs no soldering and no special hardware — NeoSD, Darksoft, anything that
+loads a homebrew `.zip`. Grab the release, watch the framed window for four
+seconds, and add a line to [`rom/RESULTS.md`](rom/RESULTS.md).
+
+It tests most of [Q1](docs/open-questions.md) — whether an AES cartridge can
+skip the sprite serializer entirely — which we have so far only answered by
+reading HDL. Nobody has checked it on silicon.
 
 ## Contributing
 
@@ -90,11 +107,16 @@ especially like to hear from you.
 
 ## Copyright and ROMs
 
-NeoForge does not distribute copyrighted Neo Geo game ROMs.
+NeoForge does not distribute copyrighted Neo Geo game ROMs, ROM fragments,
+encrypted blobs or BIOS dumps.
 
-Development and testing should use legally obtained ROM dumps, homebrew,
-public-domain software, or other material for which the user has appropriate
-rights.
+ROMs NeoForge builds from its own sources are a different thing, and we publish
+them — the fix-layer test ROM is in the releases, precisely so that people can
+run it without building a toolchain first.
+
+Development and testing should otherwise use legally obtained ROM dumps,
+homebrew, public-domain software, or other material for which the user has
+appropriate rights.
 
 ## Disclaimer
 
@@ -103,4 +125,8 @@ endorsed by, or sponsored by SNK or any Neo Geo hardware manufacturer.
 
 ## License
 
-See [LICENSE](LICENSE) for licensing information.
+NeoForge is licensed **per directory** — CERN-OHL-S-2.0 for hardware,
+GPL-3.0-or-later for HDL, MIT for software, CC-BY-SA-4.0 for documentation.
+See [LICENSE.md](LICENSE.md) for the full table and the reasoning, including
+the GPL-2.0/3.0 incompatibility that anyone writing serializer HDL needs to
+read first.

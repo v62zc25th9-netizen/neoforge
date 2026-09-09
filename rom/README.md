@@ -9,6 +9,11 @@ make          # build the cartridge
 make gngeo    # build and run, AES mode
 ```
 
+**You do not have to build it.** A prebuilt `neoforge-fixtest.zip` is attached
+to the `fixtest-v1` release. If you have an AES and any flash cart, run it and
+add a line to [`RESULTS.md`](RESULTS.md) — that is the single most useful thing
+anyone outside this repository can do right now.
+
 ## What it does and why
 
 Q1 established, from the HDL, that the fix layer never touches the sprite

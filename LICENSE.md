@@ -7,7 +7,7 @@ of four different kinds and one licence cannot serve all of them.
 |---|---|---|---|
 | Hardware designs — PCB, schematics, gerbers, BOMs | `hardware/` | CERN Open Hardware Licence v2 — Strongly Reciprocal | `CERN-OHL-S-2.0` |
 | HDL — Verilog, testbenches, constraints | `hdl/`, `sim/` | GNU General Public License v3.0 or later | `GPL-3.0-or-later` |
-| Software — tools, firmware, scripts | `tools/`, `firmware/`, `sw/` | MIT | `MIT` |
+| Software — tools, firmware, scripts | `tools/`, `firmware/`, `sw/`, `rom/` | MIT | `MIT` |
 | Documentation | `docs/`, `*.md` at root | Creative Commons Attribution-ShareAlike 4.0 | `CC-BY-SA-4.0` |
 
 Full texts are in [`LICENSES/`](LICENSES/). Where a file's location is
@@ -142,7 +142,33 @@ The practical consequence is that **this licensing structure is now effectively
 permanent** — changing it later would require the agreement of everyone who has
 contributed by then.
 
+## Built ROMs, and the ngdevkit runtime
+
+`rom/` holds our own sources (MIT), but the **ROM image** built from them is not
+just our code: it links ngdevkit's runtime and startup code, which is
+**LGPL-3.0-or-later**. `[UNVERIFIED — confirm against ngdevkit's per-file
+headers before the first release that anyone relies on]`
+
+If that is right, distributing a built ROM carries the LGPL's relinking
+obligation: recipients must be able to substitute a modified runtime and rebuild
+a working image. In practice we satisfy that by publishing the complete build —
+`rom/main.c`, `rom/tiles.py` and `rom/Makefile` are all here, and ngdevkit is
+public — so anyone can rebuild from a modified runtime. We are not shipping an
+opaque binary with the sources withheld, which is the case the clause exists to
+prevent.
+
+Two loose ends, recorded rather than hidden:
+
+- The M ROM in the released zip is a prebuilt Z80 driver copied from
+  `ngdevkit-examples`. Replacing it with our own driver linked against
+  `nullsound-aes.lib` removes a redistributed third-party binary from our
+  release as well as making the build self-contained. See `rom/README.md`.
+- The exact licence and headers of the ngdevkit files we link have not been
+  read carefully. Do that before treating the paragraph above as settled.
+
 ## ROMs
 
-No copyrighted ROM data belongs in this repository under any licence. See
-`contributing.md`.
+No copyrighted ROM data belongs in this repository under any licence — no
+commercial games, ROM fragments, encrypted blobs or BIOS dumps. ROMs built from
+NeoForge's own sources are a different thing and are published deliberately.
+See `contributing.md`.
