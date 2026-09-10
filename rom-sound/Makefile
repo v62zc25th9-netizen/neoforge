@@ -39,6 +39,10 @@ GNGEO      ?= ngdevkit-gngeo
 
 CFLAGS := -std=c99 -fomit-frame-pointer -O2 -g
 
+# -aes: the two nullsound variants differ only in the FM and SSG frequency
+# tables. ADPCM-A does not use them - its rate is fixed by the YM2610 - so the
+# choice does not change what this ROM sounds like. It would the moment
+# anything here used FM or SSG. See sound-driver.s.
 NULLSOUND ?= $(Z80LIBDIR)/nullsound-aes.lib
 
 # The fix tiles come from the fix-layer test's generator. One font, two ROMs.

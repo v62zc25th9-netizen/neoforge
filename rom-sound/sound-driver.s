@@ -9,6 +9,13 @@
 ;;; Unlike ../rom/sound-driver.s, this one actually plays something. It adds
 ;;; a single user command that starts one ADPCM-A sample on channel 1.
 ;;;
+;;; On linking -aes: nullsound's two variants differ only in fm-tables.inc and
+;;; ssg-tables.inc, and only entrypoint.s is assembled per-variant. ADPCM-A
+;;; playback does not use those tables at all - its rate is fixed by the
+;;; YM2610's own clock - so the variant makes no difference to *this* ROM even
+;;; though it does play a sound. It will matter the moment anything here uses
+;;; FM or SSG. `[VERIFIED: ngdevkit nullsound/Makefile.in, OBJS vs OBJS_AES]`
+;;;
 ;;; What is being tested is not the YM2610 - that is on the motherboard and
 ;;; is not ours to doubt. It is the path from the cartridge's V ROM to it:
 ;;; the sample data lives on the cart, crosses the connector on its own bus,

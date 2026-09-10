@@ -92,6 +92,18 @@ be collecting into. Changing what that ROM does would invalidate those results.
 The two Makefiles overlap and are expected to drift, because they test
 different things.
 
+## Note on the `-aes` nullsound variant
+
+The driver links `nullsound-aes.lib` rather than the default. For this ROM that
+is a formality: the two variants differ only in `fm-tables.inc` and
+`ssg-tables.inc`, only `entrypoint.s` is assembled per-variant, and **ADPCM-A
+does not use those tables** — its playback rate is fixed by the YM2610's own
+clock. `[VERIFIED: ngdevkit nullsound/Makefile.in]`
+
+So the chirp sounds identical either way. The distinction becomes real the
+moment anything here uses FM or SSG, because AES and MVS clock the YM2610
+differently and the tables are computed from that clock.
+
 ## Note on `vromtool`
 
 It runs twice, because `--roms` and `--asm` are mutually exclusive modes: once
