@@ -69,8 +69,9 @@ The project is currently in the research and simulation phase. Open source flash
 - [Fix-layer test ROM](rom/README.md) — a ROM we wrote, with a positive
   control, that tests Q1 on real hardware. Results land in
   [`rom/RESULTS.md`](rom/RESULTS.md)
-- [Sprite serializer simulation](sim/README.md) — what `zmc2_dot` actually does,
-  from a passing testbench
+- [NEO-ZMC2, the cartridge chip](docs/serializer.md) — both halves, from
+  simulation: the sprite serializer and the Z80 mapper, what they mean for the
+  project, and what is still unknown. How to run it: [sim/README.md](sim/README.md)
 - [Hello World cart](hello-world.md) — the first hardware target
 - [Contributing](contributing.md) — including the evidence convention
 

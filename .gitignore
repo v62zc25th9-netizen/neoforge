@@ -6,7 +6,9 @@
 # ngdevkit's share directory.
 build/
 rom/build/
-sim/zmc2_tb
+# Compiled testbenches. The glob covers new ones without another edit;
+# testbench *sources* are zmc2_dot_tb.v / zmc_tb.v and are not matched.
+sim/*_tb
 *.vcd
 
 # ROM components, in case one is ever produced outside a build directory.
