@@ -9,6 +9,7 @@
 #   make clean
 #
 # Requires ngdevkit on PATH (brew install ngdevkit; brew install ngdevkit-gngeo)
+# and nothing else. No second checkout, no borrowed binaries.
 
 GAMEROM   := neoforge-fixtest
 BUILD     := build
@@ -20,8 +21,13 @@ NGCFLAGS  := $(shell $(PKGCONFIG) --cflags ngdevkit)
 NGLIBS    := $(shell $(PKGCONFIG) --libs ngdevkit)
 SHAREDIR  := $(shell $(PKGCONFIG) --variable=sharedir ngdevkit)
 
+Z80INCDIR := $(shell $(PKGCONFIG) --variable=z80includedir ngdevkit)
+Z80LIBDIR := $(shell $(PKGCONFIG) --variable=z80libdir ngdevkit)
+
 GCC        := m68k-neogeo-elf-gcc
 OBJCOPY    := m68k-neogeo-elf-objcopy
+Z80AS      := z80-neogeo-ihx-sdasz80
+Z80LD      := z80-neogeo-ihx-sdldz80
 Z80OBJCOPY := z80-neogeo-ihx-sdobjcopy
 ROMTOOL    := romtool.py
 GNGEO      ?= ngdevkit-gngeo
@@ -30,14 +36,20 @@ CFLAGS := -std=c99 -fomit-frame-pointer -O2 -g
 
 # The Z80 sound driver.
 #
-# This ROM makes no sound and does not care what is in the M ROM, but the
-# system expects a valid Z80 program there. For now we borrow the prebuilt
-# driver from an ngdevkit-examples checkout rather than building one.
+# This ROM makes no sound, but the BIOS expects a valid Z80 program in the M
+# ROM and talks to it during boot. sound-driver.s provides the command jump
+# table and nothing else, linked against nullsound-aes.lib.
 #
-# TODO: link a minimal driver against nullsound-aes.lib so this build is
-# self-contained. Until then this is the one external dependency.
-NGDEVKIT_EXAMPLES ?= $(HOME)/ngdevkit-examples
-SOUND_DRIVER      ?= $(NGDEVKIT_EXAMPLES)/01-helloworld/build/assets/base-sound-driver.ihx
+# nullsound ships with ngdevkit, so this build needs no second checkout. It
+# used to copy a prebuilt driver out of ngdevkit-examples; that made the
+# build unreproducible for anyone without that checkout and put a
+# third-party binary in the release.
+#
+# -aes rather than the default: the two variants differ only in frequency
+# tables derived from the audio clock, which AES and MVS drive differently.
+# Nothing here plays a note, so it makes no audible difference - but this is
+# an AES project.
+NULLSOUND ?= $(Z80LIBDIR)/nullsound-aes.lib
 
 # GnGeo's own data archive, for the AES BIOS wiring
 GNGEO_DATA ?= $(shell brew --prefix ngdevkit-gngeo 2>/dev/null)/share/ngdevkit-gngeo/gngeo_data.zip
@@ -86,13 +98,22 @@ $(PROM): $(BUILD)/rom.elf
 	$(OBJCOPY) -O binary -S -R .text2 --gap-fill 0xff --pad-to $(P_SIZE) $< $@
 	dd if=$@ of=$@ conv=notrunc,swab status=none
 
-# --- Z80 program (borrowed; see note above) ----------------------------------
-$(MROM): | $(ROM)
-	@test -f "$(SOUND_DRIVER)" || { \
-	  echo "ERROR: sound driver not found at $(SOUND_DRIVER)"; \
-	  echo "       set NGDEVKIT_EXAMPLES=/path/to/ngdevkit-examples, or"; \
-	  echo "       SOUND_DRIVER=/path/to/base-sound-driver.ihx"; exit 1; }
-	$(Z80OBJCOPY) -I ihex -O binary "$(SOUND_DRIVER)" $@ --pad-to $(M_SIZE)
+# --- Z80 program -------------------------------------------------------------
+# nullsound links its state trackers into RAM at 0xf800; -b DATA=0xf800 is
+# not optional, and the driver misbehaves in ways that look like anything
+# but a link flag if it is omitted.
+$(BUILD)/sound-driver.rel: sound-driver.s | $(ROM)
+	$(Z80AS) -g -l -p -u -I$(Z80INCDIR)/nullsound -o $@ $<
+
+$(BUILD)/sound-driver.ihx: $(BUILD)/sound-driver.rel
+	@test -f "$(NULLSOUND)" || { \
+	  echo "ERROR: nullsound-aes.lib not found at $(NULLSOUND)"; \
+	  echo "       it ships with ngdevkit - check 'pkg-config --variable=z80libdir ngdevkit'"; \
+	  exit 1; }
+	$(Z80LD) -b DATA=0xf800 -m -w -i $@ $(NULLSOUND) $<
+
+$(MROM): $(BUILD)/sound-driver.ihx
+	$(Z80OBJCOPY) -I ihex -O binary $< $@ --pad-to $(M_SIZE)
 
 # --- C ROMs: exactly one solid sprite tile, the rest zero --------------------
 # The tile exists only so the positive control has something opaque to draw.

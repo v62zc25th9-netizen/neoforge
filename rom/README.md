@@ -102,16 +102,39 @@ development, so the encoder and a decoder written from the same spec agree —
 which catches typos but would not catch a misreading of the spec. **The screen
 is the real check.**
 
-## Known rough edge
+## The M ROM
 
-The M ROM is borrowed. This ROM makes no sound and does not care what the Z80
-runs, but the system expects a valid program there, so the Makefile takes the
-prebuilt driver from an `ngdevkit-examples` checkout:
+This ROM makes no sound, but the BIOS expects a valid Z80 program in the M ROM
+and talks to it during boot. `sound-driver.s` supplies the command jump table
+and nothing else, linked against `nullsound-aes.lib`.
 
-```sh
-make NGDEVKIT_EXAMPLES=/path/to/ngdevkit-examples
-```
+`nullsound` ships with ngdevkit, so **the build needs no second checkout** —
+`make` works from a clean clone. `[MEASURED: 2026-09-10]` Earlier builds copied
+a prebuilt driver out of an `ngdevkit-examples` tree, which made the build
+unreproducible for anyone without it and put a third-party binary in the
+release.
 
-That is the build's only external dependency. Replacing it with a minimal driver
-linked against `nullsound-aes.lib` — note the AES-specific variant — would make
-this fully self-contained. Worth doing before anyone else is asked to build it.
+`-aes` rather than the default variant: the two differ only in frequency tables
+derived from the audio clock, which AES and MVS drive differently. Nothing here
+plays a note, so it makes no audible difference — but this is an AES project.
+
+### The subtlety in the jump table
+
+Entry 2 is not a command handler, and treating it like one produces something
+that works in an emulator and may not on hardware.
+
+Command 2 is *"reset the driver and play the eye-catcher music"*. nullsound
+implements it by initialising the driver and then **calling entry 2 as a
+subroutine**, with the main loop as the return address — the music itself has to
+come from the game ROM, which is why nullsound cannot provide it. `01-helloworld`
+points entry 2 at ngdevkit's attract music, which is the only reason that
+example needs an extra library.
+
+We have no music, so entry 2 must return cleanly and do nothing. It
+deliberately does **not** jump to `snd_command_unused`: that ends in `retn`,
+correct inside an NMI but wrong here, because by that point the driver has
+already returned from the NMI. Entry 2 is a plain `ret`.
+
+Licensing note: `sound-driver.s` is derived from ngdevkit-examples'
+`base-sound-driver.s` and is therefore **LGPL-3.0-or-later** — the one file
+under `rom/` that is not MIT. See [`../LICENSE.md`](../LICENSE.md).
