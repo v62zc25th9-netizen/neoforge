@@ -8,6 +8,7 @@ of four different kinds and one licence cannot serve all of them.
 | Hardware designs — PCB, schematics, gerbers, BOMs | `hardware/` | CERN Open Hardware Licence v2 — Strongly Reciprocal | `CERN-OHL-S-2.0` |
 | HDL — Verilog, testbenches, constraints | `hdl/`, `sim/` | GNU General Public License v3.0 or later | `GPL-3.0-or-later` |
 | Software — tools, firmware, scripts | `tools/`, `firmware/`, `sw/`, `rom/` | MIT | `MIT` |
+| Exception: the Z80 sound driver | `rom/sound-driver.s` | GNU Lesser General Public License v3.0 or later | `LGPL-3.0-or-later` |
 | Documentation | `docs/`, `*.md` at root | Creative Commons Attribution-ShareAlike 4.0 | `CC-BY-SA-4.0` |
 
 Full texts are in [`LICENSES/`](LICENSES/). Where a file's location is
@@ -78,6 +79,41 @@ NeoGeoFPGA-sim lineage, which means:
 - ❌ **Do not** read `NeoChips/NEO-ZMC2/neo-zmc2.v` (or its `.jed`) into
   NeoForge's own HDL. That would create a work derived from GPL-2.0-only code
   that we cannot then license as GPL-3.0.
+
+### We asked, and the question is still open
+
+NeoForge opened `neogeodev/NeoChips` issue #1 on 2026-09-09 asking whether the
+grant is v2-only or v2-or-later. It was closed without a licensing answer.
+`[VERIFIED: NeoChips issue #1]`
+
+So we continue to treat it as **v2-only**, which is the conservative reading and
+the one the repository supports on its face: GitHub reports the licence as
+GPL-2.0, and no "or later" grant appears in the LICENSE or the per-file headers.
+
+Two things that are **not** in dispute, stated plainly because they are easy to
+mistake for an answer to the question above:
+
+- **Commercial use is permitted.** GPL-2.0 allows commercial use, modification,
+  distribution, and one-for-one copies; the NeoChips README actively encourages
+  building your own boards. Nobody had to grant us that — it is what the licence
+  says.
+- **Reciprocity comes with it.** A derivative must be released under the same
+  licence. That condition is exactly what makes GPL-2.0-only incompatible with
+  our GPL-3.0-or-later HDL.
+
+The question was never *may we use it*. It was *may we combine it*, and absent
+an answer we must assume no.
+
+A trap worth naming: the NeoChips README says "See paragraphs 11 and 12 of the
+LICENSE file." Those are GPL-2.0's **NO WARRANTY** and **limitation of
+liability** clauses. They are a disclaimer, not a grant, and they say nothing
+about versions or combination.
+
+**This costs the project little.** The component route above is unaffected, and
+`docs/serializer.md` shows both halves of NEO-ZMC2 are already characterised
+from the NeoGeoFPGA-sim lineage, which we may derive from freely.
+
+---
 
 If you have looked at the NeoChips sources and then write serializer HDL, say
 so in your pull request. This is not an accusation; it is how contamination
@@ -157,14 +193,19 @@ public — so anyone can rebuild from a modified runtime. We are not shipping an
 opaque binary with the sources withheld, which is the case the clause exists to
 prevent.
 
-Two loose ends, recorded rather than hidden:
+The same reasoning covers the M ROM, which links `nullsound-aes.lib` —
+also LGPL-3.0-or-later, also part of ngdevkit. `rom/sound-driver.s` is derived
+from ngdevkit-examples' `base-sound-driver.s` and carries that licence itself,
+which is why it is called out as an exception in the table above.
+`[MEASURED: 2026-09-10]` — the release no longer redistributes a third-party
+binary; the driver is built from a source file in this repository.
 
-- The M ROM in the released zip is a prebuilt Z80 driver copied from
-  `ngdevkit-examples`. Replacing it with our own driver linked against
-  `nullsound-aes.lib` removes a redistributed third-party binary from our
-  release as well as making the build self-contained. See `rom/README.md`.
-- The exact licence and headers of the ngdevkit files we link have not been
-  read carefully. Do that before treating the paragraph above as settled.
+One loose end, recorded rather than hidden:
+
+- The exact licence and headers of every ngdevkit file we link have not been
+  read individually. `nullsound` and the runtime carry LGPL-3.0-or-later
+  headers where we have looked. Do a careful pass before treating the
+  paragraphs above as settled.
 
 ## ROMs
 

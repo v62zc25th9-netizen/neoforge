@@ -123,11 +123,12 @@ Prove the software half of the chain end to end before spending a dollar.
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
 - [ ] Run `neogeodev/NGAcidTests` and record which emulator passes what
 - [ ] Document the macOS setup as a reproducible script (see notes below)
-- [ ] Commit a reproducible build (`make` → ROM, no manual steps) — **almost.**
-      Builds from a clean checkout except for the borrowed Z80 M ROM, so
-      `make NGDEVKIT_EXAMPLES=...` is still required. Linking a minimal driver
-      against `nullsound-aes.lib` closes it. This is what blocks asking a
-      stranger to build the ROM rather than download it.
+- [x] Commit a reproducible build (`make` → ROM, no manual steps) —
+      `[MEASURED: 2026-09-10]` `rom/sound-driver.s` supplies the Z80 command
+      jump table and links against `nullsound-aes.lib`, which ships with
+      ngdevkit. No second checkout, no borrowed binary. `make` works from a
+      clean clone with ngdevkit on PATH, and the built ROM boots unchanged in
+      GnGeo.
 
 **Exit:** a ROM we wrote, booting in two independent emulators, buildable from
 a clean checkout by a stranger.
@@ -209,12 +210,19 @@ Everything that can be learned without hardware, learned before buying any.
 - [x] Machine-readable pinout — `docs/data/aes-cartridge-pinout.csv`, including
       which pins the AES 3.5 leaves unconnected. No text or CSV version appears
       to exist upstream; the wiki publishes images only.
-- [ ] `docs/serializer.md`: how the serializer actually works — **half done in
-      the wrong file.** `sim/README.md` documents the `zmc2_dot` datapath from
-      simulation: bitplane layout, `H` as shift direction rather than a separate
-      path, `DOTA`/`DOTB` as opacity only. `[MEASURED: 2026-09-05]` Remaining:
-      the `zmc2_zmc` bankswitching half, and FusionConverter's CPLD sources —
-      whose licence is still unchecked, see `LICENSE.md`.
+- [x] `docs/serializer.md` — **done 2026-09-10.** Both halves of NEO-ZMC2,
+      from simulation. `zmc2_dot` (the sprite datapath): bitplane layout, `H` as
+      shift direction rather than a separate path, `DOTA`/`DOTB` as opacity
+      only. `zmc2_zmc` (the Z80 mapper): four bank windows, programmed by an
+      I/O *read* rather than a write, no reset on the registers, and an alias at
+      `F800`. `[MEASURED: 2026-09-05, 2026-09-10]` 65 checks across two
+      testbenches, 0 failures.
+- [ ] Report the `BANKSEL` width bug to NeoGeoFPGA-sim — `wire BANKSEL =
+      SDA_U[15:8]` is declared as a scalar, so the eight-bit value truncates to
+      one bit and every bank register can only hold 0 or 1. One-line fix; they
+      should have it back. See `docs/serializer.md`.
+- [ ] Read FusionConverter's CPLD sources — **check its licence first**, which
+      `LICENSE.md` still records as unverified.
 - [x] Document AES vs. MVS cartridge differences — `docs/why-the-split.md`.
       The mechanism is verified (32 lines in, 10 out; a 40-pin connector
       difference of which the serializer accounts for 22). The *motive* is
@@ -231,7 +239,12 @@ Everything that can be learned without hardware, learned before buying any.
       chip markings fills three blanks upstream as well as inventorying the
       Phase 4 donor.
 - [ ] **Resolve the serializer decision** — donor chip, NeoChips NEO-ZMC2
-      replacement, or own CPLD implementation
+      replacement, or own CPLD implementation. The GPL-2.0 version question we
+      raised upstream was closed without an answer, so NeoChips stays usable as
+      a bought-or-built **component** and unusable as a source. See
+      `LICENSE.md`. Not blocking: a fix-only cart needs no serializer at all,
+      and `docs/serializer.md` characterises both halves from the GPL-3.0
+      lineage.
 
 **Exit:** we can explain, from sources, exactly what a cartridge must do
 electrically for the AES to boot it.
