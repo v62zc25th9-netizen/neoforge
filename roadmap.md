@@ -119,6 +119,15 @@ Prove the software half of the chain end to end before spending a dollar.
 - [x] Publish it so other people can run it — release `fixtest-v1`, results
       collected in `rom/RESULTS.md`. Anyone with an AES and any flash cart can
       test most of Q1 with no soldering.
+- [x] Exercise the V ROM — `[MEASURED: 2026-09-10]` `rom-sound/` plays one
+      ADPCM-A sample from the cartridge V ROM every two seconds. The V ROM was
+      512 KB of zeroes in everything we had built, which left one of the
+      cartridge's five ROMs completely untested. Unlike the fix-layer test, an
+      emulator answers a real question here: whether our V ROM is *correctly
+      constructed* — ADPCM-A encoding, sample offsets, the map `vromtool`
+      generates. The hardware question — can a board serve V ROM reads — waits
+      for Phase 7, when the board doing the serving is ours.
+      The sample is synthesised by `sample.py`; no audio file is committed.
 - [ ] Run it under GnGeo with GDB attached
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
 - [ ] Run `neogeodev/NGAcidTests` and record which emulator passes what

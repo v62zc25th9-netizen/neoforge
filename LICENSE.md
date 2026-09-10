@@ -8,7 +8,7 @@ of four different kinds and one licence cannot serve all of them.
 | Hardware designs — PCB, schematics, gerbers, BOMs | `hardware/` | CERN Open Hardware Licence v2 — Strongly Reciprocal | `CERN-OHL-S-2.0` |
 | HDL — Verilog, testbenches, constraints | `hdl/`, `sim/` | GNU General Public License v3.0 or later | `GPL-3.0-or-later` |
 | Software — tools, firmware, scripts | `tools/`, `firmware/`, `sw/`, `rom/` | MIT | `MIT` |
-| Exception: the Z80 sound driver | `rom/sound-driver.s` | GNU Lesser General Public License v3.0 or later | `LGPL-3.0-or-later` |
+| Exception: the Z80 sound drivers | `rom/sound-driver.s`, `rom-sound/sound-driver.s` | GNU Lesser General Public License v3.0 or later | `LGPL-3.0-or-later` |
 | Documentation | `docs/`, `*.md` at root | Creative Commons Attribution-ShareAlike 4.0 | `CC-BY-SA-4.0` |
 
 Full texts are in [`LICENSES/`](LICENSES/). Where a file's location is
@@ -193,10 +193,13 @@ public — so anyone can rebuild from a modified runtime. We are not shipping an
 opaque binary with the sources withheld, which is the case the clause exists to
 prevent.
 
-The same reasoning covers the M ROM, which links `nullsound-aes.lib` —
-also LGPL-3.0-or-later, also part of ngdevkit. `rom/sound-driver.s` is derived
-from ngdevkit-examples' `base-sound-driver.s` and carries that licence itself,
-which is why it is called out as an exception in the table above.
+The same reasoning covers the M ROMs, which link `nullsound-aes.lib` —
+also LGPL-3.0-or-later, also part of ngdevkit. Both `rom/sound-driver.s` and
+`rom-sound/sound-driver.s` are derived from ngdevkit-examples
+(`base-sound-driver.s` and `user_commands.s`) and carry that licence
+themselves, which is why they are called out as an exception in the table
+above. Everything else under `rom/` and `rom-sound/` is MIT, including the
+generators — `tiles.py` and `sample.py` are our own.
 `[MEASURED: 2026-09-10]` — the release no longer redistributes a third-party
 binary; the driver is built from a source file in this repository.
 

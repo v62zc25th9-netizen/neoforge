@@ -11,6 +11,10 @@ rom/build/
 sim/*_tb
 *.vcd
 
+# Generated audio. rom-sound/sample.py synthesises its own sample; no audio
+# file belongs in this repository. See rom-sound/README.md.
+*.wav
+
 # ROM components, in case one is ever produced outside a build directory.
 # contributing.md: no ROM data of any kind lives here.
 *.p1

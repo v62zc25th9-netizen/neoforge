@@ -69,6 +69,8 @@ The project is currently in the research and simulation phase. Open source flash
 - [Fix-layer test ROM](rom/README.md) — a ROM we wrote, with a positive
   control, that tests Q1 on real hardware. Results land in
   [`rom/RESULTS.md`](rom/RESULTS.md)
+- [V ROM test ROM](rom-sound/README.md) — plays a sample from the cartridge
+  V ROM, the one cartridge function nothing else we build exercises
 - [NEO-ZMC2, the cartridge chip](docs/serializer.md) — both halves, from
   simulation: the sprite serializer and the Z80 mapper, what they mean for the
   project, and what is still unknown. How to run it: [sim/README.md](sim/README.md)
