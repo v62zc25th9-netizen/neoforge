@@ -53,6 +53,11 @@ The project is currently in the research and simulation phase. Open source flash
 ## Documentation
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [What the hardware has to do](docs/hardware-constraints.md) — the memory
+  budget from real games, the PROG/CHA split, C ROM bandwidth, and why 5V —
+  not logic capacity — picks the FPGA
+- [ROM sets and the `.neo` format](docs/rom-format.md) — the container laid out
+  from two independent implementations, and where they disagree
 - [P ROM banking and cartridge families](docs/prom-banking.md) — the memory
   map, how banking works, and why a board must copy SNK's mapper rather than
   invent one

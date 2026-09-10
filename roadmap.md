@@ -175,9 +175,19 @@ data models and emits MAME, GnGeo **and** NeoSD `.neo` output. That is the
 *write* direction of most of what was scoped here. The honest remaining work is
 the *read* direction against a model that already exists.
 
-- [ ] Read `romtool.py` properly and decide: extend it upstream with an inspect
-      mode, or build a reader that reuses its model. Upstreaming is probably
-      better for everyone and costs us less.
+- [x] Read `romtool.py` properly — **done 2026-09-10.**
+      `docs/rom-format.md` lays out the `.neo` container from two independent
+      implementations (`romtool.py` and `city41/neosdconv`) and records where
+      they disagree: `neosdconv` swaps the halves of a P region that is exactly
+      2 MB, and `romtool.py` does not. If our reading is right, a homebrew ROM
+      with a 2 MB P built by `romtool.py` runs with its banks transposed.
+      `[UNVERIFIED]` and cheap to test.
+- [ ] Test the 2 MB P-ROM meg-swap discrepancy. Build a ROM with exactly 2 MB
+      of P, convert it both ways, compare. A real upstream bug if it holds; a
+      correction to our own reading of the format if it does not.
+- [ ] Decide: extend `romtool.py` upstream with an inspect mode, or build a
+      reader that reuses its model. Upstreaming serves ngdevkit users too and
+      costs us less. Decide before writing code.
 - [ ] `neoforge-rominfo`: ROM set → machine-readable cartridge description
 - [ ] Identify P/C/S/M/V components and sizes
 - [ ] Identify cartridge configuration and mapper
@@ -190,6 +200,12 @@ a competitor's on-card format in working code.
 **Priority note.** This phase serves loading *commercial* ROM sets, which is a
 Phase 9 concern. It does nothing to help build the fix-only board that Q1 just
 unblocked. Worth doing, but not next.
+
+**Revised 2026-09-10 — smaller still.** Nothing that exists reads a ROM set or
+parses a `.neo`; both implementations go one way only. So the gap is the *read*
+direction and verification — do the C ROMs pair evenly, is P a legal size, does
+the layout match a known cartridge family — not construction, which is solved
+twice over.
 
 **Exit:**
 
@@ -312,6 +328,13 @@ With a known-good cartridge in hand, capture what the AES actually does.
 - [ ] Instrument the donor cart: address, data, control, and serializer lines
 - [ ] Capture reset and boot sequence
 - [ ] Capture normal read cycles and measure setup, hold and access times
+- [ ] **Measure the console-side input thresholds.** Cheap, and it settles the
+      question `docs/hardware-constraints.md` flags as our real 5V unknown:
+      driving a 5V system from 3.3V logic works only if every receiver is
+      TTL-threshold (2.0 V), and the receivers here are undocumented SNK ASICs.
+      Measurable on a working cartridge without building anything. If any input
+      is plain-CMOS-threshold (3.7 V), direct 3.3V drive fails on that pin —
+      and it will fail marginally, which is the worst way.
 - [ ] Capture serializer transactions against LSPC clocking
 - [ ] Publish captures and analysis under `docs/measured/` with `[MEASURED]`
       markers and raw files
@@ -334,7 +357,11 @@ hard problem
 Replace the donor cart's SNK serializer with logic we can publish.
 
 - [ ] Select a **5V-tolerant** CPLD. This constraint eliminates most modern
-      parts and drives the entire electrical design; settle it early
+      parts and drives the entire electrical design; settle it early.
+      `docs/hardware-constraints.md` has the analysis: the logic is tiny, so
+      the part is picked for voltage and availability, and a 5V CPLD stays
+      attractive for small boards precisely because it deletes the level
+      translation problem entirely.
 - [ ] Implement the serializer, derived from the FusionConverter and
       NeoGeoFPGA-sim references, with attribution and license compatibility
       checked
@@ -382,7 +409,13 @@ connector board would be luck, not skill.
 
 Replace fixed logic with an FPGA. Now a scale-up of proven work, not a redesign.
 
-- [ ] Select FPGA platform (study Terraonion's two-FPGA PROG/CHA split)
+- [ ] Select FPGA platform. `docs/hardware-constraints.md` now carries the
+      numbers this decision needs: 90 MB worst case, split ~24 MB on PROG and
+      ~65 MB on CHA across two physically separate boards with different
+      consumers running concurrently — which is very probably why Terraonion
+      used two FPGAs. The part is chosen for I/O count, memory interface and
+      availability, **not logic capacity**; what we simulated is tiny. The
+      binding constraint is 5V.
 - [ ] Port the serializer; add programmable address decoding and banking
 - [ ] External RAM and flash interfaces
 - [ ] Validate against the Phase 3 simulator and Phase 5 captures
