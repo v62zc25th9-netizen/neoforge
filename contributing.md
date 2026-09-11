@@ -50,6 +50,23 @@ See `CLAUDE.md` for the full convention.
   ROM is what lets somebody with an AES help without installing a toolchain.
   They belong in **tagged releases**, not in the source tree; generated output
   is kept out of git for hygiene, not for licensing.
+
+  **Simulation and test harnesses must run on open inputs.** Not only because
+  of the rule above, but because a harness that needs a BIOS dump and a
+  commercial cartridge produces a result nobody can check. Use ngdevkit's
+  `nullbios` (LGPL-3.0-or-later) and ROMs from this repository — which is what
+  our builds already do; the `aes.zip` and `neogeo.zip` they copy out of
+  ngdevkit *are* nullbios. **Reproducibility is most of the value of a
+  measurement**, and it is the whole point of publishing one.
+
+  Running your own legally obtained dumps through a working harness, privately,
+  as a cross-check against something the original manufacturer made, is a
+  reasonable thing to do — **private input, public conclusion.** The dump does
+  not enter this repository, and no result may *depend* on one, or nobody else
+  can reproduce it. Note also that owning a cartridge and being entitled to a
+  copy of its contents are not the same question in every jurisdiction, and
+  neither is dumping your own cartridge versus downloading someone else's dump
+  of it. That is each contributor's call to make, not this project's.
 - **Code copied from closed products** or from decompiled commercial firmware.
 - **Reused open-source code without license review.** Much relevant work is
   GPL-2.0 or GPL-3.0, which is not automatically compatible with this repo's

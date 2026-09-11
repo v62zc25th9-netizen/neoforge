@@ -2,29 +2,61 @@
 
 A cartridge whose job is to find out how slow a cartridge is allowed to be.
 
-This is NeoForge's answer to [Q3](open-questions.md) and the first board the
-project builds. It is a design on paper — nothing here has been made.
+**Status: designed, deliberately not scheduled.** This is a research
+contribution, not a prerequisite. Read section 1 before planning any work
+around it.
 
 ---
 
-## 1. Why the obvious approach does not work
+## 1. Read this first: we probably do not need it
 
-The roadmap's Phase 5 says: instrument a working cartridge, capture read cycles,
-measure access times. That is a reasonable thing to do and it will not answer
-the question.
+The first version of this document argued that finding the timing limit was
+necessary, and that passive approaches could not answer [Q3](open-questions.md).
+**That was too strong, and the correction is worth more than the design.**
+
+There is already a known-good envelope. The ROM models in NeoGeoFPGA-sim carry
+access-time annotations — P at **120 ns**, C at 250 ns, S at 200 ns, M and V at
+100 ns — and `rom_p1.v` states its part in a comment.
+`[VERIFIED: NeoGeoFPGA-sim Cartridge/ROMs/*.v, as the model's annotations]`
+
+If SNK shipped 120 ns P ROMs and every Neo Geo cartridge ever made works, then
+**120 ns is sufficient by demonstration.** A board designer needs a sufficient
+condition, not a limit. Design to 100 ns and there is margin over what the
+hardware provably tolerates.
+
+So the engineering path is:
+
+1. **Design inside the envelope.** P ≤ 120 ns, ideally ≤ 100 ns.
+2. **Verify the envelope by reading part numbers** off a real board — speed
+   grade is in the part number. A magnifying glass, no risk.
+3. **Cross-check in simulation**, which costs nothing. See section 10.
+
+**Finding the actual limit remains worth doing** — nobody has published it, and
+it is exactly the kind of measurement this project exists to produce. But it is
+a contribution to make *after* there is a working board, not a reason to build
+one first.
+
+The rest of this document is the design, kept because the problem is interesting
+and the constraints it works out are real.
+
+## 2. What it would measure that observation cannot
 
 **Watching a working cartridge tells you the mask ROM was fast enough.** It
-gives you that ROM's access time. It does not tell you how slow a cartridge
-could be and still boot — which is the number a board designer needs, because it
-is the budget everything else is spent from.
+gives you that ROM's access time — which, per section 1, is the useful number.
+What it cannot give you is the *margin*: how much slower a cartridge could be
+and still boot.
 
-To find a limit you have to reach it. That means **making the console fail on
-purpose**, with a delay we control, and finding the edge.
+That matters only if a design cannot make the envelope. If our FPGA and level
+translation cannot hit 120 ns, then knowing whether the real limit is 130 ns or
+250 ns decides whether the approach is dead or fine. **That is the contingency
+this cart is for.**
 
-There is a second problem with passive capture, which
-[`hardware-constraints.md`](hardware-constraints.md) raised: it needs a probe
-that sits between cartridge and console, and no such thing appears to exist for
-AES. A cartridge that measures itself needs no interposer at all.
+To find a limit you have to reach it — make the console fail on purpose, with a
+delay we control, and find the edge.
+
+One side benefit that does not depend on the contingency: passive capture needs
+a probe between cartridge and console, and no such thing appears to exist for
+AES. A cartridge that measures itself needs no interposer.
 
 ## 2. The bootstrap problem
 
@@ -159,6 +191,23 @@ instead of late on an expensive one.
 
 ## 8. Risks, honestly
 
+**The timing sweep itself carries no risk to the console.** Serving data slowly
+makes the 68k read garbage, execute nonsense and hang. Power-cycle and it is
+fine. A slow read is just a read; nothing is stressed electrically.
+
+**Bus contention is the real risk, and it is unrelated to the experiment.** If
+our board drives a line the console is also driving, two outputs fight and both
+can be damaged. On a 200-pin connector whose pinout we derived from documents
+rather than continuity-tested, a single wrong pin *direction* is what costs
+somebody an AES — and that risk is identical whether the board sweeps timing or
+merely sits there. It is a cost of building a 200-pin board at all.
+
+Mitigations are the dull ones: series resistors on every driven line, verify
+direction on every pin against the schematic *and* by continuity on a real
+cartridge, and bring the board up outside the console first. This is also the
+argument the roadmap already makes — keep SNK's board between us and the console
+for as long as possible.
+
 **It is still a 200-pin 5V edge connector.** That is the part of Phase 7 that
 sinks projects, and doing it first means meeting it first. The trade is
 deliberate: meet it on a board with nothing else on it, where a failure has one
@@ -192,16 +241,57 @@ revisions before it is a specification rather than an observation.
   sprite path would test different buses with different timing. P first, since
   Q3 is a P-ROM question.
 
+## 10. The simulation route, which costs nothing
+
+Most of this can be done in Verilog before any board exists.
+
+NeoGeoFPGA-sim has a real 68000 core (TG68K) and the timing-annotated ROM models
+above. Changing `#120` to `#150`, `#200`, `#250` and finding where the simulated
+system stops booting is the same sweep, for free, with no hardware and no risk.
+
+**What it can tell us:** whether our understanding of the read cycle is right,
+whether 120 ns has margin, and where the *model* puts the edge.
+
+**What it cannot:** the real limit. TG68K is not a cycle-exact 68000, and the
+model is schematic-derived — it encodes its author's understanding, which is
+part of what we would be testing.
+
+### The harness must run on open inputs
+
+The full system model wants a BIOS and a P ROM. Both are available to us openly:
+
+- **`nullbios`** — ngdevkit's open BIOS replacement, LGPL-3.0-or-later. We
+  already use it: the `aes.zip` and `neogeo.zip` our ROM builds copy out of
+  ngdevkit's share directory *are* nullbios.
+- **Our own P ROMs** — `rom/` and `rom-sound/`.
+
+This is not a workaround for lacking dumps. **It is the point.** A harness that
+needs a BIOS dump and a commercial cartridge produces a number nobody can check;
+a harness that runs on nullbios and a ROM in this repository produces one anyone
+can rerun. Phase 5's value is a measurement the community can use, and
+reproducibility is most of that value.
+
+A contributor's own legally obtained dumps are a legitimate *private*
+cross-check once the open harness works — validating it against something SNK
+actually made. Private input, public conclusion. The dumps still never enter
+this repository. See `contributing.md`.
+
+**Caveat:** nullbios does not do everything the real BIOS does — the cartridge
+probe, the eye-catcher sequence, the full Z80 handshake. A nullbios simulation
+says more about steady-state bus timing than about whether a marginal cartridge
+survives startup.
+
 ---
 
-## Why this is the right first board
+## Why it is still worth building eventually
 
-It produces the measurement Phase 5 exists for, tests the level-translation
-approach Phase 7 depends on, and answers the ASIC threshold question — on a
-board carrying no memory, no serializer and no audio.
+It would produce a number nobody has published, test the level-translation
+approach Phase 7 depends on, and answer the ASIC threshold question — on a board
+carrying no memory, no serializer and no audio.
 
-If the project stopped after it, the published timing table would still be
-worth more to the community than anything else NeoForge has made.
+But it answers a question the project can route around, and it requires the one
+thing most likely to go wrong. **Build the board that works first; measure the
+edge afterwards.**
 
 ---
 

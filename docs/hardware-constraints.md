@@ -91,6 +91,38 @@ fix-layer data is drawn from the C ROMs instead. `[VERIFIED: wiki Cartridge ROM
 arrangements]` Any cartridge claiming full compatibility has to reproduce that,
 and it is not a mode our current documentation covers.
 
+### Access time: there is already a known-good envelope
+
+The ROM models in NeoGeoFPGA-sim carry access-time annotations, and `rom_p1.v`
+states its part outright in a comment — *"120ns 1024k*16bit (2048kB) ROM"*.
+
+| Region | Modelled access time |
+|---|---|
+| P | **120 ns** |
+| M, V | 100 ns |
+| S | 200 ns |
+| C | **250 ns** |
+
+`[VERIFIED: NeoGeoFPGA-sim, Cartridge/ROMs/*.v — as the model's annotations.
+NOT verified against silicon.]`
+
+**This is the number a board designer actually needs, and it is a sufficient
+condition rather than a limit.** If SNK shipped 120 ns P ROMs and every Neo Geo
+cartridge ever made works, then 120 ns is demonstrably fast enough. Design to
+100 ns and there is margin over what the hardware provably tolerates. Nothing
+has to be pushed until it breaks to establish that.
+
+One cross-check that raises confidence: C ROMs at 250 ns against the 333 ns
+fetch interval derived above from our own testbench. Those fit, with margin —
+two independent things agreeing. And the ordering makes physical sense: the
+graphics path is the most relaxed because the serializer pipelines it, while the
+CPU path is the tightest.
+
+**How to upgrade this from a model annotation to a measurement:** read the mask
+ROM part numbers off a real board. Speed grade is in the part number. That is a
+magnifying glass and no risk at all, and it is why the Fatal Fury Special
+teardown matters more than it first appeared.
+
 ---
 
 ## 2. Voltage: the constraint that picks the FPGA
@@ -177,6 +209,12 @@ number exists is choosing in the dark.
 
 - What are the input thresholds of the console-side ASICs? (Measurable on a
   working cart — see above.)
+- Are the modelled ROM access times right? Settled by reading part numbers off
+  a real board.
+- How much margin does 120 ns actually represent? That needs the 68000's read
+  cycle AC timing from its datasheet, which we have not yet looked up. It tells
+  us whether SNK chose 120 ns because the bus demanded it or because it was
+  what was cheap — and therefore how much room a slower design really has.
 - What is kof2003's actual region split, and does anything exceed 8/64/16 MB?
 - What does the LSPC's *average* C ROM fetch rate look like across a frame,
   including blanking and the per-line sprite limit?

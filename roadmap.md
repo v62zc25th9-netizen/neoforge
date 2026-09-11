@@ -301,8 +301,14 @@ PROGGS / NEO-AEG CHA42G-4 boards. `[VERIFIED: yAronet dev cart thread]`
       damaged title. Fatal Fury Special acquired 2026-09-09, in transit. Open
       and document before deciding whether it becomes the donor; it may be
       worth more as a documented reference than as a sacrifice.
-- [ ] Document the donor board fully before modifying it: photos, chip list,
-      trace the serializer
+- [ ] **Document the donor board fully before modifying it** — and do this
+      first, because it is free and it upgrades evidence elsewhere. Photos, full
+      chip list, trace the serializer. **Read the mask ROM part numbers**: the
+      speed grade is in the part number, which turns the access-time envelope in
+      `docs/hardware-constraints.md` from a simulation model's annotation into a
+      verified measurement, with a magnifying glass and no risk. The wiki also
+      lists PROG board, CHA board and protection chip as *Unknown* for the AES
+      release of Fatal Fury Special, so this fills three blanks upstream.
 - [ ] Desolder mask ROMs, fit pin receptacles (lower profile than sockets, so
       the board still fits the shell)
 - [ ] Burn the Phase 1 hello ROM and boot it
@@ -324,30 +330,41 @@ first original contribution
 
 With a known-good cartridge in hand, capture what the AES actually does.
 
-### Revision, 2026-09-11 — passive capture cannot answer Q3
+### Revision, 2026-09-11 — and a same-day correction
 
-The list below assumes observing a working cartridge is enough. It is not.
-Watching a working cart measures *that ROM's* access time; it says nothing about
-how slow a cartridge may be and still boot, which is the number a board designer
-spends from. **To find a limit you have to reach it.**
+**First revision, retained because the reasoning is still half right.** The list
+below assumes observing a working cartridge is enough to answer Q3. Watching a
+working cart measures *that ROM's* access time; it says nothing about how much
+slower a cartridge could be. `docs/measurement-cart.md` designs an instrument
+that finds the edge by making the console fail on purpose, and resolves the
+bootstrap problem — you cannot read a result from a machine that just crashed —
+by splitting the address space so only a probe region is swept.
 
-`docs/measurement-cart.md` designs the instrument: a cartridge that varies its
-own access time and finds where the console stops reading it correctly. It
-resolves the bootstrap problem — you cannot read a result from a machine that
-just crashed — by splitting the address space, so the code region is always
-served safely and only a probe region is swept. A timing failure becomes a wrong
-value rather than a dead console, and the program can draw the table on screen.
+**Corrected the same day: we do not need the limit.** The ROM models in
+NeoGeoFPGA-sim are annotated with the original access times — P at **120 ns**,
+C at 250 ns, S at 200 ns, M and V at 100 ns. `[VERIFIED: NeoGeoFPGA-sim
+Cartridge/ROMs/*.v, as the model's annotations]` If SNK shipped 120 ns P ROMs
+and every cartridge ever made works, 120 ns is **sufficient by demonstration**.
+A board designer needs a sufficient condition, not an edge. Design to 100 ns.
 
-Two further findings that reorder this phase:
+So the path is: design inside the envelope, verify the envelope by reading mask
+ROM part numbers off a real board, and cross-check in simulation — which is free,
+and which `docs/measurement-cart.md` §10 now describes. The measurement cart is
+demoted from prerequisite to optional contribution, and becomes the contingency
+if a design cannot make 120 ns.
 
-- **`ROMWAIT`, `PWAIT0` and `PWAIT1` are cartridge outputs.** The cart already
-  owns the coarse knob and can sweep wait states directly.
+Two findings from this work that stand regardless:
+
+- **`ROMWAIT`, `PWAIT0` and `PWAIT1` are cartridge outputs.** The cart owns the
+  coarse knob and can sweep wait states directly.
   `[VERIFIED: docs/data/aes-cartridge-pinout.csv]`
 - **No AES interposer appears to exist.** A cart that measures itself needs
-  none, which removes a blocker rather than working around it.
+  none.
 
-The captures below are still worth having — they characterise the console side
-and cost only a breakout board. They are no longer the path to Q3.
+And one risk worth stating in the roadmap rather than only in the design doc:
+**a slow read cannot damage anything** — the 68k just reads garbage and hangs.
+**Bus contention can**, and that risk comes from building a 200-pin board at
+all, not from any experiment run on it.
 
 - [ ] Acquire a logic analyzer with real bandwidth. The 68k runs ~12 MHz and
       the C-ROM side is faster; **$10 24 MHz clones are not adequate** and will
