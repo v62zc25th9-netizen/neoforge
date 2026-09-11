@@ -53,6 +53,8 @@ The project is currently in the research and simulation phase. Open source flash
 ## Documentation
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [The measurement cartridge](docs/measurement-cart.md) — the first board:
+  a cartridge that finds out how slow a cartridge is allowed to be
 - [What the hardware has to do](docs/hardware-constraints.md) — the memory
   budget from real games, the PROG/CHA split, C ROM bandwidth, and why 5V —
   not logic capacity — picks the FPGA
