@@ -183,7 +183,9 @@ the *read* direction against a model that already exists.
       with a 2 MB P built by `romtool.py` runs with its banks transposed.
       `[UNVERIFIED]` and cheap to test.
 - [ ] Test the 2 MB P-ROM meg-swap discrepancy. Build a ROM with exactly 2 MB
-      of P, convert it both ways, compare. A real upstream bug if it holds; a
+      of P, convert it both ways, compare. Test the two-file case too (`p1` +
+      `p2`, 1 MB each), where the filenames already state the roles and a
+      positional swap would invert them. A real upstream bug if it holds; a
       correction to our own reading of the format if it does not.
 - [ ] Decide: extend `romtool.py` upstream with an inspect mode, or build a
       reader that reuses its model. Upstreaming serves ngdevkit users too and
@@ -322,6 +324,31 @@ first original contribution
 
 With a known-good cartridge in hand, capture what the AES actually does.
 
+### Revision, 2026-09-11 — passive capture cannot answer Q3
+
+The list below assumes observing a working cartridge is enough. It is not.
+Watching a working cart measures *that ROM's* access time; it says nothing about
+how slow a cartridge may be and still boot, which is the number a board designer
+spends from. **To find a limit you have to reach it.**
+
+`docs/measurement-cart.md` designs the instrument: a cartridge that varies its
+own access time and finds where the console stops reading it correctly. It
+resolves the bootstrap problem — you cannot read a result from a machine that
+just crashed — by splitting the address space, so the code region is always
+served safely and only a probe region is swept. A timing failure becomes a wrong
+value rather than a dead console, and the program can draw the table on screen.
+
+Two further findings that reorder this phase:
+
+- **`ROMWAIT`, `PWAIT0` and `PWAIT1` are cartridge outputs.** The cart already
+  owns the coarse knob and can sweep wait states directly.
+  `[VERIFIED: docs/data/aes-cartridge-pinout.csv]`
+- **No AES interposer appears to exist.** A cart that measures itself needs
+  none, which removes a blocker rather than working around it.
+
+The captures below are still worth having — they characterise the console side
+and cost only a breakout board. They are no longer the path to Q3.
+
 - [ ] Acquire a logic analyzer with real bandwidth. The 68k runs ~12 MHz and
       the C-ROM side is faster; **$10 24 MHz clones are not adequate** and will
       produce confidently wrong data
@@ -339,6 +366,10 @@ With a known-good cartridge in hand, capture what the AES actually does.
 - [ ] Publish captures and analysis under `docs/measured/` with `[MEASURED]`
       markers and raw files
 - [ ] Build a Verilog testbench that reproduces the captured behaviour
+- [ ] **Build the measurement cartridge** — see `docs/measurement-cart.md`.
+      Answers Q3, tests the level-translation approach Phase 7 depends on, and
+      settles the ASIC input-threshold question, on a board with no memory, no
+      serializer and no audio. Design on paper; nothing built.
 
 **Exit:** published, sourced, measured AES cartridge bus timing — which does not
 currently exist publicly, benefits MiSTer and the emulator projects as much as

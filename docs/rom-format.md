@@ -79,11 +79,21 @@ one, leaving V2 empty.
 So when the total P data is **exactly 2 MB**, `neosdconv` writes the second
 megabyte first; `romtool.py` concatenates in order.
 
-The reason is banking, and it connects directly to
-[`prom-banking.md`](prom-banking.md): the 68k sees the first megabyte at
-`$000000`–`$0FFFFF` and reaches the rest through the bank window at
-`$200000`–`$2FFFFF`. The two halves are not interchangeable, and the container
-has to state which is which — by position, since there is no field for it.
+**The 2 MB threshold is not arbitrary — it is exactly the point where banking
+stops being needed.** From [`prom-banking.md`](prom-banking.md):
+
+- `$000000`–`$0FFFFF` — 1 MiB, fixed, never banked. Holds the 68k vector table.
+- `$200000`–`$2FFFFF` — 1 MiB, the banked window. **Reset clears the bank
+  latches, so bank 0 is mapped at power-on.**
+
+So a game with 2 MB of P has one megabyte fixed at `$000000` and the other
+sitting in the window as bank 0 — both visible simultaneously, with no bank
+switch ever executed. **2 MB is the largest P a game can have while remaining
+an unbanked game.**
+
+Which is precisely why the container has to say which megabyte is which, and
+why it can only say it by position: there is no field for it, and above 2 MB the
+question is settled by the file split instead (`p1` fixed, `p2` banked).
 
 **Consequence, if this reading is right:** a homebrew ROM with exactly 2 MB of
 P data, converted by `romtool.py`, would produce a `.neo` that runs with its
@@ -92,9 +102,23 @@ It is cheap to test and worth testing, because if it holds it is a real bug
 worth reporting upstream, and if it does not, our reading of the format is
 wrong and we should know that too.
 
-Note also that the rule keys on *exactly* 2 MB. What a 3 MB or 5 MB P region
-does is not covered by either implementation, and Metal Slug X ships
-`1024k + 4096k`. `[VERIFIED: wiki Cartridge ROM arrangements]`
+### Two things about that rule we cannot resolve by reading
+
+**It keys on the total, not the file layout.** `neosdconv` swaps when the *sum*
+of P data is exactly 2 MB. That is unambiguous for a single 2 MB `p1` file. But
+a set of two 1 MB files, `p1` + `p2`, also totals 2 MB — and there the roles are
+already stated by the filenames, so a positional swap would invert a mapping
+that was not ambiguous in the first place. Whether that case exists in the wild,
+and whether the swap is right for it, we do not know.
+
+**And it does not generalise.** The rule fires at exactly 2 MB and says nothing
+about anything else. Metal Slug X ships `1024k + 4096k` — 5 MB across two files.
+`[VERIFIED: wiki Cartridge ROM arrangements]` If the convention for multi-file
+sets is "`p1` first, `p2` second", then the 2 MB single-file case is the
+*exception*, not the rule, and it is the one case where the file cannot express
+the distinction any other way.
+
+Both of these are settled by one experiment, not by more reading.
 
 ## What this means for Phase 2
 
