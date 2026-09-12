@@ -383,6 +383,11 @@ all, not from any experiment run on it.
 - [ ] Publish captures and analysis under `docs/measured/` with `[MEASURED]`
       markers and raw files
 - [ ] Build a Verilog testbench that reproduces the captured behaviour
+- [ ] **Build the whole-console simulation harness** — scoped 2026-09-12 and
+      buildable; see `docs/simulation-harness.md`. fx68k under Verilator 5
+      replaces the model's VHDL CPU, and every input has an open ngdevkit
+      equivalent, so the result is reproducible by anyone. This is what replaced
+      the measurement cart on the critical path.
 - [ ] **Build the measurement cartridge** — see `docs/measurement-cart.md`.
       Answers Q3, tests the level-translation approach Phase 7 depends on, and
       settles the ASIC input-threshold question, on a board with no memory, no

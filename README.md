@@ -53,6 +53,8 @@ The project is currently in the research and simulation phase. Open source flash
 ## Documentation
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
+- [Simulating the whole console](docs/simulation-harness.md) — running our own
+  ROM through a full model of the Neo Geo, on open inputs only
 - [The measurement cartridge](docs/measurement-cart.md) — the first board:
   a cartridge that finds out how slow a cartridge is allowed to be
 - [What the hardware has to do](docs/hardware-constraints.md) — the memory

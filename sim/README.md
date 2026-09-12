@@ -39,9 +39,25 @@ forced by the lineage, not preferred. `neogeodev/NeoChips` also implements
 NEO-ZMC2 but is GPL-2.0-**only**, which cannot be combined with ours; nothing
 here was derived from it. See [`LICENSE.md`](../LICENSE.md).
 
+## The whole-console harness
+
+Running a NeoForge ROM through a full model of the Neo Geo — and sweeping the
+cartridge's access time in it — has been scoped and is buildable.
+See [`docs/simulation-harness.md`](../docs/simulation-harness.md).
+`[MEASURED: 2026-09-12]`
+
+Short version: the model compiles under Icarus with everything resolved except
+the CPU, which is VHDL. **fx68k** under **Verilator 5** replaces it — and
+improves on it, since Verilator 5 honours `#delay` and fx68k is
+microcode-accurate where TG68K is not. Every input has an open equivalent in
+ngdevkit, so the harness needs no dumps.
+
 ## Next
 
 - [ ] Report the `BANKSEL` width bug upstream — one line, and they should have it
+- [ ] Report the `neo_c1.v` duplicate declaration upstream — `nPORT_ZONE` is
+      declared both as an `output` and as a `wire`, so the model **does not
+      compile with Icarus Verilog at all** as shipped. Also one line.
 - [ ] Drive the serializer from real C ROM data (our own tiles) rather than
       synthetic lines, and settle the C1/C2 byte-order question the reference
       raises in two places and answers in neither
