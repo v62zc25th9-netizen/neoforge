@@ -102,31 +102,57 @@ It is cheap to test and worth testing, because if it holds it is a real bug
 worth reporting upstream, and if it does not, our reading of the format is
 wrong and we should know that too.
 
-### Two things about that rule we cannot resolve by reading
+### We ran the experiment `[MEASURED: 2026-09-12]`
 
-**It keys on the total, not the file layout.** `neosdconv` swaps when the *sum*
-of P data is exactly 2 MB. That is unambiguous for a single 2 MB `p1` file. But
-a set of two 1 MB files, `p1` + `p2`, also totals 2 MB — and there the roles are
-already stated by the filenames, so a positional swap would invert a mapping
-that was not ambiguous in the first place. Whether that case exists in the wild,
-and whether the swap is right for it, we do not know.
+Built two synthetic ROM sets with a 2 MB P made of two distinguishable
+megabytes — one marked `MEG0`, one `MEG1` — and converted each with both tools.
+Case A had P as a single 2 MB `p1`; case B split it as `p1` + `p2`, 1 MB each.
 
-**And it does not generalise.** The rule fires at exactly 2 MB and says nothing
-about anything else. Metal Slug X ships `1024k + 4096k` — 5 MB across two files.
-`[VERIFIED: wiki Cartridge ROM arrangements]` If the convention for multi-file
-sets is "`p1` first, `p2` second", then the 2 MB single-file case is the
-*exception*, not the rule, and it is the one case where the file cannot express
-the distinction any other way.
+| Converter | Input | First meg in the `.neo` | Second |
+|---|---|---|---|
+| `romtool.py` | single 2 MB `p1` | `MEG0` | `MEG1` |
+| `neosdconv` | single 2 MB `p1` | **`MEG1`** | **`MEG0`** |
+| `romtool.py` | `p1` + `p2` | `MEG0` | `MEG1` |
+| `neosdconv` | `p1` + `p2` | **`MEG1`** | **`MEG0`** |
 
-Both of these are settled by one experiment, not by more reading.
+**The two tools produce different `.neo` files from identical input.** The P
+regions differ byte for byte, in both cases. At least one of them is wrong, and
+anybody who builds a homebrew ROM with a 2 MB P using ngdevkit and runs it on a
+NeoSD will find out which.
+
+**A correction to what this document said before.** It argued that swapping the
+two-file case would "invert a mapping that was not ambiguous," since `p1` and
+`p2` name their own roles. That was wrong. If the container's convention is
+*banked half first, fixed half second* — which is what `neosdconv`'s comment,
+citing a Terraonion forum post, says it is — then swapping `[p1][p2]` into
+`[p2][p1]` is the **consistent** thing to do, not an inversion. `neosdconv` is
+self-consistent at 2 MB; the disagreement with `romtool.py` is the finding, not
+the split case specifically.
+
+**Still open: which one is right.** The experiment shows they differ; it cannot
+show whose convention matches Terraonion's loader. `neosdconv` cites a primary-
+ish source and `romtool.py` cites none, which is weak evidence for `neosdconv`
+and against `romtool.py` — but only weak. Settling it needs a NeoSD and a 2 MB
+homebrew ROM.
+
+**And it still does not generalise.** The rule fires at exactly 2 MB and says
+nothing about any other size. Metal Slug X ships `1024k + 4096k` — 5 MB across
+two files — where `neosdconv` does not swap at all.
+`[VERIFIED: wiki Cartridge ROM arrangements]` If the convention really is
+banked-first, that ordering looks inconsistent across sizes, and we cannot
+explain it.
+
+`tools/neoforge-rominfo` warns on any ROM set or `.neo` with a 2 MB P region, so
+nobody hits this silently.
 
 ## What this means for Phase 2
 
 The phase was scoped as "build cartridge description tooling." Most of that
 exists. The honest remaining work is narrower:
 
-- **The read direction.** Nothing parses a `.neo` or inspects a ROM set. That is
-  the actual gap, and it is what `neoforge-rominfo` should be.
+- **The read direction.** Nothing parses a `.neo` or inspects a ROM set. That was
+  the actual gap, and `tools/neoforge-rominfo` now fills it — see
+  [`../tools/README.md`](../tools/README.md). `[MEASURED: 2026-09-12]`
 - **Verification, not construction.** Given a ROM set: do the C ROMs pair up
   evenly? Is P a legal size? Does the region layout match a known cartridge
   family? Those are the questions that catch problems before an EPROM is burned.

@@ -182,18 +182,32 @@ the *read* direction against a model that already exists.
       2 MB, and `romtool.py` does not. If our reading is right, a homebrew ROM
       with a 2 MB P built by `romtool.py` runs with its banks transposed.
       `[UNVERIFIED]` and cheap to test.
-- [ ] Test the 2 MB P-ROM meg-swap discrepancy. Build a ROM with exactly 2 MB
-      of P, convert it both ways, compare. Test the two-file case too (`p1` +
-      `p2`, 1 MB each), where the filenames already state the roles and a
-      positional swap would invert them. A real upstream bug if it holds; a
-      correction to our own reading of the format if it does not.
-- [ ] Decide: extend `romtool.py` upstream with an inspect mode, or build a
-      reader that reuses its model. Upstreaming serves ngdevkit users too and
-      costs us less. Decide before writing code.
-- [ ] `neoforge-rominfo`: ROM set → machine-readable cartridge description
-- [ ] Identify P/C/S/M/V components and sizes
-- [ ] Identify cartridge configuration and mapper
-- [ ] Validation and test-ROM support
+- [x] Test the 2 MB P-ROM meg-swap discrepancy — **done 2026-09-12.** Built two
+      synthetic sets with a 2 MB P of two distinguishable megabytes and ran both
+      converters. **They disagree**: `neosdconv` swaps, `romtool.py` does not,
+      in both the single-file and the `p1`+`p2` case. The P regions differ byte
+      for byte. At least one is wrong. It also corrected this roadmap's own
+      guess — swapping the split case is *consistent* under a banked-first
+      convention, not an inversion. Which tool is right still needs a NeoSD.
+      See `docs/rom-format.md`.
+- [x] Decide: extend `romtool.py` upstream, or build our own reader —
+      **decided 2026-09-12: build ours first, offer it upstream after.**
+      Proposing an inspect mode to ngdevkit is a much better conversation with
+      a working tool behind it than with a design sketch, and it let us move
+      without waiting on anyone's review cycle. Ours is MIT and standalone;
+      `romtool.py` is LGPL and part of a toolchain with its own release
+      cadence.
+- [ ] Offer an inspect mode upstream to ngdevkit, now that one exists.
+- [x] `neoforge-rominfo`: ROM set → machine-readable cartridge description —
+      **done 2026-09-12.** Reads a `.neo`, a directory or a zip; `--json` for
+      machine output; exit 1 on error so it can gate a build. 25 self-tests.
+      See `tools/README.md`.
+- [x] Identify P/C/S/M/V components and sizes — including which board serves
+      each, since PROG and CHA are separate memory systems.
+- [ ] Identify cartridge configuration and mapper — needs the family/mapper
+      inference from `docs/prom-banking.md`; sizes alone do not determine it.
+- [x] Validation — C ROM pairing, pair sizes, header consistency, power-of-two
+      sizes, region maxima, and the 2 MB P ambiguity.
 - [ ] Document ROM formats and assumptions
 
 Also read `neogeodev/NeoADPCMEx` and `city41/neosdconv` — the latter documents

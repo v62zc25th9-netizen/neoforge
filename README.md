@@ -60,6 +60,8 @@ The project is currently in the research and simulation phase. Open source flash
 - [What the hardware has to do](docs/hardware-constraints.md) — the memory
   budget from real games, the PROG/CHA split, C ROM bandwidth, and why 5V —
   not logic capacity — picks the FPGA
+- [`neoforge-rominfo`](tools/README.md) — inspect a ROM set or `.neo` image and
+  check it against what the hardware accepts
 - [ROM sets and the `.neo` format](docs/rom-format.md) — the container laid out
   from two independent implementations, and where they disagree
 - [P ROM banking and cartridge families](docs/prom-banking.md) — the memory

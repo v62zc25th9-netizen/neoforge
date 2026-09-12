@@ -1,0 +1,381 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""neoforge-rominfo - inspect a Neo Geo ROM set or a .neo cartridge image.
+
+Everything that exists goes one way: ngdevkit's romtool.py and city41's
+neosdconv both take ROM files and produce a container. Neither reads one back.
+This is the read direction.
+
+    neoforge-rominfo game.neo
+    neoforge-rominfo ./romfiles/
+    neoforge-rominfo game.zip
+    neoforge-rominfo game.neo --json
+
+It reports what is in a cartridge image and checks it against what the hardware
+can actually accept. Exit status is 1 if any error was found, 0 otherwise, so it
+is usable in a build.
+
+See docs/rom-format.md for the .neo layout and docs/hardware-constraints.md for
+where the size limits come from.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import struct
+import sys
+import zipfile
+from dataclasses import dataclass, field, asdict
+
+KB = 1024
+MB = 1024 * KB
+
+NEO_HEADER_SIZE = 4096
+NEO_MAGIC = b"NEO"
+
+# Largest per-region size seen in the wild. These are LOWER BOUNDS on the true
+# maxima: the wiki's arrangement table has gaps, and kof2003's 90 MB total
+# exceeds the sum of these. See docs/hardware-constraints.md.
+REGION_MAX = {
+    "P": 8 * MB,       # Metal Slug 3, Metal Slug 5
+    "S": 128 * KB,
+    "M": 512 * KB,     # Metal Slug 3, Metal Slug 5
+    "V": 16 * MB,      # Metal Slug 3, Metal Slug 4/5
+    "C": 64 * MB,      # Metal Slug 3, Metal Slug 5
+}
+LARGEST_KNOWN_TOTAL = 92160 * KB   # kof2003, "716 MEGS"
+
+# Which board serves each region. Not cosmetic: the two boards are separate
+# memory systems with different consumers running concurrently.
+REGION_BOARD = {"P": "PROG", "V": "PROG", "C": "CHA", "S": "CHA", "M": "CHA"}
+
+
+def human(n: int) -> str:
+    if n == 0:
+        return "0"
+    if n % MB == 0:
+        return f"{n // MB} MB"
+    if n % KB == 0:
+        return f"{n // KB} KB"
+    return f"{n} B"
+
+
+def megs(n: int) -> str:
+    """Neo Geo marketing units: 1 MEG = 1 megabit = 128 KB."""
+    return f"{n / (128 * KB):.0f} MEGS"
+
+
+@dataclass
+class Finding:
+    level: str      # "error" | "warning" | "note"
+    where: str
+    text: str
+
+
+@dataclass
+class Report:
+    source: str
+    kind: str                                    # "neo" | "romset"
+    regions: dict = field(default_factory=dict)  # name -> total bytes
+    files: dict = field(default_factory=dict)    # name -> [(filename, size)]
+    meta: dict = field(default_factory=dict)
+    findings: list = field(default_factory=list)
+
+    def add(self, level: str, where: str, text: str) -> None:
+        self.findings.append(Finding(level, where, text))
+
+    @property
+    def total(self) -> int:
+        return sum(self.regions.values())
+
+    @property
+    def errors(self) -> int:
+        return sum(1 for f in self.findings if f.level == "error")
+
+
+# --------------------------------------------------------------------------
+# .neo containers
+# --------------------------------------------------------------------------
+
+def read_neo(path: str) -> Report:
+    r = Report(source=path, kind="neo")
+    with open(path, "rb") as f:
+        head = f.read(NEO_HEADER_SIZE)
+    size = os.path.getsize(path)
+
+    if len(head) < NEO_HEADER_SIZE:
+        r.add("error", "header", f"file is {size} bytes, shorter than the "
+                                 f"{NEO_HEADER_SIZE}-byte header")
+        return r
+
+    magic, version = head[0:3], head[3]
+    if magic != NEO_MAGIC:
+        r.add("error", "header",
+              f"magic is {magic!r}, expected {NEO_MAGIC!r} - not a .neo file")
+        return r
+    if version != 1:
+        r.add("warning", "header",
+              f"version {version}; this tool only knows version 1")
+
+    psz, ssz, msz, v1sz, v2sz, csz = struct.unpack("<6I", head[4:28])
+    year, genre, screenshot, ngh = struct.unpack("<4I", head[28:44])
+    name = head[44:77].split(b"\0")[0].decode("ascii", "replace")
+    maker = head[77:94].split(b"\0")[0].decode("ascii", "replace")
+
+    r.regions = {"P": psz, "S": ssz, "M": msz, "V": v1sz + v2sz, "C": csz}
+    r.meta = {
+        "version": version, "name": name, "manufacturer": maker,
+        "year": year, "genre": genre, "screenshot": screenshot,
+        "ngh": f"0x{ngh:03x}",
+        "v1": v1sz, "v2": v2sz,
+    }
+
+    declared = NEO_HEADER_SIZE + psz + ssz + msz + v1sz + v2sz + csz
+    if declared != size:
+        r.add("error", "header",
+              f"sizes in the header total {declared} bytes with the header, "
+              f"but the file is {size} - a difference of {declared - size:+d}")
+
+    if year and not (1990 <= year <= 2030):
+        r.add("note", "header", f"year {year} looks implausible")
+
+    check_regions(r)
+    check_p_ambiguity(r, split_known=False)
+    return r
+
+
+# --------------------------------------------------------------------------
+# Loose ROM sets: a directory or a zip
+# --------------------------------------------------------------------------
+
+# Matches the two conventions both existing tools accept:
+#   089-c1.c1     <anything>-<type><n>.<type><n>
+#   kof94_p1.rom  <anything>-<type><n>.rom|.bin
+ROMFILE = re.compile(
+    r"(?P<type>[psmvc])(?P<idx>\d*)\.(?:(?P=type)\d*|rom|bin)$", re.IGNORECASE)
+
+
+def classify(filename: str):
+    m = ROMFILE.search(os.path.basename(filename).lower())
+    if not m:
+        return None, None
+    return m.group("type").upper(), int(m.group("idx") or 1)
+
+
+def read_romset(entries: list[tuple[str, int]], source: str) -> Report:
+    """entries is a list of (filename, size)."""
+    r = Report(source=source, kind="romset")
+    unmatched = []
+    for fname, fsize in sorted(entries):
+        region, idx = classify(fname)
+        if region is None:
+            unmatched.append(fname)
+            continue
+        r.files.setdefault(region, []).append((os.path.basename(fname), fsize, idx))
+
+    for region, lst in r.files.items():
+        lst.sort(key=lambda t: t[2])
+        r.regions[region] = sum(s for _, s, _ in lst)
+
+    if unmatched:
+        r.add("note", "files",
+              "not recognised as ROM components: " + ", ".join(sorted(unmatched)))
+    if not r.regions:
+        r.add("error", "files", "no ROM components found")
+        return r
+
+    for region in ("P", "S", "M", "C"):
+        if region not in r.regions:
+            r.add("warning", "files",
+                  f"no {region} ROM. The BIOS expects a valid program in the M "
+                  f"ROM even for a silent game" if region == "M" else
+                  f"no {region} ROM")
+
+    check_c_pairing(r)
+    check_power_of_two(r)
+    check_regions(r)
+    check_p_ambiguity(r, split_known=len(r.files.get("P", [])) > 1)
+    return r
+
+
+# --------------------------------------------------------------------------
+# Checks
+# --------------------------------------------------------------------------
+
+def check_regions(r: Report) -> None:
+    for region, total in r.regions.items():
+        cap = REGION_MAX.get(region)
+        if cap and total > cap:
+            r.add("warning", region,
+                  f"{human(total)} exceeds the largest {region} seen in the "
+                  f"wild ({human(cap)}). Not necessarily wrong - those figures "
+                  f"are lower bounds - but worth a look")
+    if r.total > LARGEST_KNOWN_TOTAL:
+        r.add("warning", "total",
+              f"{human(r.total)} is larger than the biggest known ROM set "
+              f"(kof2003, {human(LARGEST_KNOWN_TOTAL)})")
+
+
+def check_c_pairing(r: Report) -> None:
+    """C ROMs come in pairs: odd files carry bitplanes 0/1, even 2/3."""
+    croms = r.files.get("C", [])
+    if not croms:
+        return
+    if len(croms) % 2:
+        r.add("error", "C",
+              f"{len(croms)} C ROMs. They must come in pairs - odd files carry "
+              f"bitplanes 0 and 1, even files 2 and 3")
+        return
+    for i in range(0, len(croms), 2):
+        (n1, s1, _), (n2, s2, _) = croms[i], croms[i + 1]
+        if s1 != s2:
+            r.add("error", "C",
+                  f"{n1} is {human(s1)} but its pair {n2} is {human(s2)}; "
+                  f"paired C ROMs must be the same size")
+
+
+def check_power_of_two(r: Report) -> None:
+    for region, lst in r.files.items():
+        for name, size, _ in lst:
+            if size and (size & (size - 1)):
+                r.add("warning", region,
+                      f"{name} is {size} bytes, not a power of two. "
+                      f"romtool.py rejects this outright")
+
+
+def check_p_ambiguity(r: Report, split_known: bool) -> None:
+    """The 2 MB P case, where the two existing converters disagree.
+
+    Verified by experiment 2026-09-12, not by reading: given identical inputs,
+    romtool.py writes [first meg][second meg] and neosdconv writes them
+    swapped. It does so whether P arrives as one 2 MB file or as p1 + p2.
+    """
+    p = r.regions.get("P", 0)
+    if p != 2 * MB:
+        return
+    r.add("warning", "P",
+          "P is exactly 2 MB, the size at which ngdevkit's romtool.py and "
+          "city41's neosdconv produce DIFFERENT .neo files from identical "
+          "input - neosdconv swaps the two megabytes and romtool.py does not. "
+          "[MEASURED: 2026-09-12] At least one is wrong. See docs/rom-format.md")
+    if split_known:
+        r.add("note", "P",
+              "P arrives as separate files, so the fixed and banked halves are "
+              "named rather than positional - but the container stores only "
+              "position, and the swap still applies")
+
+
+# --------------------------------------------------------------------------
+# Output
+# --------------------------------------------------------------------------
+
+LEVEL_TAG = {"error": "ERROR  ", "warning": "warning", "note": "note   "}
+
+
+def render(r: Report) -> str:
+    out = []
+    out.append(f"{r.source}")
+    out.append(f"  {'a .neo cartridge image' if r.kind == 'neo' else 'a ROM set'}")
+    out.append("")
+
+    # meta is empty when the header was rejected outright - a truncated file or
+    # one that is not a .neo at all. Reporting that cleanly matters more than
+    # the metadata does.
+    if r.kind == "neo" and r.meta:
+        m = r.meta
+        out.append(f"  name          {m['name'] or '(unnamed)'}")
+        out.append(f"  manufacturer  {m['manufacturer'] or '(none)'}")
+        out.append(f"  year          {m['year']}")
+        out.append(f"  NGH           {m['ngh']}")
+        out.append("")
+
+    if not r.regions:
+        for f in r.findings:
+            out.append(f"  {LEVEL_TAG[f.level]}  {f.where:<6}  {f.text}")
+        out.append("")
+        return "\n".join(out)
+
+    out.append(f"  {'region':<8}{'size':>10}{'':>4}{'megs':>10}  board  files")
+    out.append(f"  {'------':<8}{'--------':>10}{'':>4}{'--------':>10}  -----  -----")
+    for region in ("P", "S", "M", "V", "C"):
+        if region not in r.regions:
+            continue
+        size = r.regions[region]
+        names = ""
+        if r.kind == "romset":
+            names = ", ".join(n for n, _, _ in r.files.get(region, []))
+        elif region == "V" and r.meta.get("v2"):
+            names = f"v1 {human(r.meta['v1'])} + v2 {human(r.meta['v2'])}"
+        out.append(f"  {region:<8}{human(size):>10}{'':>4}{megs(size):>10}  "
+                   f"{REGION_BOARD[region]:<5}  {names}")
+    out.append(f"  {'------':<8}{'--------':>10}")
+    out.append(f"  {'total':<8}{human(r.total):>10}{'':>4}{megs(r.total):>10}")
+
+    prog = sum(v for k, v in r.regions.items() if REGION_BOARD[k] == "PROG")
+    cha = sum(v for k, v in r.regions.items() if REGION_BOARD[k] == "CHA")
+    out.append("")
+    out.append(f"  PROG board {human(prog):>10}      CHA board {human(cha):>10}")
+
+    if r.findings:
+        out.append("")
+        for f in r.findings:
+            first = True
+            # wrap at 72 columns, indented under the tag
+            words, line = f.text.split(), ""
+            lines = []
+            for w in words:
+                if len(line) + len(w) + 1 > 66:
+                    lines.append(line)
+                    line = w
+                else:
+                    line = f"{line} {w}".strip()
+            lines.append(line)
+            for ln in lines:
+                if first:
+                    out.append(f"  {LEVEL_TAG[f.level]}  {f.where:<6}  {ln}")
+                    first = False
+                else:
+                    out.append(f"  {'':<7}  {'':<6}  {ln}")
+    out.append("")
+    return "\n".join(out)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(
+        description="Inspect a Neo Geo ROM set or .neo cartridge image.")
+    ap.add_argument("path", help="a .neo file, a .zip, or a directory of ROMs")
+    ap.add_argument("--json", action="store_true", help="machine-readable output")
+    args = ap.parse_args()
+
+    p = args.path
+    if not os.path.exists(p):
+        print(f"neoforge-rominfo: {p}: no such file or directory", file=sys.stderr)
+        return 2
+
+    if os.path.isdir(p):
+        entries = [(os.path.join(p, f), os.path.getsize(os.path.join(p, f)))
+                   for f in os.listdir(p)
+                   if os.path.isfile(os.path.join(p, f))]
+        r = read_romset(entries, p)
+    elif zipfile.is_zipfile(p):
+        with zipfile.ZipFile(p) as z:
+            entries = [(i.filename, i.file_size) for i in z.infolist()
+                       if not i.is_dir()]
+        r = read_romset(entries, p)
+    else:
+        r = read_neo(p)
+
+    if args.json:
+        d = asdict(r)
+        d["total"] = r.total
+        print(json.dumps(d, indent=2))
+    else:
+        print(render(r))
+    return 1 if r.errors else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
