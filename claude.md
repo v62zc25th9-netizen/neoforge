@@ -53,7 +53,17 @@ from general knowledge. General knowledge about this platform is unreliable.
 **How does the first physical cartridge get its sprite serializer?**
 
 On AES the serializer (PRO-CT0 / NEO-ZMC2) lives *in the cartridge*, not on the
-board. There is no such thing as a dumb EPROM-only AES cart. Two paths:
+board. There is no such thing as a dumb EPROM-only AES cart **that can display
+sprites** — the qualification matters, and the unqualified version of this claim
+drove the project's original plan and was wrong.
+
+A cartridge that holds DOTA and DOTB low needs no serializer at all; it simply
+cannot draw sprites. `[ANSWERED IN SIMULATION — 2026-09-06]` See
+`docs/open-questions.md` Q1, `docs/serializer.md`, and `rom/` — the test ROM
+that would confirm it on hardware.
+
+That makes a fix-only development cartridge and a game-capable cartridge two
+separate milestones rather than one. For the game-capable one, two paths:
 
 1. **Donor chip** — harvest a PRO-CT0 or NEO-ZMC2 from a dead/cheap AES cart.
    Fastest to something that boots. Isolates ROM mapping work from serializer
