@@ -160,6 +160,67 @@ exists. The honest remaining work is narrower:
   users too and costs us less than a parallel implementation. Decide before
   writing code, not after.
 
+## What the format's *silence* tells us
+
+The `.neo` header carries sizes, year, genre, screenshot and NGH number. It does
+**not** carry a mapper, a cartridge family, a protection type, or an encryption
+flag. `[VERIFIED: both implementations]`
+
+That absence is informative. A cartridge that had to reproduce each game's
+original mapping and protection would need to be told which — and the container
+never says. So either the loader identifies games some other way, or it does not
+need to know.
+
+It does not need to know. `bodgit/terraonion` is a third-party Go
+reimplementation of the conversion (BSD-3-Clause), and its README states the
+mechanism plainly: *"the ROM images will be unscrambled and processed based on
+the same logic MAME uses."* Its source carries **56 per-game reader functions**
+alongside generic paths named `commonCMC42Reader`, `commonCMC50Reader`,
+`commonPVCReader`, `commonPCM2Reader` and `commonK2K2Reader` — the Neo Geo's
+encryption and protection families. Those functions do XOR key application and
+bit-swapping over the ROM data at **conversion time**.
+
+**So the cartridge is handed already-decrypted, already-descrambled, normalised
+data.** The work happens on the PC, once, before the file ever reaches the card.
+
+This explains a detail that looked odd earlier: `neosdconv`'s README says it is
+homebrew-only and directs commercial games to TerraOnion's own NeoBuilder. Of
+course it does — `neosdconv` implements none of that per-game work. Homebrew has
+nothing to decrypt.
+
+### A correction to our roadmap
+
+Phase 10 described the choice as *"precompute offline (cheaper, incompatible ROM
+format) versus emulate live like NeoSD (harder, unpatched games work)"*.
+
+**NeoSD does not emulate live. It precomputes offline.** The evidence above is
+against our own framing, and the framing was making the cheaper option look like
+the compromise when it is what the market leader actually ships.
+
+The trade named in that sentence is still real — a normalised `.neo` is not the
+same bytes as a MAME set, so you cannot drop a plain zip onto the card and the
+conversion step is mandatory. That cost is apparently one the market accepts.
+
+### What this does *not* settle
+
+Two things worth keeping separate, because "the NeoSD precomputes" is easy to
+over-read:
+
+- **Bank switching is not encryption.** PROGBK1-style banking is live address
+  decoding the cartridge must implement — a write selects a bank, a read uses
+  it. No amount of offline processing removes that. See
+  [`prom-banking.md`](prom-banking.md).
+- **Live protection registers are a separate question.** Chips like PVC and
+  NEO-SMA both scramble data *and* answer reads at protection addresses.
+  Precomputing handles the scrambling. Whether the remaining live behaviour is
+  emulated on the card or patched out of the ROM is not something this evidence
+  answers.
+
+`[UNVERIFIED]` as to TerraOnion's own implementation — `bodgit/terraonion` is a
+reimplementation by a third party, not vendor documentation. It is strong
+evidence about what the format requires, since the files it produces reportedly
+work, but it is not authoritative.
+
 ## `.neo` is a transfer format, not a memory layout
 
 Worth separating, because Phase 9 conflates them.

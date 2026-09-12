@@ -512,8 +512,23 @@ Game database and metadata, improved menu, save RAM, automatic cartridge
 configuration, larger ROM support, additional mappers, homebrew support,
 firmware update, USB debug interface.
 
-Protection handling decision point: precompute offline (cheaper, incompatible
-ROM format) versus emulate live like NeoSD (harder, unpatched games work).
+Protection handling decision point: precompute offline (cheaper, needs a
+conversion step) versus emulate live (harder, unmodified ROM sets work).
+
+**Corrected 2026-09-12.** This previously said "emulate live *like NeoSD*". That
+is wrong: **NeoSD precomputes offline.** The `.neo` header carries no mapper,
+family, protection or encryption field, and `bodgit/terraonion`'s reimplementation
+of the conversion carries 56 per-game readers plus generic CMC42/CMC50/PVC/PCM2/
+K2K2 paths that decrypt and descramble on the PC. The cartridge receives
+normalised data. See `docs/rom-format.md`.
+
+The practical consequence is encouraging: the cheaper path is what the market
+leader ships, and the cost it carries — a mandatory conversion step, so a plain
+MAME zip will not do — is one the market evidently accepts.
+
+Note this covers encryption and scrambling only. **Bank switching is live
+cartridge behaviour regardless** and must still be implemented; so, possibly,
+are protection chips' read-side registers.
 
 ---
 
