@@ -76,6 +76,26 @@ position. The full write-up, including which tool is probably right, is in
 The tool warns rather than errors, because we do not yet know which convention
 is correct.
 
+## `gen-kicad-symbol.py`
+
+Generates KiCad symbols for the two AES cartridge connectors from the pinout
+CSV.
+
+```sh
+python3 tools/gen-kicad-symbol.py \
+    docs/data/aes-cartridge-pinout.csv \
+    hardware/lib/neoforge-aes.kicad_sym
+```
+
+The CSV is the single source of truth; the symbol is generated and must not be
+hand-edited. Pin electrical types are assigned from the cartridge's point of
+view, so KiCad's ERC can catch a cartridge driving a line the console already
+drives. It prints a summary of how every pin was classified, and lists anything
+its direction table did not match — so unclassified pins are visible rather than
+quietly defaulted.
+
+See [`../hardware/README.md`](../hardware/README.md).
+
 ## `test_rominfo.py`
 
 ```sh

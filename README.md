@@ -54,12 +54,15 @@ The project is currently in the research and simulation phase. Open source flash
 
 - [Roadmap](roadmap.md) — phased plan, exit criteria, cost and skill estimates
 - [Simulating the whole console](docs/simulation-harness.md) — running our own
-  ROM through a full model of the Neo Geo, on open inputs only
+  ROM through a full model of the Neo Geo, on open inputs only.
+  The harness itself is in [`sim/harness/`](sim/harness/)
 - [The measurement cartridge](docs/measurement-cart.md) — the first board:
   a cartridge that finds out how slow a cartridge is allowed to be
 - [What the hardware has to do](docs/hardware-constraints.md) — the memory
   budget from real games, the PROG/CHA split, C ROM bandwidth, and why 5V —
   not logic capacity — picks the FPGA
+- [Hardware](hardware/README.md) — KiCad symbols for both AES cartridge
+  connectors, generated from the pinout CSV. The project's first PCB artifact
 - [`neoforge-rominfo`](tools/README.md) — inspect a ROM set or `.neo` image and
   check it against what the hardware accepts
 - [ROM sets and the `.neo` format](docs/rom-format.md) — the container laid out

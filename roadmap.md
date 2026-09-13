@@ -397,11 +397,15 @@ all, not from any experiment run on it.
 - [ ] Publish captures and analysis under `docs/measured/` with `[MEASURED]`
       markers and raw files
 - [ ] Build a Verilog testbench that reproduces the captured behaviour
-- [ ] **Build the whole-console simulation harness** — scoped 2026-09-12 and
-      buildable; see `docs/simulation-harness.md`. fx68k under Verilator 5
-      replaces the model's VHDL CPU, and every input has an open ngdevkit
-      equivalent, so the result is reproducible by anyone. This is what replaced
-      the measurement cart on the critical path.
+- [ ] **Build the whole-console simulation harness** — **lints clean
+      2026-09-12**, does not run yet. `sim/harness/` holds the fx68k shim, the
+      patch set and a Makefile. The whole system model elaborates under
+      Verilator 5 with `--timing` and a cycle-accurate 68000 in place of the
+      VHDL core, so no unknown blocker remains. What is left: a top-level
+      testbench, ROM data from nullbios and our own ROMs, and — the real risk —
+      verifying fx68k's clock-phase alignment against `CLK_68KCLK`, since the
+      wait-state logic is keyed to it and wrong alignment yields a machine that
+      almost works. See `sim/harness/README.md`.
 - [ ] **Build the measurement cartridge** — see `docs/measurement-cart.md`.
       Answers Q3, tests the level-translation approach Phase 7 depends on, and
       settles the ASIC input-threshold question, on a board with no memory, no
@@ -453,7 +457,12 @@ it unblocks Phases 7–9 while the serializer work continues in parallel.
 Only now does a PCB make sense: every function on it has already been proven on
 a board that works.
 
-- [ ] Design the edge connector and mechanical fit (verify against a real shell)
+- [ ] Design the edge connector and mechanical fit (verify against a real shell).
+      **Started 2026-09-13:** `hardware/lib/neoforge-aes.kicad_sym` has KiCad
+      symbols for both connectors, generated from the pinout CSV, with pin
+      directions from the cartridge's point of view so ERC can catch bus
+      contention. The footprint — pad geometry, pitch, mechanical outline —
+      needs measuring off a real cartridge and waits for the teardown.
 - [ ] Level translation across 100+ 5V signals — the failure mode that has sunk
       cheap multicarts
 - [ ] EPROM/flash footprints, CPLD serializer, address decoding
@@ -462,8 +471,20 @@ a board that works.
 - [ ] Publish design files under an open hardware license
 
 **Deliverable: NeoForge Cartridge v0.1** — a single-game, reproducible,
-open-hardware AES development cartridge. Useful to homebrew developers on its
-own, independent of the flash cart goal.
+open-hardware AES development cartridge.
+
+**Decided 2026-09-12: this is a stepping stone, not a product.** It will be
+built, learned from, and published as design files — but it is not going to be
+packaged, supported, or maintained as a thing other people are invited to buy or
+rely on. The goal is the flash cart, and finishing an intermediate product would
+cost months of documentation and support that the actual goal needs more.
+
+Stated because it changes how much polish Phase 7 gets, and because the opposite
+choice is defensible: a single-game dev cart is genuinely useful to Neo Geo
+homebrew developers, would arrive far sooner than the loader, and might have
+brought in the contributors and testers the loader will eventually want. **The
+risk we are accepting is arriving at the flash cart with no community around the
+project.** If that starts to look like the binding constraint, revisit this.
 
 Budget for three board revisions. First-spin success on a 200-pin 5V edge
 connector board would be luck, not skill.
