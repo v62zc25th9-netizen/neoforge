@@ -52,12 +52,20 @@ improves on it, since Verilator 5 honours `#delay` and fx68k is
 microcode-accurate where TG68K is not. Every input has an open equivalent in
 ngdevkit, so the harness needs no dumps.
 
+**It now lints clean.** `[MEASURED: 2026-09-12]` `harness/` holds the fx68k
+shim, the patch set and a Makefile — `cd harness && make lint`. It does not run
+yet; `harness/README.md` is precise about what remains, and the clock-phase
+alignment is the real risk.
+
 ## Next
 
 - [ ] Report the `BANKSEL` width bug upstream — one line, and they should have it
 - [ ] Report the `neo_c1.v` duplicate declaration upstream — `nPORT_ZONE` is
       declared both as an `output` and as a `wire`, so the model **does not
       compile with Icarus Verilog at all** as shipped. Also one line.
+- [ ] Report the `neogeo.v` ADPCM bus direction upstream — `SDRAD` and `SDPAD`
+      are declared `input` there while `ym2610` declares them `inout` and the
+      cartridge drives them. Verilator rejects it; Icarus is lax. One line.
 - [ ] Drive the serializer from real C ROM data (our own tiles) rather than
       synthetic lines, and settle the C1/C2 byte-order question the reference
       raises in two places and answers in neither
