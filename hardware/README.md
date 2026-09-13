@@ -68,6 +68,45 @@ source data records all eight as **unconnected**.
 So the pins exist on the edge and go nowhere on at least that revision. Do not
 plan to use them, and do not be surprised to find them dead.
 
+## The minimum viable cartridge
+
+Costed 2026-09-13. **Every part is a commodity 5V device still in production**,
+which is the practical consequence of Q1 that we had not spelled out: a
+fix-layer-only cartridge needs no serializer, no mapper, no CPLD — and because
+everything on it runs at 5V, **no level translation either.** The whole
+electrical difficulty of Phase 7 is absent from a first board.
+
+| Function | Part | Why |
+|---|---|---|
+| P ROM | 27C800 (8 Mbit) | our test P is 1 MB; `$000000`–`$0FFFFF` is never banked, so **no bank latch is needed at all** |
+| S ROM | 27C010 (1 Mbit) | 128 KB of fix tiles |
+| M ROM | 27C010 (1 Mbit) | 128 KB; the BIOS wants a valid Z80 program even for a silent cart |
+| V ROM | 27C400 (4 Mbit) | 512 KB. **Not a 27C322** — see the byte-mode trap in [`../docs/prom-banking.md`](../docs/prom-banking.md) |
+| Fix address latch | 2 × 74HCT374 | NEO-273's S half — 16 bits on `PCK2B`. See [`../docs/serializer.md`](../docs/serializer.md) |
+| `DOTA` / `DOTB` | 2 resistors to GND | tells the console nothing here is opaque; this is what makes the serializer unnecessary |
+| Decoupling | 0.1 µF per IC | |
+
+Not on the list, and worth noticing: **no C ROMs, no NEO-ZMC2, no 74LS74 bank
+latch, no 74LS08, no level shifters.** Banking is absent because a 1 MB P fits
+entirely in the fixed window; add banking only when P exceeds 1 MB.
+
+**HCT, not HC.** 74HCT has TTL input thresholds (2.0 V) where plain 74HC needs
+3.7 V. On a bus shared with 1990 TTL parts that distinction is the difference
+between working and intermittent.
+
+### Buy-ahead note: 5V programmable logic is disappearing
+
+Nothing above needs a CPLD. But the moment we want the serializer — Phase 6, a
+game-capable cartridge — we need programmable logic that survives 5V, and
+Microchip's **ATF150x** family is described by the people who maintain tooling
+for it as *"some of the only standing active 5V programmable logic parts still
+available."* `[VERIFIED: peterzieba/5Vpld]`
+
+They are cheap and they are not being replaced. Securing a few ATF1504 or
+ATF1508 while they exist costs little and removes a future single point of
+failure. Note they need their own programmer (ATDH1150-USB or a compatible
+one) — that is a second purchase, not an afterthought.
+
 ## What is not here yet
 
 - **The footprint.** Pad geometry, pitch and mechanical outline need measuring

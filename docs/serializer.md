@@ -236,6 +236,33 @@ That is a stronger statement of Q1 than we had, and it makes the first PCB
 simpler than the roadmap assumed: no custom silicon, no CPLD, no donor chip.
 Just ROMs, address decoding, and two grounded pins.
 
+### But it does need NEO-273 `[VERIFIED: NeoGeoFPGA-sim aes_cha.v, neo_273.v]`
+
+**A correction, found 2026-09-13 while costing a bill of materials.** "Needs
+neither half of NEO-ZMC2" is true, and it was being read as "needs no
+cartridge-side logic at all." It is not.
+
+The fix-layer address does not arrive on the connector. It is latched from PBUS
+by **NEO-273**, a second custom chip:
+
+```verilog
+always @(posedge PCK2B)
+    S_LATCH <= {PBUS[11:0], PBUS[15:12]};
+```
+
+and the S ROM is then addressed as `{S_LATCH[15:3], S2H1, S_LATCH[2:0]}` — the
+latch, with the console's `S2H1` spliced in at bit 3.
+
+**The good news is that NEO-273 is not a serializer.** It is two banks of
+edge-triggered latches — 20 bits of C address on `PCK1B`, 16 bits of S address
+on `PCK2B` — each with a nibble rotation that is pure wiring. A fix-only
+cartridge needs only the S half, which is **two 74HCT374 octal D flip-flops**,
+and the `S2H1` splice is a track rather than a gate.
+
+So the claim survives in the form that matters: a fix-only cartridge needs no
+custom silicon. It does need sixteen bits of latch, and anyone budgeting a board
+from Q1 alone would have left them off.
+
 **A cartridge that runs commercial games needs both.** Any game with an M ROM
 over 64 KB banks it, and any game with sprites needs the serializer. That is
 Phase 6 and Phase 9, and nothing here makes them easier.
