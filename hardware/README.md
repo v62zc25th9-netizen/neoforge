@@ -94,18 +94,26 @@ entirely in the fixed window; add banking only when P exceeds 1 MB.
 3.7 V. On a bus shared with 1990 TTL parts that distinction is the difference
 between working and intermittent.
 
-### Buy-ahead note: 5V programmable logic is disappearing
+### On 5V programmable logic — corrected 2026-09-14
 
-Nothing above needs a CPLD. But the moment we want the serializer — Phase 6, a
-game-capable cartridge — we need programmable logic that survives 5V, and
-Microchip's **ATF150x** family is described by the people who maintain tooling
-for it as *"some of the only standing active 5V programmable logic parts still
-available."* `[VERIFIED: peterzieba/5Vpld]`
+An earlier version of this note urged buying ATF150x parts ahead of need,
+because they are among the last 5 V programmable logic still in production and
+are not being replaced. `[VERIFIED: peterzieba/5Vpld]` **That advice assumed a
+serializer needs a 5 V part. It does not.**
 
-They are cheap and they are not being replaced. Securing a few ATF1504 or
-ATF1508 while they exist costs little and removes a future single point of
-failure. Note they need their own programmer (ATDH1150-USB or a compatible
-one) — that is a second purchase, not an afterthought.
+`FusionConverter`, a shipping open-hardware AES device, runs its CPLD at
+**1.8 V core with 3.3 V I/O** — a Lattice LC4064ZE, whose inputs tolerate 5.5 V
+when the bank is set to 3.3 V — sitting directly on the AES bus with no level
+shifters at all on the CHA side. `[VERIFIED: FusionConverter BOM; Lattice
+DS1022]`
+
+So the scarcity is real and mostly irrelevant to us. A modern low-voltage CPLD
+with 5 V-tolerant inputs is available, cheaper, and demonstrably works in this
+exact application. Buy ATF150x parts if you want them for their own sake, not
+as insurance.
+
+Nothing in the BOM above needs a CPLD at all — a fix-only cartridge has no
+serializer to implement.
 
 ## What is not here yet
 

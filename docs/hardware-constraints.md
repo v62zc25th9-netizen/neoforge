@@ -158,6 +158,38 @@ For the hard direction, the standard answer is the **74LV / 74LVC / 74LVCT**
 families: 3.3V rail, 5V-tolerant inputs, 3.3V outputs. Bidirectional buses want
 a transceiver such as the **74LVC245**, which needs a direction signal.
 
+### Somebody already did it, and it works `[VERIFIED: FusionConverter BOM]`
+
+`neogeodev/FusionConverter` is a shipping open-hardware MVS-to-AES converter.
+Its bill of materials answers the question above empirically, and the answer is
+encouraging.
+
+| Board | Parts |
+|---|---|
+| **CHA** | LDO (1.8 V + 3.3 V), **CPLD Lattice LC4064ZE-7TN100**, voltage detector, LED. **No level shifters.** |
+| **PROG** | 2 × 74HC245 octal transceiver, 1 × 74HC08 quad AND |
+
+The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states
+that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for
+3.3 V operation." `[VERIFIED: Lattice DS1022, ispMACH 4000ZE family]`
+
+So on the CHA board a 1.8 V/3.3 V CPLD sits directly on the AES bus, with
+**nothing between it and the console** — 5 V in on tolerant inputs, 3.3 V out
+straight into the console's ASICs. And the device works.
+
+That is not proof that every console input is TTL-threshold, but it is a
+shipping counterexample to the fear, on exactly the pins a serializer drives.
+It moves "3.3 V drive might not clear the threshold" from an open risk to an
+unlikely one.
+
+Two smaller things the same BOM tells us:
+
+- **The CPLD is on CHA, and PROG has none** — which is exactly where our
+  architecture says the serializer lives. Independent confirmation of the split.
+- **PROG's 74HC08 quad AND** is almost certainly the `/PORTOEL` · `/PORTOEU` →
+  `/PORTOE` function [`prom-banking.md`](prom-banking.md) derives from PROGBK1,
+  where SNK used a 74LS08. Two independent designs reaching the same gate.
+
 ### Where our actual unknown is
 
 Here is the uncomfortable part, and it is worth stating plainly rather than

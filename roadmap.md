@@ -265,8 +265,13 @@ Everything that can be learned without hardware, learned before buying any.
       SDA_U[15:8]` is declared as a scalar, so the eight-bit value truncates to
       one bit and every bank register can only hold 0 or 1. One-line fix; they
       should have it back. See `docs/serializer.md`.
-- [ ] Read FusionConverter's CPLD sources — **check its licence first**, which
-      `LICENSE.md` still records as unverified.
+- [x] Check FusionConverter's licence — **done 2026-09-14. GPL-2.0, no "or
+      later" grant**, same position as NeoChips. So we **cannot** read
+      `fusion_vsense_top.v` or its `.jed` into NeoForge's HDL, and did not. The
+      item resolves by not doing it.
+      Its **BOM and README are documentation**, not HDL, and reading those was
+      worth more than the Verilog would have been — see the next item and
+      `docs/hardware-constraints.md`.
 - [x] Document AES vs. MVS cartridge differences — `docs/why-the-split.md`.
       The mechanism is verified (32 lines in, 10 out; a 40-pin connector
       difference of which the serializer accounts for 22). The *motive* is
@@ -282,13 +287,21 @@ Everything that can be learned without hardware, learned before buying any.
       CHA42G-3B / no protection), so photographing the boards and reading the
       chip markings fills three blanks upstream as well as inventorying the
       Phase 4 donor.
-- [ ] **Resolve the serializer decision** — donor chip, NeoChips NEO-ZMC2
-      replacement, or own CPLD implementation. The GPL-2.0 version question we
-      raised upstream was closed without an answer, so NeoChips stays usable as
-      a bought-or-built **component** and unusable as a source. See
-      `LICENSE.md`. Not blocking: a fix-only cart needs no serializer at all,
-      and `docs/serializer.md` characterises both halves from the GPL-3.0
-      lineage.
+- [x] **Resolve the serializer decision — 2026-09-14: our own CPLD
+      implementation, on a low-voltage 5 V-tolerant part.**
+      Both GPL-2.0 options stay available as *components* and unusable as
+      sources: NeoChips' NEO-ZMC2 can be bought or built, FusionConverter's
+      bitstream can be programmed, neither can be read into our HDL. That leaves
+      our own implementation, which we can already write — `docs/serializer.md`
+      characterises both halves from the GPL-3.0 lineage with a passing
+      testbench behind it.
+      What settled the part choice is that **FusionConverter does exactly this
+      and ships**: a 64-macrocell Lattice LC4064ZE at 1.8 V core / 3.3 V I/O,
+      sitting directly on the AES bus with no level shifters on the CHA side.
+      `[VERIFIED: FusionConverter BOM]` So the serializer needs neither a
+      harvested chip nor a scarce 5 V CPLD.
+      Provisional in one respect: it rests on somebody else's working device
+      rather than our own measurement. Revisit if our board cannot reproduce it.
 
 **Exit:** we can explain, from sources, exactly what a cartridge must do
 electrically for the AES to boot it.
