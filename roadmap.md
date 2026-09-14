@@ -208,7 +208,10 @@ the *read* direction against a model that already exists.
       inference from `docs/prom-banking.md`; sizes alone do not determine it.
 - [x] Validation — C ROM pairing, pair sizes, header consistency, power-of-two
       sizes, region maxima, and the 2 MB P ambiguity.
-- [ ] Document ROM formats and assumptions
+- [x] Document ROM formats and assumptions — `docs/rom-format.md`, covering the
+      `.neo` container from two independent implementations, the padding and
+      interleaving rules, the 2 MB P ambiguity settled by experiment, and what
+      the format's silence about mappers reveals about how NeoSD works.
 
 Also read `neogeodev/NeoADPCMEx` and `city41/neosdconv` — the latter documents
 a competitor's on-card format in working code.
