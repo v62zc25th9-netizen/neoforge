@@ -221,6 +221,18 @@ the *read* direction against a model that already exists.
       `.neo` container from two independent implementations, the padding and
       interleaving rules, the 2 MB P ambiguity settled by experiment, and what
       the format's silence about mappers reveals about how NeoSD works.
+- [ ] **An evidence index.** The `[VERIFIED]` / `[MEASURED]` / `[ANECDOTAL]` /
+      `[UNVERIFIED]` convention is applied well *locally* - 119 / 35 / 12 / 46
+      occurrences across the tree as of 2026-09-15 - but nothing lists them in
+      one place. Only six of the twenty-eight lines carrying `[UNVERIFIED]`
+      live in `docs/open-questions.md`; the rest sit in prose, visible only to
+      whoever reads that particular file. The C1/C2 byte-order note in
+      `sim/harness/mkdata.py` is the example that matters: honestly tagged,
+      says "revisit before trusting sprite output," and nothing outside that
+      file knows it exists.
+      Build it the way `gen-kicad-symbol.py` is built - a script that walks the
+      tree and emits a table of every tag with its file, line and claim.
+      Generated, never hand-edited, so it cannot drift from what it indexes.
 
 Also read `neogeodev/NeoADPCMEx` and `city41/neosdconv` — the latter documents
 a competitor's on-card format in working code.
