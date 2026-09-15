@@ -182,6 +182,61 @@ def main() -> int:
     print("  reported, not crashed.")
     print()
 
+    # ---- 8: banking inference ------------------------------------------
+    # $000000-$0FFFFF is fixed and never banked, so a P that fits there needs
+    # no mapper. Above it, the rest is reached through $200000-$2FFFFF.
+    print("Test 8 - banking is inferred from P size")
+    d = romset(os.path.join(tmp, "nobank"),
+               p1=1 * MB, s1=128 * KB, m1=128 * KB, c1=1 * MB, c2=1 * MB)
+    _, rep = run(d)
+    chk("1 MB needs no banking", rep["cartridge"]["banking"], "none")
+    chk("zero bank bits", rep["cartridge"]["bank_bits"], 0)
+
+    # Metal Slug X ships 1024k + 4096k. 4 MB banked, four banks, two bits -
+    # which is exactly what PROGBK1's 74LS74 provides.
+    d = romset(os.path.join(tmp, "msx"),
+               p1=1 * MB, p2=4 * MB, s1=128 * KB, m1=128 * KB,
+               c1=1 * MB, c2=1 * MB)
+    _, rep = run(d)
+    chk("5 MB banks", rep["cartridge"]["banks"], 4)
+    chk("5 MB bits", rep["cartridge"]["bank_bits"], 2)
+    chk("PROGBK1 suffices", rep["cartridge"]["progbk1_capacity"], True)
+    print("  no banking at 1 MB; four banks and two bits at 5 MB.")
+    print()
+
+    # ---- 9: past PROGBK1 -------------------------------------------------
+    # Metal Slug 3 ships 2 x 4096k. Seven banks needs three bits, and PROGBK1
+    # has two - so that board cannot be a PROGBK1, and neither could a
+    # NeoForge board that copies one.
+    print("Test 9 - P beyond PROGBK1's capacity is called out")
+    d = romset(os.path.join(tmp, "ms3"),
+               p1=4 * MB, p2=4 * MB, m1=512 * KB, c1=1 * MB, c2=1 * MB)
+    _, rep = run(d)
+    chk("8 MB bits", rep["cartridge"]["bank_bits"], 3)
+    chk("PROGBK1 insufficient", rep["cartridge"]["progbk1_capacity"], False)
+    chk("says so", "PROGBK1" in texts(rep), True)
+    print("  three bits needed, two available, reported.")
+    print()
+
+    # ---- 10: fix source --------------------------------------------------
+    # Late CHAFIO games ship no S ROM and draw fix tiles from the C ROMs.
+    print("Test 10 - a missing S ROM means fix comes from the C ROMs")
+    chk("fix source", rep["cartridge"]["fix_source"], "C ROMs (no S ROM)")
+    chk("CHAFIO mentioned", "CHAFIO" in texts(rep), True)
+
+    d = romset(os.path.join(tmp, "hasS"),
+               p1=512 * KB, s1=128 * KB, m1=128 * KB, c1=1 * MB, c2=1 * MB)
+    _, rep2 = run(d)
+    chk("S ROM present", rep2["cartridge"]["fix_source"], "S ROM")
+    print("  distinguished both ways.")
+    print()
+
+    # ---- 11: what it refuses to guess -----------------------------------
+    print("Test 11 - protection is never inferred")
+    chk("not inferable", rep2["cartridge"]["protection"], "not inferable")
+    print("  sizes constrain the board; they do not name it.")
+    print()
+
     print("========================================")
     if failures == 0:
         print(f"PASS - {checks} checks, 0 failures")

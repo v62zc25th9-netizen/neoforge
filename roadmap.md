@@ -204,8 +204,17 @@ the *read* direction against a model that already exists.
       See `tools/README.md`.
 - [x] Identify P/C/S/M/V components and sizes — including which board serves
       each, since PROG and CHA are separate memory systems.
-- [ ] Identify cartridge configuration and mapper — needs the family/mapper
-      inference from `docs/prom-banking.md`; sizes alone do not determine it.
+- [x] Identify cartridge configuration and mapper — **done 2026-09-15**, in the
+      only form that is honest. `neoforge-rominfo` now reports what a ROM set's
+      dimensions *constrain*: whether banking is needed at all, how many banks
+      and bits, whether PROGBK1's two-bit 74LS74 suffices, and whether the fix
+      layer comes from an S ROM or from the C ROMs. Validated against Metal Slug
+      X (four banks, two bits, within PROGBK1) and Metal Slug 3 (seven banks,
+      three bits, beyond it — and it does use PROGLBA).
+      **It deliberately will not name a board.** Protection and encryption are
+      properties of a game, not of a ROM set's shape, and identifying them needs
+      a database keyed by game — exactly what NeoBuilder has and neosdconv does
+      not. Sizes constrain the board; they do not name it.
 - [x] Validation — C ROM pairing, pair sizes, header consistency, power-of-two
       sizes, region maxima, and the 2 MB P ambiguity.
 - [x] Document ROM formats and assumptions — `docs/rom-format.md`, covering the

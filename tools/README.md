@@ -60,6 +60,52 @@ design. See [`../docs/hardware-constraints.md`](../docs/hardware-constraints.md)
 | **P region is exactly 2 MB** — see below | warning |
 | Missing S, M, P or C | warning |
 
+### What the shape implies
+
+Beyond listing regions, it reports what a ROM set's *dimensions* constrain about
+the board it came from — and, as importantly, what they do not.
+
+```
+  what the shape implies
+  ----------------------
+  banking        required - 7 MB sits beyond the fixed window
+  bank window    7 x 1 MB at $200000-$2FFFFF, needs 3 bits
+  PROGBK1        NOT enough - it provides 2 bits, up to 5 MB of P
+  fix source     C ROMs (no S ROM)
+  protection     not inferable from a ROM set
+```
+
+The reasoning, all from [`../docs/prom-banking.md`](../docs/prom-banking.md):
+
+- `$000000`–`$0FFFFF` is fixed and **never banked**, so a P that fits there
+  needs no mapper at all — which is why our own test ROM has no bank latch.
+- Anything above it is reached through the 1 MiB window at `$200000`–`$2FFFFF`,
+  so the bank count is `ceil((P − 1 MiB) / 1 MiB)` and the bit count follows.
+- **PROGBK1 holds its bank number in a 74LS74 — two bits, four banks, so at
+  most 5 MB of P.** PROGBK1 is NeoForge's target because it is the only
+  non-protected banking board, so "could a PROGBK1 copy run this?" is a
+  question worth answering automatically.
+- **No S ROM means the fix layer comes from the C ROMs**, which is what late
+  CHAFIO boards do. `[VERIFIED: wiki Cartridge ROM arrangements — Metal Slug 3,
+  4, 5]` A compatible cartridge has to reproduce that, and NeoForge does not yet
+  document it.
+
+Checked against real games: Metal Slug X (1024k + 4096k) comes out as four
+banks and two bits, within PROGBK1's capacity; Metal Slug 3 (2 × 4096k) as seven
+banks and three bits, beyond it — and Metal Slug 3 does in fact use PROGLBA.
+
+**It will not name a board, and that is deliberate.** Protection and encryption
+— NEO-SMA, NEO-PVC, the CMC families — are properties of a *game*, not of a ROM
+set's dimensions. Identifying them needs a database keyed by game, which is
+precisely what TerraOnion's NeoBuilder has and `neosdconv` does not. See
+[`../docs/rom-format.md`](../docs/rom-format.md). Sizes constrain the board;
+they do not name it, and guessing would be wrong often enough to be worse than
+useless.
+
+Note the distinction the tool is careful about: Metal Slug X is PROGBK1-capable
+*for banking* and still ships on PROGEOP, because it needs protection. The tool
+answers only the question it can.
+
 ### The 2 MB P warning
 
 At exactly 2 MB of P, **`romtool.py` and `neosdconv` produce different `.neo`
@@ -102,7 +148,7 @@ See [`../hardware/README.md`](../hardware/README.md).
 python3 tools/test_rominfo.py
 ```
 
-25 checks, 0 failures. `[MEASURED: 2026-09-12]`
+37 checks, 0 failures. `[MEASURED: 2026-09-15]`
 
 Same convention as the testbenches in [`../sim/`](../sim/): build known inputs,
 assert known outputs, print a count. No framework, no dependencies.

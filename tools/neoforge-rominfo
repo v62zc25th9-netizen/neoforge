@@ -52,6 +52,19 @@ LARGEST_KNOWN_TOTAL = 92160 * KB   # kof2003, "716 MEGS"
 # memory systems with different consumers running concurrently.
 REGION_BOARD = {"P": "PROG", "V": "PROG", "C": "CHA", "S": "CHA", "M": "CHA"}
 
+# The 68000's view of cartridge program ROM. See docs/prom-banking.md.
+#   $000000-$0FFFFF   1 MiB, fixed, never banked. Holds the vector table.
+#   $200000-$2FFFFF   1 MiB, the banked window.
+P_FIXED_WINDOW = 1 * MB
+P_BANK_WINDOW = 1 * MB
+
+# PROGBK1 holds its bank number in a 74LS74 dual D-latch: two bits, so four
+# 1 MiB banks, so at most 4 MiB banked plus the 1 MiB fixed window.
+# PROGBK1 matters because it is the only non-protected banking board, which
+# makes it NeoForge's target. `[VERIFIED: wiki Bankswitching, PROGBK1]`
+PROGBK1_BANK_BITS = 2
+PROGBK1_MAX_P = P_FIXED_WINDOW + (2 ** PROGBK1_BANK_BITS) * P_BANK_WINDOW
+
 
 def human(n: int) -> str:
     if n == 0:
@@ -82,6 +95,7 @@ class Report:
     regions: dict = field(default_factory=dict)  # name -> total bytes
     files: dict = field(default_factory=dict)    # name -> [(filename, size)]
     meta: dict = field(default_factory=dict)
+    cartridge: dict = field(default_factory=dict)
     findings: list = field(default_factory=list)
 
     def add(self, level: str, where: str, text: str) -> None:
@@ -144,6 +158,7 @@ def read_neo(path: str) -> Report:
 
     check_regions(r)
     check_p_ambiguity(r, split_known=False)
+    analyse_cartridge(r)
     return r
 
 
@@ -198,6 +213,7 @@ def read_romset(entries: list[tuple[str, int]], source: str) -> Report:
     check_power_of_two(r)
     check_regions(r)
     check_p_ambiguity(r, split_known=len(r.files.get("P", [])) > 1)
+    analyse_cartridge(r)
     return r
 
 
@@ -269,6 +285,84 @@ def check_p_ambiguity(r: Report, split_known: bool) -> None:
 
 
 # --------------------------------------------------------------------------
+# Cartridge inference
+#
+# What a ROM set's *shape* can and cannot tell you about the board it came
+# from. The honest answer is: it constrains, it does not identify. This
+# function is written to report constraints and exclusions rather than to
+# guess a board name, because guessing one would be wrong often enough to be
+# worse than useless.
+# --------------------------------------------------------------------------
+
+def analyse_cartridge(r: Report) -> None:
+    c = r.cartridge
+    p = r.regions.get("P", 0)
+
+    # ---- banking -------------------------------------------------------
+    # $000000-$0FFFFF is fixed and never banked, so a P that fits there needs
+    # no mapper at all. This is also why our own test ROM needs no bank latch.
+    if p == 0:
+        c["banking"] = "unknown"
+    elif p <= P_FIXED_WINDOW:
+        c["banking"] = "none"
+        c["bank_bits"] = 0
+        c["reason"] = (f"{human(p)} fits the fixed window at "
+                       f"$000000-$0FFFFF; nothing is ever banked")
+    else:
+        banked = p - P_FIXED_WINDOW
+        banks = -(-banked // P_BANK_WINDOW)          # ceiling division
+        bits = max(1, (banks - 1).bit_length())
+        c["banking"] = "required"
+        c["banked_bytes"] = banked
+        c["banks"] = banks
+        c["bank_bits"] = bits
+        c["reason"] = (f"{human(banked)} sits beyond the fixed window and "
+                       f"must be reached through $200000-$2FFFFF")
+
+    # ---- is PROGBK1 enough? --------------------------------------------
+    # Only a statement about banking capacity. PROGBK1 is also the only
+    # non-protected banking board, but nothing here can tell you whether a
+    # game needs protection.
+    if p:
+        bits = c.get("bank_bits", 0)
+        c["progbk1_capacity"] = bits <= PROGBK1_BANK_BITS
+        if bits > PROGBK1_BANK_BITS:
+            r.add("note", "P",
+                  f"{human(p)} of P needs {bits} bank bits, more than "
+                  f"PROGBK1's 74LS74 provides ({PROGBK1_BANK_BITS}, so "
+                  f"{human(PROGBK1_MAX_P)} of P). This board is not a PROGBK1 "
+                  f"and a NeoForge board copying PROGBK1 could not run it")
+
+    # ---- where do fix tiles come from? ---------------------------------
+    # Late CHAFIO-era games ship no S ROM and draw the fix layer from the C
+    # ROMs instead. A cartridge claiming full compatibility has to reproduce
+    # that. `[VERIFIED: wiki Cartridge ROM arrangements - Metal Slug 3, 4, 5]`
+    if r.regions.get("S", 0) == 0:
+        c["fix_source"] = "C ROMs (no S ROM)"
+        r.add("note", "S",
+              "no S ROM, which on late CHAFIO boards means the fix layer is "
+              "drawn from the C ROMs instead. That is a mode NeoForge does "
+              "not yet document and a compatible cartridge must reproduce")
+    else:
+        c["fix_source"] = "S ROM"
+
+    # ---- C ROM pairs ---------------------------------------------------
+    if r.kind == "romset":
+        n = len(r.files.get("C", []))
+        if n:
+            c["c_pairs"] = n // 2
+
+    # ---- and the large, honest gap -------------------------------------
+    # Protection and encryption are properties of a game, not of a ROM set's
+    # dimensions. NEO-SMA, NEO-PVC and the CMC42/CMC50 families are identified
+    # by knowing which game this is - which is exactly what TerraOnion's
+    # NeoBuilder has and neosdconv does not. See docs/rom-format.md.
+    c["protection"] = "not inferable"
+    if r.kind == "neo" and r.meta.get("ngh") not in (None, "0x000"):
+        c["ngh"] = r.meta["ngh"]
+
+
+# --------------------------------------------------------------------------
 # Output
 # --------------------------------------------------------------------------
 
@@ -318,6 +412,38 @@ def render(r: Report) -> str:
     cha = sum(v for k, v in r.regions.items() if REGION_BOARD[k] == "CHA")
     out.append("")
     out.append(f"  PROG board {human(prog):>10}      CHA board {human(cha):>10}")
+
+    c = r.cartridge
+    if c:
+        out.append("")
+        out.append("  what the shape implies")
+        out.append("  ----------------------")
+
+        b = c.get("banking")
+        if b == "none":
+            out.append(f"  {'banking':<14} not needed - {c['reason']}")
+        elif b == "required":
+            out.append(f"  {'banking':<14} required - {c['reason']}")
+            out.append(f"  {'bank window':<14} {c['banks']} x {human(P_BANK_WINDOW)} "
+                       f"at $200000-$2FFFFF, needs {c['bank_bits']} bits")
+        if "progbk1_capacity" in c:
+            ok = c["progbk1_capacity"]
+            out.append(f"  {'PROGBK1':<14} "
+                       + ("within its banking capacity" if ok
+                          else f"NOT enough - it provides {PROGBK1_BANK_BITS} bits, "
+                               f"up to {human(PROGBK1_MAX_P)} of P"))
+        out.append(f"  {'fix source':<14} {c['fix_source']}")
+        if "c_pairs" in c:
+            out.append(f"  {'C ROM pairs':<14} {c['c_pairs']}")
+        if "ngh" in c:
+            out.append(f"  {'NGH':<14} {c['ngh']} - identifying the board from "
+                       f"this needs a database we do not have")
+        out.append(f"  {'protection':<14} not inferable from a ROM set. "
+                   f"NEO-SMA, NEO-PVC and")
+        out.append(f"  {'':<14} the CMC families are properties of a game, "
+                   f"not of its")
+        out.append(f"  {'':<14} dimensions. Sizes constrain the board; "
+                   f"they do not name it.")
 
     if r.findings:
         out.append("")
