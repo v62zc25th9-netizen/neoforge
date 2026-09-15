@@ -71,3 +71,33 @@ if grep -q '^	wire BANKSEL = SDA_U\[15:8\];' Cartridge/zmc.v; then
 fi
 
 printf '%s\n' "reference tree patched."
+
+# -------------------------------------------------------------------------
+# 5. NOT A BUG: export the signals an AES cartridge needs
+#
+# neogeo.v's port list was written for testbench_1, which drives an MVS cart.
+# aes_cart.v needs six signals that exist inside neogeo as implicit wires but
+# are never brought out: nRESET, nROMOEL, nROMOEU, CLK_24M, SDRD0 and SDRD1.
+#
+# Appended to the end of the port list so positional instantiations elsewhere
+# keep working. Our own testbench connects by name.
+# -------------------------------------------------------------------------
+if ! grep -q 'NeoForge: exported for the AES cartridge' neogeo.v; then
+    python3 - "$PWD/neogeo.v" <<'PY'
+import io, sys
+p = sys.argv[1]
+s = io.open(p, encoding='utf-8', errors='surrogateescape').read()
+old = "\toutput VIDEO_SYNC\n"
+new = ("\toutput VIDEO_SYNC,\n\n"
+       "\t// NeoForge: exported for the AES cartridge model. These all exist\n"
+       "\t// as implicit wires driven by submodules; only the port list was\n"
+       "\t// missing them, because it was written for the MVS testbench.\n"
+       "\toutput nRESET,\n"
+       "\toutput nROMOEL, nROMOEU,\n"
+       "\toutput CLK_24M,\n"
+       "\toutput SDRD0, SDRD1\n")
+assert old in s, "neogeo.v: VIDEO_SYNC port not found"
+io.open(p, 'w', encoding='utf-8', errors='surrogateescape').write(s.replace(old, new, 1))
+PY
+    say "neogeo.v: exported nRESET, nROMOEL/U, CLK_24M, SDRD0/1 for aes_cart"
+fi

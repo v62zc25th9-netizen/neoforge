@@ -413,15 +413,25 @@ all, not from any experiment run on it.
 - [ ] Publish captures and analysis under `docs/measured/` with `[MEASURED]`
       markers and raw files
 - [ ] Build a Verilog testbench that reproduces the captured behaviour
-- [ ] **Build the whole-console simulation harness** — **lints clean
-      2026-09-12**, does not run yet. `sim/harness/` holds the fx68k shim, the
-      patch set and a Makefile. The whole system model elaborates under
-      Verilator 5 with `--timing` and a cycle-accurate 68000 in place of the
-      VHDL core, so no unknown blocker remains. What is left: a top-level
-      testbench, ROM data from nullbios and our own ROMs, and — the real risk —
-      verifying fx68k's clock-phase alignment against `CLK_68KCLK`, since the
-      wait-state logic is keyed to it and wrong alignment yields a machine that
-      almost works. See `sim/harness/README.md`.
+- [ ] **Build the whole-console simulation harness** — **blocked 2026-09-15, and
+      we know exactly where.** Everything assembles; neither available simulator
+      can run it, for two unrelated reasons that combine badly.
+      **Verilator 5** compiles the lot and produces a working binary, but the
+      model drives real tri-state buses throughout and Verilator's resolution of
+      them oscillates — memory climbs ~110 MB/s while simulated time barely
+      advances, until the process is killed. A zero-delay loop, not a leak.
+      **Icarus** handles tri-state and delays natively — it is what the model was
+      written for — but cannot compile fx68k. Making the three struct typedefs
+      `packed` clears the first blocker; 85 errors remain where struct members
+      cross module boundaries.
+      Finished and reusable regardless: `mkdata.py` (the 24 `$readmemh` files,
+      with byte order settled by the reset-vector test rather than by
+      convention) and `neoforge_tb.sv` (console wired to `aes_cart` — the model
+      only ever had an MVS testbench).
+      Four ways forward are written up in `sim/harness/README.md`. The next
+      attempt should start with finding a Verilog-2001 68000 core Icarus can
+      compile, or with dropping the console entirely and driving the cartridge
+      from a behavioural bus master.
 - [ ] **Build the measurement cartridge** — see `docs/measurement-cart.md`.
       Answers Q3, tests the level-translation approach Phase 7 depends on, and
       settles the ASIC input-threshold question, on a board with no memory, no

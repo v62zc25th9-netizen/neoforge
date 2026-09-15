@@ -73,10 +73,18 @@ module tg68 (
     // ---------------------------------------------------------------------
     wire extReset = ~reset;
 
-    reg  pwr_seen = 1'b0;
-    wire pwrUp = ~pwr_seen & extReset;
-    always @(posedge clk_2x)
-        if (!extReset) pwr_seen <= 1'b1;
+    // pwrUp must be high *during* the first reset and never again. An earlier
+    // version latched on "not in reset", which is already true at time zero
+    // before the reset button is pressed - so pwrUp never fired, fx68k never
+    // initialised, and the 68000 never asserted /AS. The symptom was a
+    // simulation that ran happily and did nothing. [MEASURED: 2026-09-15]
+    reg seen_reset = 1'b0;      // have we been in reset at all yet
+    reg pwrup_done = 1'b0;      // ...and come back out of it
+    always @(posedge clk_2x) begin
+        if (extReset)          seen_reset <= 1'b1;
+        else if (seen_reset)   pwrup_done <= 1'b1;
+    end
+    wire pwrUp = extReset & ~pwrup_done;
 
     // ---------------------------------------------------------------------
     // Bus
