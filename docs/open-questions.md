@@ -284,6 +284,18 @@ every game but needs a wait state has not succeeded.
   arbitrating shared memory — has to hide that latency completely or assert
   wait states. This is a plausible reason Terraonion's NeoSD carries two FPGAs
   and substantial RAM rather than streaming on demand. `[UNVERIFIED]`
+  **Corroborated 2026-09-18, weakly.** If the AES+ cartridge really did move
+  from parallel to serial NOR, it cannot be reading flash on the bus either, and
+  must shadow into RAM for the same reason. Two independent designs reaching the
+  same structure is worth more than either alone — though both readings are
+  inferences, not confirmed teardowns. See Q4, TGS 2026-09-18.
+- **How long may a cartridge stall the console?** A shadow-loading design needs
+  to hold the bus while it fills RAM, and NeoForge owns the mechanism already
+  (`ROMWAIT`, `PWAIT0`, `PWAIT1`, `PDTACK` are cartridge outputs). The bound is
+  presumably the Neo Geo watchdog, and possibly whatever the BIOS tolerates
+  during its own startup. **We have not looked either up.** This is cheap to
+  settle from the wiki and it gates any design that does not present flash
+  directly to the bus. `[UNVERIFIED]`
 - The decision belongs in Phase 7's memory selection, and it should be made
   against measured numbers from Phase 5 rather than datasheet optimism.
 
@@ -349,6 +361,97 @@ by analogy with MVS and with the cost argument in `why-the-split.md`. That
 reasoning ignored the obvious commercial point: compatibility with thirty years
 of installed hardware is worth more than a chip per cartridge. Recorded rather
 than deleted.
+
+### Shown at TGS - 2026-09-18
+
+First hard data since the delay. Sources are second-hand attendee reports, so
+the tags matter more than usual.
+
+**The 48.33 MHz figure is not a speed difference.** It is 2 x 24.167829 =
+48.3357 MHz - the AES master clock doubled. Doubling the *AES* crystal rather
+than the MVS 24.000 MHz means they cloned the right machine. Several people
+repeated it as evidence of inaccuracy; it is an internal core clock.
+`[VERIFIED: arithmetic against wiki Clock]` See
+[`hardware-constraints.md`](hardware-constraints.md) §1.
+
+**They built a new board that works in an old system, rather than rebuilding the
+old board out of new parts.** Reported: the cartridge PCB was redesigned with
+new components, moving from *"Nord Flash Parallel"* to *"Nord Flash Series"* -
+almost certainly a phonetic rendering of **NOR flash, parallel to serial**.
+`[UNVERIFIED - one garbled second-hand line, no photo or spec]`
+
+If that reading is right it is the most consequential item on the list, because
+serial NOR **cannot** feed a 68000 bus: command and address phases alone exceed
+the ~120 ns a random read has to complete in. The board must therefore shadow
+flash into RAM at power-up, which makes an AES+ cartridge flash + RAM + a loader
++ a serializer. That is not a ROM board with a serializer added. It is
+structurally most of what roadmap Phase 9 describes, shipping in a $90 retail
+product.
+
+**This is the more useful existence proof, and it is the second correction to
+this question.** Q4 originally predicted dumb ROM boards; that was logged wrong
+above. The answer recorded in its place - "the carts must contain a serializer"
+- is right but understates the finding. The choice on display is not *which
+chips to re-make*, it is *whether to re-make the board at all*. A new
+architecture that satisfies a 1990 bus is a design freedom NeoForge has too, and
+one this file had implicitly treated as a Phase 9 luxury rather than a Phase 7
+option.
+
+**Caveat on that proof.** Cartridge compatibility with *original* AES hardware
+is still PLAION's claim; TGS demonstrated AES+ cartridges in AES+ consoles. The
+interesting direction has not been publicly shown.
+
+**A design note that follows.** A cartridge that shadows flash into RAM has to
+hold the console off while it does. NeoForge already owns the mechanism - four of
+PROG's outputs are `ROMWAIT`, `PWAIT0`, `PWAIT1` and `PDTACK`, so the cartridge
+sets its own wait states (see [`../hardware/README.md`](../hardware/README.md)).
+How long it may legitimately stall is bounded by the Neo Geo's watchdog, and we
+have not looked that bound up. Added to the open list below.
+
+**Do not over-read the delay.** This file previously took the component-shortage
+explanation at face value and drew a sourcing lesson from it. That chain has a
+weak link, and the counter-argument is good: a company holding finished units
+ships them and press-releases the sell-out, because selling out is free
+marketing. Delaying a year is what you do when the product is not right - and a
+Shock Troopers sound bug, a PLAION-only game lineup and a censored ROM at TGS
+look more like a product still in development than one waiting on a chip order.
+`[ANECDOTAL - inference from what was and was not shown]`
+
+So: the switch away from parallel NOR is evidence about **their design choice**.
+It is *not* established evidence that parallel NOR is hard to source, and
+NeoForge should not retire that option on this basis alone. Worth checking
+directly against distributor stock before any board decision.
+
+**On provenance.** Several people have suggested the AES+ is built on the
+community's reverse engineering rather than on SNK's own 1990s files. Consistent
+with what exists publicly: knowledge of these custom chips comes from silicon -
+`furrtek/SiliconRE` is traces and schematics recovered by decapping - and no SNK
+internal documentation for them is public. SNK still exists and holds its own
+archives, so whether they used them is unknown.
+
+If the suggestion is right, the consequence is one this project has already
+written down about itself. From
+[`../sim/harness/README.md`](../sim/harness/README.md): the model "is
+schematic-derived and encodes its author's understanding, which is part of what
+we would be testing." That ceiling applies to a funded commercial recreation on
+the same terms. **NeoForge is not at an information disadvantage here** - the
+body of knowledge is the same body, and it is public.
+
+**The ASIC allegation, recorded but not relied on.** FPGA developer Pramod
+Somashekar has alleged the design is "the MiSTer core, but instead of having the
+design on one FPGA, you break it up into multiple ASICs," and calls the
+ASIC marketing a bait and switch. The MiSTer Neo Geo core is Furrtek's and is
+GPL. `[ANECDOTAL - a disputed public claim, not independently verified]` Nothing
+in NeoForge depends on it, and this file draws no conclusion from it about any
+person's conduct or motives. It is noted only because it is a reminder that the
+licence boundary in [`../contributing.md`](../contributing.md) has practical
+stakes rather than merely procedural ones.
+
+**Immaterial to this project**, listed so nobody re-researches it: shell plastic
+finish (matte ABS ~2 mm, chosen against yellowing), stick feel, absence of
+scanlines at the show, the censored Samurai Shodown V Special build, UniBIOS
+upgradeable but without the original cheat functions, MVS mode switching, and an
+unnamed arcade partner that is reportedly not Taito.
 
 ### Original framing, retained for the record
 

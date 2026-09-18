@@ -91,6 +91,35 @@ fix-layer data is drawn from the C ROMs instead. `[VERIFIED: wiki Cartridge ROM
 arrangements]` Any cartridge claiming full compatibility has to reproduce that,
 and it is not a mode our current documentation covers.
 
+### The clock all of this is measured against
+
+Worth stating plainly, because every access-time number below is relative to it
+and this file never said it:
+
+| | Master clock |
+|---|---|
+| **AES** | **24.167829 MHz** |
+| MVS | 24.000 MHz |
+
+`[VERIFIED: wiki Clock]` NEO-D0 divides it by 2, 4 and 8 for the 12 MHz
+NEO-ZMC2 clock, the inverted 6 MHz video clock and 3 MHz for NEO-B1; LSPC2-A2
+divides by 3 and 6 for the YM2610's 8 MHz and the Z80's 4 MHz.
+
+**The two machines do not share a crystal**, and NeoForge targets the AES one.
+
+Two consequences, both small and both worth having written down:
+
+- `NeoGeoFPGA-sim` oscillates with `always #20.8`, which is 24.04 MHz - the MVS
+  figure, driving an AES cartridge. 0.7% fast. It changes no conclusion at a
+  120 ns access time, but it is a discrepancy in our own harness rather than in
+  the model's documentation, and anyone sweeping timing to the last nanosecond
+  should know before they trust the result. `[MEASURED: 2026-09-18]`
+- PLAION's AES+ was reported at TGS as clocked at **48.33 MHz**, which several
+  people repeated as evidence of inaccuracy. It is 2 x 24.167829 = 48.3357 - the
+  AES master clock doubled, the ordinary way to clock a recreation that must
+  generate both edges of the original domain. Doubling the *AES* figure rather
+  than the MVS one is a point in their favour. See Q4.
+
 ### Access time: there is already a known-good envelope
 
 The ROM models in NeoGeoFPGA-sim carry access-time annotations, and `rom_p1.v`
