@@ -145,17 +145,40 @@ $(CART): $(PROM) $(SROM) $(MROM) $(CROM1) $(CROM2) $(VROM)
 gngeo: $(CART)
 	$(GNGEO) --scale 3 --no-resize --system home -i $(ROM) -d $(ROM)/gngeo_data.zip $(GAMEROM)
 
-# Same, but -D makes GnGeo wait for a GDB client on localhost:2159 before
-# running a single instruction. In another terminal:
+# -D starts a debugger. WHICH debugger depends on how GnGeo was built, and the
+# difference cost us an evening:  `[MEASURED: 2026-09-20]`
 #
-#     m68k-neogeo-elf-gdb build/rom.elf
-#     (gdb) target remote :2159
-#     (gdb) b main
-#     (gdb) c
+#     src/main.c:
+#         if (conf.debug)
+#         #ifdef HAVE_EMUDBG_H
+#             emudbg_loop();     <- GDB stub, listens on localhost:2159
+#         #else
+#             debug_loop();      <- GnGeo's own monitor, prompts "cpu1> "
+#         #endif
 #
-# Attach to build/rom.elf, not to the ROM - the ELF is what carries symbols and
-# line numbers. On connect the PC reads 0x00c04300, which is inside the BIOS at
-# $C00000 and is the same value sim/harness/ was written to expect.
+# A "cpu1> " prompt means this GnGeo has NO GDB server and nothing is listening
+# on 2159, however correctly you type at gdb. Homebrew's ngdevkit-gngeo formula
+# does not depend on emudbg, and its bottle is built without it, so this is the
+# default state. To get the GDB stub:
+#
+#     brew install dciabrin/ngdevkit/emudbg
+#     brew reinstall --build-from-source dciabrin/ngdevkit/ngdevkit-gngeo
+#
+# --build-from-source matters: the bottle was compiled with no emudbg present,
+# so configure never defined HAVE_EMUDBG_H.
+#
+# With the stub, from THIS directory, as one shell command - no gdb prompt to
+# paste into:
+#
+#     m68k-neogeo-elf-gdb build/rom.elf -ex 'target remote :2159' -ex 'b main' -ex 'c'
+#
+# Attach to build/rom.elf, not the ROM - the ELF carries the symbols and line
+# numbers. On connect the PC reads 0x00c04300, inside the BIOS at $C00000, the
+# same value sim/harness/ was written to expect.
+#
+# Without it, "cpu1> " is still a capable 68k monitor: ? for help, r registers,
+# u unassemble, d dump memory, h hardware dump, B <addr> breakpoint, R run,
+# t <n> trace n instructions, q quit.
 debug: $(CART)
 	$(GNGEO) --scale 3 --no-resize --system home -i $(ROM) -d $(ROM)/gngeo_data.zip -D $(GAMEROM)
 

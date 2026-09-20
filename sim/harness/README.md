@@ -68,6 +68,34 @@ Its first milestone is deliberately small: catch the reset vector fetch. If SSP
 and PC come back as `0010f300` / `00c04300`, then clocks, reset, bus arbitration
 and BIOS loading are all confirmed at once, from one result.
 
+### That milestone has now been met - by a different route `[MEASURED: 2026-09-20]`
+
+The harness still does not run. But GnGeo's own 68k monitor, stopped at the
+first instruction of our ROM's boot, prints this:
+
+    d3=00000000   d7=00000000   a3=00000000   a7=0010f300   usp=00000000
+    c04300 : 46fc 2700  : MOVETSR.W  #$2700
+
+**`a7 = 0010f300`. `PC = c04300`.** The two values `neoforge_tb.sv` was written
+to check for, from an independent implementation of the machine, on the first
+instruction executed.
+
+That matters for the byte-order work above more than for the harness. The
+argument in `mkdata.py` was made from first principles - read as-is the vector
+gives SSP `0x100000f3`, which masks to nonsense; read byte-swapped it gives the
+top of work RAM and an address inside the BIOS, and only one of those is a
+machine that boots. **That reasoning is now corroborated by something that
+actually executes.** It was inference; it is now inference plus a witness.
+
+The first instruction is `MOVE #$2700,SR` - supervisor, interrupts masked -
+which is what a BIOS reset entry should be, and `R` from there prints
+"Selecting Game Vector" and hands off to the cartridge. So the boot path is
+sound end to end.
+
+**It does not rescue the harness.** What is confirmed is that our *expectation*
+was right, not that our model reaches it. The reason to keep wanting the harness
+is timing, which GnGeo does not model.
+
 ## A bug we wrote, worth recording
 
 `tg68.sv` asserted fx68k's `pwrUp` from `~pwr_seen & extReset`, with `pwr_seen`
