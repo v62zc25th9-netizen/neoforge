@@ -309,23 +309,32 @@ every game but needs a wait state has not succeeded.
   watchdog runs before cartridge code executes, which for a shadow-loading
   design is the part that matters most. `[UNVERIFIED: the wiki's own tag]`
 
-  **The consequence is a real constraint on the architecture Q4 just got
-  interested in.** Whole-cartridge shadowing does not fit in that window. A
-  quad-SPI NOR at a realistic 25-40 MB/s needs ~270 ms for an 8 MB P region
-  alone, and a large C set is tens of megabytes more - seconds, not
-  milliseconds. So a serial-flash cartridge cannot simply fill RAM and let the
-  console run, unless it does so entirely during a reset long enough to cover
-  it, which we have not established is available.
+  **Corrected 2026-09-20, same evening.** The arithmetic below is right and the
+  conclusion drawn from it was too strong. Whole-cartridge shadowing genuinely
+  does not fit in 128 ms - a quad-SPI NOR at a realistic 25-40 MB/s needs
+  ~270 ms for an 8 MB P region alone, and a large C set is seconds - **but the
+  watchdog is not the constraint that matters, because a loading cartridge does
+  not stall a running console.** NeoSD shows the actual mechanism: the cart
+  serves its own menu program, the console runs that quite normally and kicks
+  the watchdog like any other software, the game is written into cart memory
+  while that menu is up, and only then does the machine reset into the game.
+  `[VERIFIED: NeoSD manuals - "a game is loaded into the memory of the NeoSD, it
+  will instantly boot every time your NeoGeo board is turned on"]`
 
-  **Which suggests the split is not P-versus-everything but
-  random-versus-predictable.** P is small and randomly accessed, so it wants
-  shadowing. C is large but read on the LSPC's fixed schedule - our own
-  testbench put the fetch interval at 333 ns - so it is prefetchable, and
-  streaming it from serial flash behind a modest buffer is plausible in a way
-  that streaming code is not. `[UNVERIFIED - an inference from our own numbers,
-  not an observation of anyone's hardware.]` If a teardown ever shows an AES+
-  cartridge with a small RAM rather than a large one, this is the reason to
-  look for.
+  So the real question is not "how long may we stall?" but **"what runs on the
+  console while we load, and what resets it afterwards?"** - which is a design
+  choice a cartridge makes for itself, not a limit the hardware imposes. The
+  128 ms figure still bounds any design that tries to stall the bus *during
+  gameplay*, which is worth knowing, and it is the reason on-demand streaming of
+  P is not an option.
+
+  **What this does to the random-versus-predictable idea.** It weakens the case
+  for it. If loading happens up front behind a menu, there is no need to treat C
+  differently from P at run time, and NeoSD does not: every slot holds a whole
+  game and serves the bus directly. The split may still be how the AES+ does it,
+  but our own numbers no longer argue for it - loading up front is simpler and
+  demonstrably works. `[UNVERIFIED - and now less favoured than when it was
+  written three hours ago.]`
 - The decision belongs in Phase 7's memory selection, and it should be made
   against measured numbers from Phase 5 rather than datasheet optimism.
 
