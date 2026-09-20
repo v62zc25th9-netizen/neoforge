@@ -6,6 +6,7 @@
 #
 #   make            build the cartridge zip
 #   make gngeo      build and run in GnGeo, AES mode
+#   make debug      same, but wait for GDB on localhost:2159
 #   make clean
 #
 # Requires ngdevkit on PATH (brew install ngdevkit; brew install ngdevkit-gngeo)
@@ -71,7 +72,7 @@ V_SIZE := 524288
 
 pad = $(PYTHON) -c 'import sys;open(sys.argv[1],"ab").truncate(int(sys.argv[2]))' $(1) $(2)
 
-.PHONY: all gngeo clean distclean
+.PHONY: all gngeo debug clean distclean
 all: $(CART)
 
 $(ROM):
@@ -143,6 +144,20 @@ $(CART): $(PROM) $(SROM) $(MROM) $(CROM1) $(CROM2) $(VROM)
 # --system home is AES mode
 gngeo: $(CART)
 	$(GNGEO) --scale 3 --no-resize --system home -i $(ROM) -d $(ROM)/gngeo_data.zip $(GAMEROM)
+
+# Same, but -D makes GnGeo wait for a GDB client on localhost:2159 before
+# running a single instruction. In another terminal:
+#
+#     m68k-neogeo-elf-gdb build/rom.elf
+#     (gdb) target remote :2159
+#     (gdb) b main
+#     (gdb) c
+#
+# Attach to build/rom.elf, not to the ROM - the ELF is what carries symbols and
+# line numbers. On connect the PC reads 0x00c04300, which is inside the BIOS at
+# $C00000 and is the same value sim/harness/ was written to expect.
+debug: $(CART)
+	$(GNGEO) --scale 3 --no-resize --system home -i $(ROM) -d $(ROM)/gngeo_data.zip -D $(GAMEROM)
 
 clean:
 	rm -rf $(BUILD)
