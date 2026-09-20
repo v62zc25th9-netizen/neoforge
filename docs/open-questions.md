@@ -338,8 +338,64 @@ every game but needs a wait state has not succeeded.
 - The decision belongs in Phase 7's memory selection, and it should be made
   against measured numbers from Phase 5 rather than datasheet optimism.
 
+### Somebody has already built the stimulus rig `[MEASURED: 2026-09-20]`
+
+`neogeodev/NGAcidTests` contains `LagTest/main_dtacktests.asm`, which is not a
+lag test at all. It is an **interactive bus-stimulus program**: each joypad
+button puts the 68000 into a tight read/write loop against one address region -
+`$200000` (the cartridge PORT window), `$3C0006`, `$3E0000`, `$400000`,
+`$300001`, `$320000/1`, `$380001`, `$380051`, `$3A0001` - so that a scope on the
+bus sees a repeating, isolated cycle. That is precisely the rig step 3 below
+describes, already written.
+
+It is **Unlicense / public domain**, so we may use, adapt and republish it
+freely. No licence boundary to keep here.
+
+And it carries this comment against the PORT case:
+
+    ; PORT byte:
+    ; W1 W0 PDTACK AS2WE WE2DTACK AS2OE OE2DTACK
+    ; 0  0  0      1     0        0     0
+    ; 0  1  1      1     0        0     0
+    ; 1  1  1      1     0        0     0
+    ; 0  0  1      1     1        0     2
+    ; 1  0  1      1     1        0     2
+    ; 0  1  0      1     2        0     3
+    ; 1  1  0      1     2        0     3
+    ; 1  0  0      Nothing, always H
+
+**If that is what it appears to be, it is the answer to this question**: the
+console's response, in cycles, to every combination of the three wait-state
+signals a cartridge drives - `PWAIT1`, `PWAIT0` and `PDTACK` - measured on the
+cartridge's own address window.
+
+Two things stand out even before verifying it. The bottom row, **`1 0 0` -
+"Nothing, always H"** - is a combination that produces no strobe at all, which
+is a trap worth knowing about before we drive those pins. And the pattern shows
+`PDTACK` asserted with either wait line adding delay to the `*2DTACK` columns,
+which is the direction one would expect but is not something we had established.
+
+**Provenance is the caveat, and it is a real one.** This is a comment in one
+person's test source, not a published measurement. It is consistent with the
+program being a scope rig - you would write down what you saw - but nothing
+states that, the file is not the one `make.bat` builds, and no units are given
+(cycles is the natural reading). `[UNVERIFIED - a comment in NGAcidTests
+LagTest/main_dtacktests.asm, provenance and units both inferred]`
+
+**What to do with it.** Not adopt it. Port it: the program is AS-syntax 68000
+assembly built by a Windows batch file with hardcoded `d:\` paths, a missing
+`flip`/`pad` helper pair, and an output step that copies the ROM over Super
+Sidekicks' files in a MAME directory - so as shipped it needs a commercial ROM
+set, which [`../contributing.md`](../contributing.md) rules out. Rebuilding it
+under ngdevkit as a standalone NeoForge test ROM makes it runnable by anyone
+with an AES and a flash cart, exactly as `rom/` already is, and turns this table
+into something we measured rather than something we found.
+
 ### How to settle it
 
+0. **Port `main_dtacktests.asm` to ngdevkit** and re-measure the table above.
+   Public domain, no BIOS dump needed, and it converts the strongest lead in
+   this question into our own evidence.
 1. Record mask ROM part numbers and access times from donor cart photographs
    and the arcade-collector board scans. Free, and gives a target.
 2. Check whether any documented AES cartridge asserts these signals.

@@ -130,7 +130,20 @@ Prove the software half of the chain end to end before spending a dollar.
       The sample is synthesised by `sample.py`; no audio file is committed.
 - [ ] Run it under GnGeo with GDB attached
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
-- [ ] Run `neogeodev/NGAcidTests` and record which emulator passes what
+- [ ] ~~Run `neogeodev/NGAcidTests` and record which emulator passes what~~ -
+      **rescoped 2026-09-20 after actually reading it.** It is not a pass/fail
+      emulator accuracy suite. It is four hardware-investigation tools -
+      `LagTest`, `MemEdit`, `SpriteTest`, `VideoDump` - built by Windows batch
+      files with hardcoded `d:\` paths, using the AS assembler rather than
+      ngdevkit, depending on `flip`/`pad` helpers that are not in the repo, and
+      copying their output over Super Sidekicks' files in a MAME directory. As
+      shipped it needs a commercial ROM set, which `contributing.md` rules out.
+      It is Unlicense, so adapting it is free.
+      **The valuable part is `LagTest/main_dtacktests.asm`** - an interactive
+      bus-stimulus program for scope work, carrying a table of the console's
+      response to every `PWAIT1`/`PWAIT0`/`PDTACK` combination. See
+      `docs/open-questions.md` Q3. Porting that one program to ngdevkit is now
+      its own task and belongs to Phase 5, not here.
 - [ ] Document the macOS setup as a reproducible script (see notes below)
 - [x] Commit a reproducible build (`make` → ROM, no manual steps) —
       `[MEASURED: 2026-09-10]` `rom/sound-driver.s` supplies the Z80 command
