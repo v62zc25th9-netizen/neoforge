@@ -202,6 +202,16 @@ blocking the first PCB and becomes a Phase 8 concern instead.
 **Status:** `[UNVERIFIED]` · Opened 2026-09-06 · **Blocks:** Phases 7, 8, 9 ·
 **This is an acceptance criterion, not just a question.**
 
+**Partially answered 2026-09-20 — the budget now exists.** Derived from the
+68000's own datasheet rather than from any model: at 12.083915 MHz a no-wait
+read offers **~183–193 ns** from address valid to data required, so a 120 ns P
+ROM leaves **~65–73 ns** for the console's decode, the connector, the
+cartridge's chip-select logic and any level translation. That is the number
+"How to settle it" step 1 was asking for, and it arrived from a datasheet
+instead of a donor cart. It does not answer whether *our* board fits inside it —
+that is still addition we have to do, and then measurement. See
+[`hardware-constraints.md`](hardware-constraints.md) §1.
+
 ### The question
 
 The AES cartridge does not merely supply data — it tells the console how long
@@ -289,13 +299,33 @@ every game but needs a wait state has not succeeded.
   must shadow into RAM for the same reason. Two independent designs reaching the
   same structure is worth more than either alone — though both readings are
   inferences, not confirmed teardowns. See Q4, TGS 2026-09-18.
-- **How long may a cartridge stall the console?** A shadow-loading design needs
-  to hold the bus while it fills RAM, and NeoForge owns the mechanism already
-  (`ROMWAIT`, `PWAIT0`, `PWAIT1`, `PDTACK` are cartridge outputs). The bound is
-  presumably the Neo Geo watchdog, and possibly whatever the BIOS tolerates
-  during its own startup. **We have not looked either up.** This is cheap to
-  settle from the wiki and it gates any design that does not present flash
-  directly to the bus. `[UNVERIFIED]`
+- **How long may a cartridge stall the console? About 128 ms, and that is
+  shorter than it sounds.** `[MEASURED: 2026-09-20]` The watchdog is a frame
+  counter kicked by writing any value to `REG_DIPSW`, usually from the VBlank
+  routine. The wiki puts the timeout at roughly 8-20 frames and records a
+  measurement of a 0.128762 s loop sometimes resetting the system - about 7.6
+  frames - with a continuous reset cycle running at 3.7 Hz, ~135 ms apart.
+  **The wiki tags its own timings unverified**, and does not say whether the
+  watchdog runs before cartridge code executes, which for a shadow-loading
+  design is the part that matters most. `[UNVERIFIED: the wiki's own tag]`
+
+  **The consequence is a real constraint on the architecture Q4 just got
+  interested in.** Whole-cartridge shadowing does not fit in that window. A
+  quad-SPI NOR at a realistic 25-40 MB/s needs ~270 ms for an 8 MB P region
+  alone, and a large C set is tens of megabytes more - seconds, not
+  milliseconds. So a serial-flash cartridge cannot simply fill RAM and let the
+  console run, unless it does so entirely during a reset long enough to cover
+  it, which we have not established is available.
+
+  **Which suggests the split is not P-versus-everything but
+  random-versus-predictable.** P is small and randomly accessed, so it wants
+  shadowing. C is large but read on the LSPC's fixed schedule - our own
+  testbench put the fetch interval at 333 ns - so it is prefetchable, and
+  streaming it from serial flash behind a modest buffer is plausible in a way
+  that streaming code is not. `[UNVERIFIED - an inference from our own numbers,
+  not an observation of anyone's hardware.]` If a teardown ever shows an AES+
+  cartridge with a small RAM rather than a large one, this is the reason to
+  look for.
 - The decision belongs in Phase 7's memory selection, and it should be made
   against measured numbers from Phase 5 rather than datasheet optimism.
 

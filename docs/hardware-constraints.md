@@ -154,6 +154,100 @@ teardown matters more than it first appeared.
 
 ---
 
+### How much of that envelope is actually the ROM's `[MEASURED: 2026-09-20]`
+
+The 120 ns figure above is borrowed - it is what the model's author annotated.
+This section derives the budget independently, from the CPU's own datasheet, so
+that for the first time a timing number in this repository does not trace back
+to somebody else's model.
+
+**The read cycle.** A 68000 read with no wait states occupies four clock periods.
+The address is valid `tCLAV` after the clock edge that starts it, and the data
+must be valid `tDICL` before the falling edge of S6, when the CPU latches it.
+Everything in between is available to the memory system:
+
+    3 x tCYC = tCLAV + tacc + tDICL
+
+`[VERIFIED: standard 68000 read-cycle derivation; the same relation appears in
+teaching material with a worked 8 MHz example - 3 x 125 = 70 + 290 + 15 - whose
+arithmetic checks and whose values match the datasheet's 8 MHz column.]`
+
+**The numbers, and which of them we actually read.** From Motorola MC68000/D,
+*AC Electrical Specifications - Read and Write Cycles*, 12.5 MHz column:
+
+| # | Characteristic | Symbol | 12.5 MHz | Legible? |
+|---|---|---|---|---|
+| 6 | Clock low to address valid | `tCLAV` | max **50 ns** | yes - and 50 ns in the 10 and 16.67 MHz columns too |
+| 11 | Address valid to AS asserted | `tAVSL` | min 10 ns | yes |
+| 14 | AS, DS width asserted | `tSL` | min 160 ns | yes |
+| 27 | **Data-in valid to clock low (setup)** | `tDICL` | **unread** | **no - OCR artifact** |
+| 31 | AS, DS asserted to data-in valid | - | 65 ns | value yes, min/max ambiguous |
+
+**Spec 27 is the one value the calculation needs and the one the scan would not
+give up.** Two fetches of the same document returned different nonsense for that
+row. It is not recorded here as a number we have.
+
+**The result is robust to it anyway.** The 8 MHz column's 15 ns bounds it from
+above - setup times do not grow with frequency - so `tDICL` lies somewhere in
+roughly 5 to 15 ns, and at 12.083915 MHz (`tCYC` = 82.755 ns):
+
+| `tDICL` | `tacc` available | Slack over a 120 ns ROM |
+|---|---|---|
+| 5 ns | 193.3 ns | 73.3 ns |
+| 10 ns | 188.3 ns | 68.3 ns |
+| 15 ns | 183.3 ns | 63.3 ns |
+
+**So the bus offers roughly 183-193 ns from address valid to data required, and a
+120 ns P ROM consumes about two thirds of it.** The remaining **~65-73 ns** is
+the entire budget for everything between the CPU's address pins and the ROM's
+data pins: the console's decode, the connector, the cartridge's own chip-select
+logic, and any buffer or level translator in the path.
+
+### What that answers, and what it now constrains
+
+**It answers the question this file asked.** "Did SNK choose 120 ns because the
+bus demanded it or because it was cheap?" Neither, quite: 120 ns plus a realistic
+decode path is a comfortable fit inside ~190 ns, which is what a competent
+designer picks. It was not arbitrary, and it was not at the edge.
+
+**It makes the slower-is-fine assumption unsafe.** A 150 ns part leaves ~35-43 ns
+for the whole decode path. That is not obviously impossible, but it is no longer
+a margin anybody should assume without adding up their own delays.
+
+**It gives Phase 7 a number to design against, which is the real prize.** Any
+NeoForge board has to fit its decode, translation and chip-select inside that
+~65-73 ns alongside a 120 ns memory. A 5V CPLD doing chip-select at ~10 ns
+propagation is comfortable. A 3.3V FPGA behind level translators is where this
+budget starts to matter, and it can now be checked by addition rather than by
+hoping. This is the number [`open-questions.md`](open-questions.md) Q3 said it
+needed.
+
+### Two caveats, both real
+
+**The speed grade is assumed, not established.** The 12.5 MHz column is the
+conservative choice for a part clocked at 12.084 MHz, but we do not know what
+SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several
+contemporary systems used one - some specs improve. The wiki says only "runs at
+12MHz" and does not name the part. **The Fatal Fury Special teardown settles
+this by reading the lid.** `[UNVERIFIED]`
+
+**The datasheet carries a date-code condition.** The table footnote reads:
+*"These specifications represent an improvement over previously published
+specifications for the 8-, 10-, and 12.5-MHz MC68000 and are valid only for
+product bearing date codes of 8827 and later."* Neo Geo hardware is comfortably
+later than 1988, so the improved specs apply - but it means a pre-8827 part has
+*different, worse* timing, and anyone reading an older datasheet scan will get
+different numbers and be right about a different chip.
+
+### How to close this properly
+
+1. A clean (non-scanned) MC68000 datasheet for spec 27. `nxp.com` and
+   `bitsavers.org` are both unreachable from this environment; a text-layer PDF
+   from anywhere else would finish it in one reading.
+2. The CPU part number off a real board - Phase 4.
+3. Neither is blocking. The bounded result above is good enough to design
+   against and is already tighter than anything the project had before.
+
 ## 2. Voltage: the constraint that picks the FPGA
 
 The logic we simulated — a shift register, a mux, four 8-bit registers, some
@@ -272,10 +366,12 @@ number exists is choosing in the dark.
   working cart — see above.)
 - Are the modelled ROM access times right? Settled by reading part numbers off
   a real board.
-- How much margin does 120 ns actually represent? That needs the 68000's read
-  cycle AC timing from its datasheet, which we have not yet looked up. It tells
-  us whether SNK chose 120 ns because the bus demanded it or because it was
-  what was cheap — and therefore how much room a slower design really has.
+- ~~How much margin does 120 ns actually represent?~~ **Answered 2026-09-20**,
+  to within a bounded range — see "How much of that envelope is actually the
+  ROM's" above. The bus offers ~183–193 ns; a 120 ns part leaves ~65–73 ns for
+  the whole decode path. What remains open is narrower: spec 27 (`tDICL`) could
+  not be read off the available scan, and the CPU's actual speed grade is
+  assumed rather than known.
 - What is kof2003's actual region split, and does anything exceed 8/64/16 MB?
 - What does the LSPC's *average* C ROM fetch rate look like across a frame,
   including blanking and the per-line sprite limit?
