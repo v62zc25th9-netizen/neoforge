@@ -135,6 +135,15 @@ states its part outright in a comment — *"120ns 1024k*16bit (2048kB) ROM"*.
 `[VERIFIED: NeoGeoFPGA-sim, Cartridge/ROMs/*.v — as the model's annotations.
 NOT verified against silicon.]`
 
+**One of these is now known to be wrong.** `[MEASURED: 2026-09-21]` A Fatal Fury
+Special cartridge in hand carries a **`TC531001CP-12`** at M1 - the `-12` is a
+120 ns speed suffix `[VERIFIED: Toshiba datasheet]` - against the 100 ns this
+table claims for M. The model's annotation is optimistic by 20 ns. No conclusion
+changes, since 120 ns is what P uses and the budget below has room, but it is
+the first of these borrowed numbers checked against a physical part and it did
+not survive. Treat the rest as unconfirmed rather than as measurements. See
+[`teardown-fatal-fury-special.md`](teardown-fatal-fury-special.md).
+
 **This is the number a board designer actually needs, and it is a sufficient
 condition rather than a limit.** If SNK shipped 120 ns P ROMs and every Neo Geo
 cartridge ever made works, then 120 ns is demonstrably fast enough. Design to
@@ -364,8 +373,11 @@ number exists is choosing in the dark.
 
 - What are the input thresholds of the console-side ASICs? (Measurable on a
   working cart — see above.)
-- Are the modelled ROM access times right? Settled by reading part numbers off
-  a real board.
+- Are the modelled ROM access times right? **Partly settled 2026-09-21 by
+  reading part numbers off a real board: M is 120 ns, not the 100 ns modelled.**
+  The other positions carry no speed suffix in their markings, so photographs
+  cannot settle them - that needs the parts in hand or a datasheet cross-check
+  against what SNK could buy in 1993.
 - ~~How much margin does 120 ns actually represent?~~ **Answered 2026-09-20**,
   to within a bounded range — see "How much of that envelope is actually the
   ROM's" above. The bus offers ~183–193 ns; a 120 ns part leaves ~65–73 ns for
