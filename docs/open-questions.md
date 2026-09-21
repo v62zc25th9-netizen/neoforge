@@ -551,14 +551,34 @@ on the sound subsystem is more interesting than one - and note this is an
 original cartridge in an AES+ console, the compatibility direction TGS did not
 demonstrate.
 
-**But Metal Slug audio has form on genuine hardware.** A neo-geo.com thread
-titled *"Metal Slug 5 AES sound issue; confirmed on 3 copies"* exists, which
-means at least one Metal Slug title has a documented sound fault on **original
-AES**. `[UNVERIFIED - the thread title only; its contents did not load]`
-Before anyone concludes the AES+ has an audio defect, the question to answer is
-whether the behaviour reproduces on a real AES with the same cartridge. If it
-does, the AES+ is being accurate rather than broken - which would be a funny
-result and exactly the kind we should want to catch before repeating it.
+**But Metal Slug audio has form on genuine hardware, and there are at least
+three ways to get this symptom without any AES+ involved.**
+
+1. **The cartridge may be an MVS-to-AES conversion.** Metal Slug 5 on AES is
+   among the rarest and priciest Neo Geo releases, and converting an MVS board
+   into an AES cart is an established hobby - "Metal Slug 5 on Phantom 1 to
+   AES?" and "Bad conversion of Neo Geo MVS Metal Slug on AES cartridges" are
+   both things people have written. A bad conversion producing bad sound is
+   unremarkable. `[UNVERIFIED - thread and video titles; contents not read]`
+2. **The console may be the fault.** AES revisions **3-3 and 3-4 have a
+   documented audio defect**, well enough known that Console5 sells a cap kit
+   for it and FirebrandX publishes a fix guide. `[VERIFIED: Console5 product
+   listing, FirebrandX guide, RetroRGB coverage, ConsoleMods audio bypass mod]`
+3. **The clocks differ.** AES runs 24.167829 MHz against MVS's 24.000 - 0.7%
+   fast - and the Z80 and YM2610 clocks derive from it. Sound timing budgeted on
+   one machine runs slightly tight on the other. See
+   [`hardware-constraints.md`](hardware-constraints.md) §1.
+
+**And "confirmed on 3 copies" does not distinguish any of them.** Three
+cartridges in one console controls for the cartridge and not for the console -
+and if all three were conversions, it does not even do that. It is a careful-
+sounding phrase that rules out the one explanation nobody proposed.
+
+So before anyone concludes the AES+ has an audio defect: does the behaviour
+reproduce on a real AES, with a known-genuine cartridge, on a revision without
+the documented fault? If it does, the AES+ is being **accurate** rather than
+broken - which would be a funny result and exactly the kind worth catching
+before repeating it.
 
 **Why we care beyond gossip.** The Z80/YM2610/ADPCM path is the one part of a
 cartridge NeoForge has actually exercised, in `rom-sound/`. If that is where a
