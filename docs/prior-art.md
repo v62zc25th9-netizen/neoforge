@@ -149,6 +149,17 @@ worth more to the community than a marginally cheaper flash cart.
    closed commercial carts exist. A published board that anyone can order and
    populate does not. `[UNVERIFIED: absence of evidence after one search pass —
    re-check before claiming this publicly]`
+   **Second pass 2026-09-21, and it holds up.** New AES cartridges *are* being
+   manufactured for homebrew - The Eye of the Typhoon Tsunami Edition had its
+   boards made by **Japangameonline** - but the design files are not published.
+   A community thread asking directly for "PCB design files to share for a
+   manufacturer to produce them" drew no files, only a suggestion to email the
+   homebrew developers and ask. `[VERIFIED: neogeoforever thread 652]`
+   So the capability exists commercially and the *design* does not exist
+   publicly. **That makes the connector footprint ours to measure and ours to
+   publish** - and it is the piece [`../hardware/README.md`](../hardware/README.md)
+   is still waiting on, which a warped cartridge that will not boot can supply
+   perfectly well.
 
 2. **Synthesizable, validated serializer HDL packaged for cartridge use.**
    NeoGeoFPGA-sim is simulation-only. FusionConverter targets a converter, not

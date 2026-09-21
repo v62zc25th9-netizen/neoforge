@@ -542,6 +542,29 @@ person's conduct or motives. It is noted only because it is a reminder that the
 licence boundary in [`../contributing.md`](../contributing.md) has practical
 stakes rather than merely procedural ones.
 
+**A second audio report, and the check it needs first.** `[ANECDOTAL]` After the
+TGS Shock Troopers sound bug, a second account: the *Not Japanese Daddy* channel
+reportedly put the question of ASIC problems to PLAION's technical people, who
+indicated there were some, and separately ran an original **Metal Slug 2** on an
+AES+ where the audio played with interruptions. Two independent reports landing
+on the sound subsystem is more interesting than one - and note this is an
+original cartridge in an AES+ console, the compatibility direction TGS did not
+demonstrate.
+
+**But Metal Slug audio has form on genuine hardware.** A neo-geo.com thread
+titled *"Metal Slug 5 AES sound issue; confirmed on 3 copies"* exists, which
+means at least one Metal Slug title has a documented sound fault on **original
+AES**. `[UNVERIFIED - the thread title only; its contents did not load]`
+Before anyone concludes the AES+ has an audio defect, the question to answer is
+whether the behaviour reproduces on a real AES with the same cartridge. If it
+does, the AES+ is being accurate rather than broken - which would be a funny
+result and exactly the kind we should want to catch before repeating it.
+
+**Why we care beyond gossip.** The Z80/YM2610/ADPCM path is the one part of a
+cartridge NeoForge has actually exercised, in `rom-sound/`. If that is where a
+funded commercial recreation is struggling, it is where our own trouble will be
+too.
+
 **Immaterial to this project**, listed so nobody re-researches it: shell plastic
 finish (matte ABS ~2 mm, chosen against yellowing), stick feel, absence of
 scanlines at the show, the censored Samurai Shodown V Special build, UniBIOS
