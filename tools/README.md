@@ -142,6 +142,34 @@ quietly defaulted.
 
 See [`../hardware/README.md`](../hardware/README.md).
 
+## `neoforge-evidence`
+
+```sh
+tools/neoforge-evidence            # regenerate docs/evidence-index.md
+tools/neoforge-evidence --stdout   # print instead
+tools/neoforge-evidence --check    # exit 1 if the committed index is stale
+```
+
+Walks the tree and collects every `[VERIFIED]` / `[MEASURED]` / `[ANECDOTAL]` /
+`[UNVERIFIED]` tag into [`../docs/evidence-index.md`](../docs/evidence-index.md),
+weakest first.
+
+**Why it exists.** The convention was applied carefully in every file and
+indexed nowhere, so a soft claim was visible only to whoever happened to be
+reading the file that carried it. The C1/C2 byte-order note in
+[`../sim/harness/mkdata.py`](../sim/harness/mkdata.py) says *"revisit before
+trusting sprite output"* and nothing outside that file knew it existed. Now the
+list of everything we are unsure about is one page.
+
+`claude.md` and `contributing.md` are skipped deliberately: they *define* the
+convention, and indexing "`[UNVERIFIED]` — inference not yet confirmed" as an
+unverified claim is a category error that buries the real ones.
+
+`--check` is the useful mode for CI. The index is generated, so it can drift
+from the claims it indexes, and drift here is exactly the failure the tool is
+meant to prevent. **Do not hand-edit the output** - fix the tag at its source
+and re-run.
+
 ## `test_rominfo.py`
 
 ```sh

@@ -128,7 +128,15 @@ Prove the software half of the chain end to end before spending a dollar.
       generates. The hardware question — can a board serve V ROM reads — waits
       for Phase 7, when the board doing the serving is ours.
       The sample is synthesised by `sample.py`; no audio file is committed.
-- [ ] Run it under GnGeo with GDB attached
+- [x] Run it under GnGeo with GDB attached — **done 2026-09-20**, and the
+      finding was the setup rather than the ROM. GnGeo picks between two
+      debuggers at compile time: `emudbg_loop()` (a GDB stub on `:2159`) when
+      `HAVE_EMUDBG_H` is defined, and `debug_loop()` (its own `cpu1>` monitor)
+      otherwise. Homebrew's formula does not depend on emudbg and its bottle is
+      built without it, so `-D` silently gives you the monitor and a gdb connect
+      times out with no explanation. Both paths and the fix are recorded in
+      `rom/Makefile`. Under the monitor the ROM ran from reset vector through
+      the BIOS handoff into our own code at `0x8d6` writing to `VRAM_RW`.
 - [ ] Run it under MAME — the accuracy reference, not the convenient one
 - [ ] ~~Run `neogeodev/NGAcidTests` and record which emulator passes what~~ -
       **rescoped 2026-09-20 after actually reading it.** It is not a pass/fail
@@ -234,7 +242,12 @@ the *read* direction against a model that already exists.
       `.neo` container from two independent implementations, the padding and
       interleaving rules, the 2 MB P ambiguity settled by experiment, and what
       the format's silence about mappers reveals about how NeoSD works.
-- [ ] **An evidence index.** The `[VERIFIED]` / `[MEASURED]` / `[ANECDOTAL]` /
+- [x] **An evidence index** — **done 2026-09-22**, `tools/neoforge-evidence`
+      → [`docs/evidence-index.md`](docs/evidence-index.md), which carries the
+      current counts. Deliberately not repeated here: writing a tally into a
+      tracked file changes the tally. `--check` fails on a stale index.
+      Original note follows.
+- [x] ~~**An evidence index.**~~ The `[VERIFIED]` / `[MEASURED]` / `[ANECDOTAL]` /
       `[UNVERIFIED]` convention is applied well *locally* - 119 / 35 / 12 / 46
       occurrences across the tree as of 2026-09-15 - but nothing lists them in
       one place. Only six of the twenty-eight lines carrying `[UNVERIFIED]`

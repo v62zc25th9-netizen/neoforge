@@ -84,3 +84,24 @@ access times remain unknown from photographs alone.
   look hand-finished rather than machine-soldered, and there is discolouration
   that could be flux residue or could be heat damage. **Not determinable from a
   photograph.**
+
+## A diagnostic ladder, learned by accident `[MEASURED: 2026-09-21]`
+
+This cartridge has a warped board and would not boot, which turned out to be
+more instructive than a working one.
+
+| Symptom | What the console managed |
+|---|---|
+| **Blue screen / grid** | Read nothing. The BIOS runs and finds no cartridge. |
+| **Repeating click, ~3.7 Hz** | Read *some*. The 68000 executes, crashes, and the watchdog resets it before it can be kicked - the "click of death". See [`open-questions.md`](open-questions.md) Q3 for the ~128 ms timeout. |
+| **Boots** | Read enough. |
+
+Moving from the first to the second by reseating the boards is a contact
+problem, not a logic one. **This is how a NeoForge board's first power-on gets
+triaged without a scope**, and it is worth knowing before that evening rather
+than during it.
+
+**Do not run bare boards outside the shell.** Nothing holds them square, so
+which fingers connect changes every insertion, and a 5V bus is being powered
+through a partly-made connection. The shell is the alignment fixture. The
+console's slot is harder to replace than anything on the cartridge.
