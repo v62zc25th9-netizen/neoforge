@@ -12,6 +12,26 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
+## Which board goes where, physically `[VERIFIED: wiki Cartridge orientation]`
+
+Stated first because it is the thing somebody with two loose boards in their
+hands needs, and this file previously discussed orientation only in the
+transcription sense.
+
+**Counting from the joypad ports at the front, towards the back:**
+
+    CHA bottom → CHA top → PROG bottom → PROG top
+
+So the **CHA board sits in the front slot** (nearer the controllers) and the
+**PROG board in the rear**. Viewed from the label side of an assembled
+cartridge, the CHA board's bottom face is the one you see first.
+
+On the cartridge in [`teardown-fatal-fury-special.md`](teardown-fatal-fury-special.md)
+that makes `NEO-AEG CHA42G-4` the front board and `NEO-AEG PROGGS` the rear one.
+The silkscreen names them, so there is no need to infer it from chip content:
+the CHA board is the one carrying NEO-ZMC2, NEO-273 and the C ROMs; PROG carries
+the P and V ROMs and the NEO-PCM.
+
 ## Orientation: the top-face images run the other way
 
 The wiki publishes four images, one per board face. Transcribe them top to
