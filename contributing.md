@@ -92,6 +92,27 @@ Two things to know before writing code:
    pull request. Catching contamination early is cheap; catching it late means
    rewriting.
 
+### A third source to keep out, and this one is worse `[MEASURED: 2026-09-23]`
+
+**`xvortex/VTXCart`** - the reverse engineering behind the Vortex multicarts -
+contains `CPLD/MVS/` and `CPLD/AES/` trees with Verilog including **`neo_273.v`**
+and **`zmc.v`**: implementations of the two exact chips NeoForge has to
+reproduce.
+
+**It carries no licence at all.** No `LICENSE` file, and a one-line README with
+no grant in it. That is not more permissive than GPL, it is **less**: with no
+licence, default copyright applies and there is no permission to copy, modify or
+distribute. NeoChips and FusionConverter at least tell you the terms.
+
+**So: do not read `VTXCart`'s RTL into NeoForge.** Same rule as NeoChips and
+FusionConverter, for a stricter reason. Its *documentation*, board photographs
+and file listings are fine - and its existence is worth knowing about, which is
+why [`docs/prior-art.md`](docs/prior-art.md) records it.
+
+This was handled the way it should be: the repository was cloned, the file
+listing read, the licence checked, and the clone deleted **without opening the
+HDL**. If you find yourself in the same position, do the same and say so.
+
 Flag the origin and licence of anything you derive from, and we will sort out
 compatibility before merging rather than after.
 

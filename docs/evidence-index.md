@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 45 |
+| Unverified | 46 |
 | Anecdotal | 19 |
 | Measured | 54 |
 | Verified | 123 |
-| **Total** | **241** |
+| **Total** | **242** |
 
 ---
 
-## Unverified — 45
+## Unverified — 46
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -93,7 +93,9 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   NeoGeo MiSTer core** | An FPGA implementation, so it models timing in a way software emulators do not. The closest thing to hardware that is not hardware. |
 - **L104** — *that no multislot-cabinet support exists; only that the manual does not mention it*  
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
-- **L337**  
+- **L256**  
+  MAX3000A really is 3.3V core with 5V-tolerant I/O, it is a candidate for Q2's "5V-tolerant CPLD". **Not verified** - check the datasheet before repeating it.
+- **L349**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to
 
 ### `docs/rom-format.md`
@@ -204,9 +206,9 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
   Generic "161-in-1" style multicarts | Community reports a persistent 3V3-vs-5V flash issue in current revisions. | A worked example of the electrical mistake NeoForge must not make. |
 - **L108** — *public product photo, 2026-09-22*  
   What a NeoSD board actually looks like
-- **L248** — *arcade-museum forum thread*  
+- **L260** — *arcade-museum forum thread*  
   Field report worth heeding:** NeoSD MVS was reported to be picky about motherboard revision — corruption and resets on NEO-MVH boards while working on MVS-1A/1B/1C. Whatever the true
-- **L275** — *AssemblerGames thread*  
+- **L287** — *AssemblerGames thread*  
   Historical note:** PRO-CT0's logic was reverse-engineered and published to the dev wiki by Calpis, which is what made non-donor converters possible in the first place. NeoForge exists downstream of
 
 ### `roadmap.md`
@@ -591,13 +593,13 @@ Traced to a source that is not us.
   The rails are the find.** LatticeXP2 runs a **1.2V core** and tops out at **LVCMOS 3.3 / LVTTL** on its I/O, with no 5V tolerance stated anywhere in the family datasheet. The silkscreen
 - **L181** — *TI SN74LVC4245A datasheet*  
   Level translation** | several TSSOP packages marked **`LJ245A`** = **`SN74LVC4245A`**, whose TI datasheet is titled *"Octal Bus Transceiver and 3.3V to 5V Shifter"* |
-- **L267** — *thread read*  
+- **L279** — *thread read*  
   [development cartridge thread](https://www.yaronet.com/topics/171618-development-cartridge-for-neo-geo-aes-mvs) documents the donor-cart-plus-EPROM approach with photos of working AES dev carts on NEO-AEG PROGGS / NEO-AEG CHA42G-4 boards.
-- **L269** — *article read*  
+- **L281** — *article read*  
   they appear; useful for staying current.
-- **L302** — *neogeoforever thread 652*  
+- **L314** — *neogeoforever thread 652*  
   closed commercial carts exist. A published board that anyone can order and populate does not. **Qualified 2026-09-23.** Still true of a *complete* cartridge PCB, but no longer true of Neo Geo cartridge hardware in general: `jwestfall69/neogeo-161in1-dual-daughterboard` publishes full KiCad sources for a flash daughterboard under the Unlicense. A daughterboard is not a cartridge - it has no edge ...
-- **L338**  
+- **L350**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to only after actually reading the repository.
 
 ### `docs/prom-banking.md`

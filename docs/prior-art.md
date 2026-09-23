@@ -202,6 +202,59 @@ for marginal compatibility across console revisions, which is precisely what the
 timing and signal-integrity work in
 [`hardware-constraints.md`](hardware-constraints.md) exists to avoid.
 
+### Vortex / VTXCart - a third architecture we had not catalogued `[MEASURED: 2026-09-23]`
+
+NeoSD and Darksoft both build a **purpose-made board**. Vortex does something
+else entirely, and it is the cheapest path of the three:
+
+**Take a 161-in-1 V3 bootleg multicart and reflash it.** `xvortex/VTXCart` is
+reverse engineering of that cart - CPLD logic, a compiler that builds ROM images
+for it, and dumper boards - so its existing flash and CPLDs can be rewritten to
+hold whatever games you choose. It reuses the donor's connector, its logic, and
+its serializer. Only the contents change. Both **MVS and AES** versions exist,
+despite the MVS ones being more visible.
+
+The C and V flash sit on **small per-chip daughterboards**, which is what the
+bench photograph shows: adapter boards marked `P VTX V1` and `SM VTX V1`
+carrying `55LV100S` and `JS28F512` footprints, alongside a microcontroller-based
+dumper with an OLED reading out an address.
+
+**`jwestfall69/neogeo-161in1-dual-daughterboard` corrects §8 below.** It is a
+replacement daughterboard carrying two flash chips instead of one - taking C
+space from 2 Gbit to 3 Gbit so the whole library fits - and it ships **complete
+KiCad files** (`.kicad_sch`, `.kicad_pcb`, `.kicad_sym`, a `.pretty` footprint
+library) under the **Unlicense**. Public domain, manufacturable, real.
+
+Three manufacturing details from its README that are worth more than the board:
+
+- **0.8 mm board thickness**, with 0.8 mm-pitch **castellated holes**.
+- **Fabs reject the castellated-holes option** at that pitch - most require
+  0.6 mm hole diameter and 0.6 mm spacing. You order *without* the option,
+  accept mangled copper, and push it back into the hole with fine tweezers.
+  Pulling it off rips the through-hole out.
+- The 1.27 mm dual-row DIP connectors **shift under heat and side pressure**,
+  leaving pins pointing in all directions.
+
+That is the kind of thing nobody writes down until they have lost a board to it.
+
+**Licence hazard, handled.** VTXCart's CPLD tree contains `neo_273.v` and
+`zmc.v` - the two chips NeoForge must reproduce - and **the repository carries
+no licence whatsoever**. That is stricter than GPL, not looser. See
+[`../contributing.md`](../contributing.md); the clone was deleted without the
+HDL being opened.
+
+### Leads not yet followed
+
+- **BackBit** - a multi-system cartridge line that reportedly now has a Neo Geo
+  **MVS-only** product, with an AES version possibly coming from **Krizz**.
+  Not researched. Worth a look because BackBit comes from outside the Neo Geo
+  scene, so its design choices may not share this scene's assumptions.
+  `[UNVERIFIED - a name and a rumour, recorded so it is not lost]`
+- **`EPM3256ATC144-10` (Altera MAX3000A)** appears in 161-in-1 tooling. If
+  MAX3000A really is 3.3V core with 5V-tolerant I/O, it is a candidate for Q2's
+  "5V-tolerant CPLD". **Not verified** - check the datasheet before repeating it.
+  `[UNVERIFIED]`
+
 **Field report worth heeding:** NeoSD MVS was reported to be picky about
 motherboard revision — corruption and resets on NEO-MVH boards while working on
 MVS-1A/1B/1C. `[ANECDOTAL: arcade-museum forum thread]` Whatever the true
@@ -246,6 +299,13 @@ worth more to the community than a marginally cheaper flash cart.
    closed commercial carts exist. A published board that anyone can order and
    populate does not. `[UNVERIFIED: absence of evidence after one search pass —
    re-check before claiming this publicly]`
+   **Qualified 2026-09-23.** Still true of a *complete* cartridge PCB, but no
+   longer true of Neo Geo cartridge hardware in general:
+   `jwestfall69/neogeo-161in1-dual-daughterboard` publishes full KiCad sources
+   for a flash daughterboard under the Unlicense. A daughterboard is not a
+   cartridge - it has no edge connector, no decode, no serializer - so the gap
+   this project aims at is intact. But "nothing open exists" was too strong and
+   should not be repeated in that form.
    **Second pass 2026-09-21, and it holds up.** New AES cartridges *are* being
    manufactured for homebrew - The Eye of the Typhoon Tsunami Edition had its
    boards made by **Japangameonline** - but the design files are not published.
