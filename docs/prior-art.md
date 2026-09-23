@@ -132,6 +132,41 @@ a teardown. Nothing here was measured and part numbers are not legible.
   cartridge with no serializer: the gap between that and this is the measure of
   how much is being deferred, deliberately.
 
+### A NeoSD Pro **AES** PROG board, legible `[MEASURED: 2026-09-23]`
+
+A second photograph, much clearer, and this one is the AES board - so unlike the
+MVS picture above, **the form factor is the one we are designing for.** This is
+the closest reference this project has to its own target.
+
+Silkscreen reads `NEOSD_PRO_AES_PROG`, `www.terraonion.com`, `Rev.B`.
+
+| What | Read off the board |
+|---|---|
+| FPGA | **`LATTICE LFXP2-5E 5QN208C`** - LatticeXP2, **5K LUTs**, 208-pin PQFP, commercial grade |
+| MCU | a large ST package carrying the ARM logo, at the right edge |
+| Storage | microSD socket on the right edge, several TSOP memories |
+| **Power rails** | **silkscreened `VCC 3V3` and `1V2`** beside two regulators, bottom left |
+| Other | a row of small logic packages along the bottom edge near the connector; a large unpopulated pad array on the right; two mounting holes; fiducials throughout |
+
+**The rails are the find.** LatticeXP2 runs a **1.2V core** and tops out at
+**LVCMOS 3.3 / LVTTL** on its I/O, with no 5V tolerance stated anywhere in the
+family datasheet. `[VERIFIED: LatticeXP2 family product brief]` The silkscreen
+says 3V3 and 1V2, which matches exactly. The cartridge edge is 5V.
+
+**So this board must translate, and the row of small packages along the
+connector edge is where it is almost certainly doing it.** That is the geometry
+you would expect: translators parked between the gold fingers and the FPGA, as
+short a run as possible.
+
+**5K LUTs is the other number worth keeping.** Whatever a NeoSD PROG board does
+in logic, it does in a small FPGA. That is a useful scale reference for a
+project that has not yet had to size its own.
+
+**Only one FPGA here**, which supports the reading above: one per board, because
+PROG and CHA sit in separate connectors and cannot talk to each other except
+through the console. The second XP2 our specs describe will be on the CHA board,
+alongside the C flash and the serializer logic - the half we have not seen.
+
 **Field report worth heeding:** NeoSD MVS was reported to be picky about
 motherboard revision — corruption and resets on NEO-MVH boards while working on
 MVS-1A/1B/1C. `[ANECDOTAL: arcade-museum forum thread]` Whatever the true

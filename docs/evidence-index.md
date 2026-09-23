@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 43 |
 | Anecdotal | 14 |
-| Measured | 45 |
-| Verified | 116 |
-| **Total** | **218** |
+| Measured | 47 |
+| Verified | 118 |
+| **Total** | **222** |
 
 ---
 
@@ -50,7 +50,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   — this is the rate during active pixel output. Whether the LSPC
 - **L241**  
   The speed grade is assumed, not established.** The 12.5 MHz column is the conservative choice for a part clocked at 12.084 MHz, but we do not know what SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several contemporary systems used one - some specs improve. The wiki says only "runs at 12MHz" and does not name the part. **The Fatal Fury Special teardown settles this by ...
-- **L336**  
+- **L361**  
   — and there is a cheap way to settle it that does not need our
 
 ### `docs/measurement-cart.md`
@@ -91,7 +91,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   NeoGeo MiSTer core** | An FPGA implementation, so it models timing in a way software emulators do not. The closest thing to hardware that is not hardware. |
 - **L104** — *that no multislot-cabinet support exists; only that the manual does not mention it*  
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
-- **L219**  
+- **L254**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to
 
 ### `docs/rom-format.md`
@@ -189,9 +189,9 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
   Generic "161-in-1" style multicarts | Community reports a persistent 3V3-vs-5V flash issue in current revisions. | A worked example of the electrical mistake NeoForge must not make. |
 - **L108** — *public product photo, 2026-09-22*  
   What a NeoSD board actually looks like
-- **L137** — *arcade-museum forum thread*  
+- **L172** — *arcade-museum forum thread*  
   Field report worth heeding:** NeoSD MVS was reported to be picky about motherboard revision — corruption and resets on NEO-MVH boards while working on MVS-1A/1B/1C. Whatever the true
-- **L164** — *AssemblerGames thread*  
+- **L199** — *AssemblerGames thread*  
   Historical note:** PRO-CT0's logic was reverse-engineered and published to the dev wiki by Calpis, which is what made non-donor converters possible in the first place. NeoForge exists downstream of
 
 ### `roadmap.md`
@@ -211,7 +211,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 45
+## Measured — 47
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -230,6 +230,8 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   One of these is now known to be wrong.** A Fatal Fury
 - **L166** — *2026-09-20*  
   How much of that envelope is actually the ROM's
+- **L293** — *2026-09-23*  
+  And somebody did it on an AES cartridge
 
 ### `docs/open-questions.md`
 
@@ -243,6 +245,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   shorter than it sounds.** The watchdog is a frame
 - **L341** — *2026-09-20*  
   Somebody has already built the stimulus rig
+
+### `docs/prior-art.md`
+
+- **L135** — *2026-09-23*  
+  A NeoSD Pro **AES** PROG board, legible
 
 ### `docs/rom-format.md`
 
@@ -361,7 +368,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 116
+## Verified — 118
 
 Traced to a source that is not us.
 
@@ -434,9 +441,11 @@ Traced to a source that is not us.
   One of these is now known to be wrong.** A Fatal Fury Special cartridge in hand carries a **`TC531001CP-12`** at M1 - the `-12` is a 120 ns speed suffix - against the 100 ns this
 - **L278** — *NESdev, Implementing Mappers In Hardware*  
   For the easy direction, the relevant thresholds are:
-- **L293** — *FusionConverter BOM*  
+- **L302** — *LatticeXP2 family product brief*  
+  A clear photograph of a **NeoSD Pro AES PROG board** (`NEOSD_PRO_AES_PROG`, Rev.B) shows a **`LATTICE LFXP2-5E 5QN208C`** and, silkscreened beside two regulators, the rails **`VCC 3V3`** and **`1V2`**. LatticeXP2 runs a 1.2V core and tops out at LVCMOS 3.3 / LVTTL, with no 5V tolerance stated in the family datasheet.
+- **L318** — *FusionConverter BOM*  
   Somebody already did it, and it works
-- **L306** — *Lattice DS1022, ispMACH 4000ZE family*  
+- **L331** — *Lattice DS1022, ispMACH 4000ZE family*  
   The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for 3.3 V operation."
 
 ### `docs/measurement-cart.md`
@@ -535,13 +544,15 @@ Traced to a source that is not us.
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
 - **L105** — *multiple community sources*  
   Darksoft multi / MultiAES** (MVS and AES) | Different ROM file format from NeoSD. | Second data point on cart file formats and on what "acceptable compatibility" looks like. |
-- **L156** — *thread read*  
+- **L153** — *LatticeXP2 family product brief*  
+  The rails are the find.** LatticeXP2 runs a **1.2V core** and tops out at **LVCMOS 3.3 / LVTTL** on its I/O, with no 5V tolerance stated anywhere in the family datasheet. The silkscreen
+- **L191** — *thread read*  
   [development cartridge thread](https://www.yaronet.com/topics/171618-development-cartridge-for-neo-geo-aes-mvs) documents the donor-cart-plus-EPROM approach with photos of working AES dev carts on NEO-AEG PROGGS / NEO-AEG CHA42G-4 boards.
-- **L158** — *article read*  
+- **L193** — *article read*  
   they appear; useful for staying current.
-- **L184** — *neogeoforever thread 652*  
+- **L219** — *neogeoforever thread 652*  
   closed commercial carts exist. A published board that anyone can order and populate does not. **Second pass 2026-09-21, and it holds up.** New AES cartridges *are* being manufactured for homebrew - The Eye of the Typhoon Tsunami Edition had its boards made by **Japangameonline** - but the design files are not published. A community thread asking directly for "PCB design files to share for a ...
-- **L220**  
+- **L255**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to only after actually reading the repository.
 
 ### `docs/prom-banking.md`

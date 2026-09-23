@@ -290,6 +290,31 @@ For the hard direction, the standard answer is the **74LV / 74LVC / 74LVCT**
 families: 3.3V rail, 5V-tolerant inputs, 3.3V outputs. Bidirectional buses want
 a transceiver such as the **74LVC245**, which needs a direction signal.
 
+### And somebody did it on an AES cartridge `[MEASURED: 2026-09-23]`
+
+Stated before the FusionConverter evidence because it is the closer analogue: a
+converter is not a cartridge, and this is.
+
+A clear photograph of a **NeoSD Pro AES PROG board** (`NEOSD_PRO_AES_PROG`,
+Rev.B) shows a **`LATTICE LFXP2-5E 5QN208C`** and, silkscreened beside two
+regulators, the rails **`VCC 3V3`** and **`1V2`**. LatticeXP2 runs a 1.2V core
+and tops out at LVCMOS 3.3 / LVTTL, with no 5V tolerance stated in the family
+datasheet. `[VERIFIED: LatticeXP2 family product brief]`
+
+**A 3.3V FPGA is therefore sitting on a 5V cartridge bus in a shipping
+product**, and a row of small logic packages runs along the bottom edge between
+the gold fingers and the FPGA - which is where translators belong and what they
+look like.
+
+So the answer to "can a low-voltage part drive this bus through translation" is
+**yes, in volume, on the exact form factor we are designing for.** That does not
+tell us *which* translators, and part numbers are not legible at this
+resolution - but it removes the question of whether the approach works at all,
+which is what this section was for.
+
+It also gives a scale reference we lacked: **5K LUTs.** Whatever NeoSD's PROG
+side does in logic, it fits in a small FPGA.
+
 ### Somebody already did it, and it works `[VERIFIED: FusionConverter BOM]`
 
 `neogeodev/FusionConverter` is a shipping open-hardware MVS-to-AES converter.
