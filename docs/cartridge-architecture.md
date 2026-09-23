@@ -196,3 +196,34 @@ on the cartridge and the serializer never touches the audio path.
 4. C-ROM bandwidth budget — the LSPC fetches continuously during active
    display. What storage and arbitration meets it? Not yet analysed.
 5. How does the YM2610's independent ADPCM address bus get serviced?
+
+## Region bus widths `[ANECDOTAL: community reverse engineering, 2026-09-23]`
+
+A gap this file had never filled - what width each region presents:
+
+| Region | Width | Why it is that width |
+|---|---|---|
+| **P** | **16-bit** | it feeds the 68000 directly |
+| **C** | **32-bit** | four ROMs wide, serialized to 8 bits + opacity by NEO-ZMC2 |
+| **V** | 8-bit | ADPCM samples to the YM2610 |
+| **M** | 8-bit | Z80 code |
+| **S** | 8-bit | fix tiles |
+
+C at 32 bits is the number behind everything in [`serializer.md`](serializer.md):
+32 lines arrive at the cartridge's serializer and leave as `GAD0-3` + `GBD0-3`
+plus `DOTA`/`DOTB`. That is the compression the serializer exists to perform,
+stated as a width for the first time.
+
+### A cartridge can do useful work with only P and S `[ANECDOTAL]`
+
+From people building multicart menus: *"For the menu to work fine, you only need
+P and S. If S is missing or wrong, the menu will work but with no graphics."*
+
+**That is independent support for Q1** - which concluded in simulation that a
+fix-layer-only cartridge needs no working serializer - arriving from a shipping
+product rather than a testbench. A menu that runs on P plus S is exactly the
+shape of the first NeoForge board.
+
+Note the nuance: their *alternate* menu needs five regions because it plays the
+Neo Geo logo and jingle. The original needs three. Sound and sprites are what
+pull the other regions in, and the first board needs neither.

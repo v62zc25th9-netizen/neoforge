@@ -170,6 +170,26 @@ from the claims it indexes, and drift here is exactly the failure the tool is
 meant to prevent. **Do not hand-edit the output** - fix the tag at its source
 and re-run.
 
+### The refusal to name a board was right `[ANECDOTAL: 2026-09-23]`
+
+`analyse_cartridge()` deliberately reports `protection: not inferable`, on the
+grounds that protection and encryption are properties of a *game*, not of a ROM
+set's dimensions. Community tooling for the 161-in-1 confirms the shape of that:
+its converter fails per-game with errors naming **numbered modes** -
+
+    bankswitching mode 2 in svc / kof2003 / mslug5
+    bankswitching mode 3 in kof99
+    bankswitching mode 4 in garou
+    bankswitching mode 6 in mslug3
+    bankswitching mode 7 in kof2000
+    graphics mode 5 in mslug4
+    graphics mode 6 in matrim
+
+Two independent axes - bankswitching and graphics - each with a small integer
+per title, and no way to derive either from region sizes. Exactly the database
+keyed by game that `rominfo` says it would need and does not have. The honest
+refusal holds.
+
 ## `test_rominfo.py`
 
 ```sh

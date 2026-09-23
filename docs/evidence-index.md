@@ -12,10 +12,10 @@ the file carrying it. Weakest first, because those have work attached.
 | Standard | Count |
 |---|---|
 | Unverified | 45 |
-| Anecdotal | 15 |
+| Anecdotal | 19 |
 | Measured | 54 |
-| Verified | 122 |
-| **Total** | **236** |
+| Verified | 123 |
+| **Total** | **241** |
 
 ---
 
@@ -163,7 +163,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 15
+## Anecdotal — 19
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
 
@@ -177,11 +177,17 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
   Community criticism of cheap multicarts centres on exactly this — the 161-in-1 is reported to still have a "3V3 vs 5V flash issue" in current revisions, which some consider makes it unsafe to run on expensive AES hardware.
 - **L187** — *AssemblerGames thread*  
   — Whether that specific mismatch is the cause of the 161-in-1's known ADPCM audio failures through MVS-to-AES converters is not established. The observation that the failure persisted after a converter was repaired with a ZMC2 — while original carts and other bootlegs worked — points at the multicart's own FPGA rather than the conversion, since the ADPCM ROM is on the cartridge and the serializer ...
+- **L200** — *community reverse engineering, 2026-09-23*  
+  Region bus widths
+- **L217**  
+  A cartridge can do useful work with only P and S
 
 ### `docs/hardware-constraints.md`
 
 - **L278**  
   throughout: these figures are relayed from a forum comparison of
+- **L455** — *2026-09-23*  
+  2b. Power: a constraint we had not written down at all
 
 ### `docs/open-questions.md`
 
@@ -212,6 +218,8 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L153**  
   Walks the tree and collects every / / /
+- **L173** — *2026-09-23*  
+  The refusal to name a board was right
 
 ### `tools/neoforge-evidence`
 
@@ -382,7 +390,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   At exactly 2 MB of P, **`romtool.py` and `neosdconv` produce different `.neo` files from identical input** — `neosdconv` swaps the two megabytes and `romtool.py` does not. Verified by experiment, not by reading.
 - **L153**  
   Walks the tree and collects every / / /
-- **L179** — *2026-09-15*  
+- **L199** — *2026-09-15*  
   37 checks, 0 failures.
 
 ### `tools/neoforge-evidence`
@@ -397,7 +405,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 122
+## Verified — 123
 
 Traced to a source that is not us.
 
@@ -478,6 +486,8 @@ Traced to a source that is not us.
   Somebody already did it, and it works
 - **L406** — *Lattice DS1022, ispMACH 4000ZE family*  
   The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for 3.3 V operation."
+- **L478** — *JLCPCB design rules*  
+  2c. Manufacturing limits, from a fab's own rules
 
 ### `docs/measurement-cart.md`
 

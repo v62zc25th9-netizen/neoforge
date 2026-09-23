@@ -452,6 +452,45 @@ to it.
 
 ---
 
+## 2b. Power: a constraint we had not written down at all `[ANECDOTAL: 2026-09-23]`
+
+Repeatedly, from people who sell and repair these:
+
+- A multicart with three FPGAs is described as putting a system "already
+  struggling" under load, and adding an MVS-to-AES converter on top makes it
+  worse.
+- AES consoles vary in what they tolerate. Some run anything; some will not run
+  a stock, unmodified 161-in-1.
+- A recommendation, from someone with commercial exposure to both, that a
+  well-made consolised MVS with a good PSU is a more stable multicart platform
+  than an AES.
+
+**This file has a memory budget, a voltage section and a timing budget, and no
+power budget.** Original cartridges are mask ROMs and a couple of custom chips.
+Anything we build adds an FPGA or CPLD, translators on 100+ signals, and flash
+in place of mask ROM - all drawing from a 1990 supply through an edge connector.
+
+Nothing here is measured, and we will not guess a number. But **Phase 7 needs a
+current estimate before it needs a layout**, and Phase 5 should measure what an
+original cartridge actually draws so there is a baseline to compare against.
+Added to the open list below.
+
+## 2c. Manufacturing limits, from a fab's own rules `[VERIFIED: JLCPCB design rules]`
+
+Concrete numbers for when a board exists:
+
+| Rule | Limit |
+|---|---|
+| Hole diameter | ≥ 0.6 mm |
+| Hole-to-hole clearance | ≥ 0.6 mm |
+| Board edge to copper | ≥ 1 mm |
+| Annular ring | ≥ 0.25 mm (absolute minimum 0.18 mm) |
+
+These are the numbers behind the castellated-hole problem recorded in
+[`prior-art.md`](prior-art.md): a 0.8 mm-pitch castellated row cannot satisfy
+0.6 mm hole diameter *and* 0.6 mm hole-to-hole at once, which is why fabs reject
+the order rather than producing it.
+
 ## 3. What this changes about the plan
 
 **The measurement cart gets easier.** It needs to answer P ROM reads and nothing
@@ -473,6 +512,9 @@ number exists is choosing in the dark.
 
 - What are the input thresholds of the console-side ASICs? (Measurable on a
   working cart — see above.)
+- **What does a cartridge draw, and what will ours draw?** No number exists in
+  this repository. Phase 5 should measure an original cartridge; Phase 7 needs
+  an estimate for ours before layout. See §2b.
 - Are the modelled ROM access times right? **Partly settled 2026-09-21 by
   reading part numbers off a real board: M is 120 ns, not the 100 ns modelled.**
   The other positions carry no speed suffix in their markings, so photographs
