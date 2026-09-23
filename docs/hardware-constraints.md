@@ -290,6 +290,31 @@ For the hard direction, the standard answer is the **74LV / 74LVC / 74LVCT**
 families: 3.3V rail, 5V-tolerant inputs, 3.3V outputs. Bidirectional buses want
 a transceiver such as the **74LVC245**, which needs a direction signal.
 
+### The part, named `[MEASURED: 2026-09-23]`
+
+A Darksoft AES multi board (`PCB00246-01`) carries several TSSOP packages marked
+**`LJ245A`**, which is **`SN74LVC4245A`** - a part TI's own datasheet titles
+*"Octal Bus Transceiver and 3.3V to 5V Shifter With 3-State Outputs"*.
+`[VERIFIED: TI SN74LVC4245A datasheet]`
+
+Dual-supply: 3.3V on the A side, 5V on the B side, translating in both
+directions rather than relying on tolerance. Eight bits per package, TSSOP-24,
+a commodity catalogue part.
+
+So this section now has three independent data points, and they are getting
+closer to home each time:
+
+| Evidence | What it is | What it settles |
+|---|---|---|
+| FusionConverter BOM | a converter, not a cartridge | a low-voltage part can live on this bus |
+| NeoSD Pro AES PROG | a cartridge, our form factor | 3.3V FPGA + translation ships in volume |
+| **Darksoft AES multi** | a cartridge, our form factor | **and here is the translator's part number** |
+
+That does not make it our choice - eight bits per package against 100+ signals
+is a real package count, and the propagation delay has to fit inside the ~65-73
+ns of decode budget derived above. But "which translator" is no longer an open
+question with no candidates in it.
+
 ### And somebody did it on an AES cartridge `[MEASURED: 2026-09-23]`
 
 Stated before the FusionConverter evidence because it is the closer analogue: a

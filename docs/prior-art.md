@@ -167,6 +167,41 @@ PROG and CHA sit in separate connectors and cannot talk to each other except
 through the console. The second XP2 our specs describe will be on the CHA board,
 alongside the C flash and the serializer logic - the half we have not seen.
 
+### A Darksoft AES multi board, and it names the translator `[MEASURED: 2026-09-23]`
+
+The most BOM-level evidence this project has seen. Silkscreen: `DARK SOFT /
+ARCADE RESURRECTION`, `PCB00246-01`, a Wildcatz Arcade logo, and a dedication -
+*"Neocps1 in memory of his beloved father RIP 1951-1991 and mother RIP
+1954-2017"*.
+
+| What | Read off the board |
+|---|---|
+| FPGA | **`ALTERA Cyclone IV EP4CE15F23`** - ~15K logic elements, FBGA |
+| Second programmable part | a **Xilinx** QFP, top right - two vendors on one board |
+| **Level translation** | several TSSOP packages marked **`LJ245A`** = **`SN74LVC4245A`**, whose TI datasheet is titled *"Octal Bus Transceiver and 3.3V to 5V Shifter"* `[VERIFIED: TI SN74LVC4245A datasheet]` |
+| Memory | Microchip/SST parallel flash along the right edge; ISSI parts on the left |
+| Interfaces | micro-USB top left for updates, plus a debug header |
+| Notable | **a green bodge wire** looping to the FPGA - on a shipping product |
+| Cross-check | the edge connector is silkscreened **`A1`** and **`A50`**, matching the `a1`-`a50` naming in our own pinout CSV |
+
+**`SN74LVC4245A` is the answer the NeoSD photograph could not give.** It is a
+dual-supply part - 3.3V on one side, 5V on the other - designed for exactly this
+translation rather than merely tolerating it. Not a clever trick, a catalogue
+part.
+
+**Three times the logic of NeoSD's LFXP2-5**, which is a reasonable difference
+between a multi-cart and a single-game loader, and useful as a range: the
+problem sizes somewhere between 5K and 15K.
+
+**The bodge wire is the humbling detail, and worth recording.** A commercial
+cartridge, sold for years, ships with a rework wire. Our roadmap budgets three
+board revisions; this is what that budget looks like from the outside.
+
+**"More finicky" matches the field report below.** Multi-carts have a reputation
+for marginal compatibility across console revisions, which is precisely what the
+timing and signal-integrity work in
+[`hardware-constraints.md`](hardware-constraints.md) exists to avoid.
+
 **Field report worth heeding:** NeoSD MVS was reported to be picky about
 motherboard revision — corruption and resets on NEO-MVH boards while working on
 MVS-1A/1B/1C. `[ANECDOTAL: arcade-museum forum thread]` Whatever the true
