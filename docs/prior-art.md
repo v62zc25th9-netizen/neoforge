@@ -105,6 +105,33 @@ These are the benchmark. NeoForge is not first; it is open.
 | **Darksoft multi / MultiAES** (MVS and AES) | Different ROM file format from NeoSD. | Second data point on cart file formats and on what "acceptable compatibility" looks like. `[VERIFIED: multiple community sources]` |
 | Generic "161-in-1" style multicarts | Community reports a persistent 3V3-vs-5V flash issue in current revisions. | A worked example of the electrical mistake NeoForge must not make. `[ANECDOTAL: community sources]` |
 
+### What a NeoSD board actually looks like `[ANECDOTAL: public product photo, 2026-09-22]`
+
+From a marketing photograph of `NEOSD-MVS-PROG`, so: read as impressions, not as
+a teardown. Nothing here was measured and part numbers are not legible.
+
+- **It is an MVS board.** The mechanical form factor does not transfer to the
+  AES cartridge we are designing. Worth saying first, because the photo is
+  otherwise so informative that it is easy to forget.
+- **The brains sit on PROG.** A large square device rotated 45° dominates the
+  centre, a second large square package at the right edge is marked ARM - which
+  matches the "ARM Cortex-M4 @ 168 MHz" in the row above - plus several TSOP
+  memories, a microSD socket on the edge, and multiple small regulators. The
+  companion board is far sparser. Our specs say NeoSD carries *two* FPGAs; only
+  one is clearly visible here, and the second may be on the other board.
+- **The 45° rotation is a technique, not a flourish.** Turning a high-pin-count
+  package diagonally spreads its fan-out toward the board edges more evenly.
+  Worth remembering when a 200-pin connector has to reach a lot of memory.
+- **There are several pin headers**, on the left edge and near the top. Debug
+  and programming access, designed in rather than bodged on afterwards.
+  **NeoForge v0.1 should do the same** - the first board will need probing far
+  more than a mature one does.
+- **The part count is sobering**, and it is the right kind of sobering. This is
+  a mature commercial design several revisions deep. It reinforces rather than
+  undermines the decision in Q1 to make the first NeoForge board a fix-layer-only
+  cartridge with no serializer: the gap between that and this is the measure of
+  how much is being deferred, deliberately.
+
 **Field report worth heeding:** NeoSD MVS was reported to be picky about
 motherboard revision — corruption and resets on NEO-MVH boards while working on
 MVS-1A/1B/1C. `[ANECDOTAL: arcade-museum forum thread]` Whatever the true
