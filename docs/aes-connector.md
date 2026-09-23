@@ -12,6 +12,62 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
+## CONFLICT: field measurements disagree with this file's pin numbering `[MEASURED: 2026-09-23]`
+
+**Read this before generating anything from
+[`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv).**
+
+Community members reading **real cartridges with a meter** report the PROG-side
+wait-state pins in a different place, and a different order, from ours:
+
+| Pin | This file / our CSV | Reported from real carts |
+|---|---|---|
+| b25 | **VCC** | **ROMWAIT** |
+| b26 | **VCC** | **PWAIT0** |
+| b27 | **VCC** | **PWAIT1** |
+| b28 | **ROMWAIT** | **PDTACK** |
+| b29 | **PDTACK** | 5V |
+| b30 | **PWAIT0** | 5V |
+| b31 | **PWAIT1** | 5V |
+
+Two separate disagreements, and only one has an easy explanation:
+
+1. **The blocks are swapped.** Ours puts three VCC pins before the wait group;
+   theirs puts the wait group first and 5V after. That is what you would see if
+   the two sources number from opposite ends - and **this file already records
+   that it does not know which physical end SNK calls pin 1**, using
+   Board-Folk's convention because it is internally consistent. See below.
+2. **The order inside the group differs, and reversal does not explain it.**
+   Ours runs ROMWAIT, PDTACK, PWAIT0, PWAIT1. Theirs runs ROMWAIT, PWAIT0,
+   PWAIT1, PDTACK. Reversing ours does not produce theirs. One of us has
+   `PDTACK` in the wrong place.
+
+**Why this is urgent rather than interesting.** `hardware/lib/neoforge-aes.kicad_sym`
+is *generated from this CSV*. A board built from those symbols would wire the
+cartridge's four wait-state outputs to the wrong pins - and those are outputs,
+so wrong pins mean the cartridge driving lines the console also drives. That is
+the bus-contention failure the direction classification exists to prevent,
+arriving through the data rather than the tool.
+
+**Their evidence is not weak.** The reports are consistent across several
+cartridges - Bubble Bobble, KOF98, KOF2003, Pulsar - with a coherent story
+about which are tied high and which low, and a repair that reportedly works. We
+have a machine-extracted schematic and an acknowledged uncertainty about pin-1
+origin. **Do not assume we are right.**
+
+### How to settle it
+
+1. **`pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering`** publishes TIF scans
+   of a 161-in-1 v3 PROG and CHA board, front and rear, under **MIT**. Legally
+   usable, and good enough to trace edge fingers back to their pads.
+2. **`mvs-scans.com`** carries board scans the community uses for exactly this.
+3. **The Fatal Fury Special cartridge already on the bench.** A meter from each
+   edge finger to a known VCC pin settles the VCC block in minutes, and that
+   alone resolves disagreement 1.
+
+**Until then, treat the wait-state pins in the CSV as `[UNVERIFIED]` and do not
+fabricate anything that depends on them.**
+
 ## Which board goes where, physically `[VERIFIED: wiki Cartridge orientation]`
 
 Stated first because it is the thing somebody with two loose boards in their

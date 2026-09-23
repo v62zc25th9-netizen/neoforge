@@ -290,6 +290,17 @@ every game but needs a wait state has not succeeded.
 
 - **Parallel NOR flash** is likely fine on raw access time and is the
   conservative choice for early hardware.
+  **Confirmed with a part, 2026-09-23.** Vortex's flash adapter boards carry a
+  **`JS28F512`** footprint - Micron/Numonyx M29EW, **512 Mbit (64 MB) parallel
+  NOR in 56-TSOP at 95 ns**, and current distributor stock lists it.
+  `[VERIFIED: Micron M29EW / DigiKey listing]` That is comfortably inside the
+  ~183-193 ns the bus offers and leaves ~90 ns for decode and translation -
+  better headroom than the 120 ns mask ROMs SNK shipped.
+  **This also closes out the retraction of 2026-09-18.** The AES+ moving from
+  parallel to serial NOR was read here as possible evidence that parallel NOR
+  was hard to source; that inference was withdrawn as unsupported, and it is
+  now positively contradicted. Large, fast parallel NOR is a stocked commodity.
+  Whatever drove PLAION's change, availability was not obviously it.
 - **Anything with a fetch behind it** — SDRAM, an SD-backed cache, an FPGA
   arbitrating shared memory — has to hide that latency completely or assert
   wait states. This is a plausible reason Terraonion's NeoSD carries two FPGAs
@@ -337,6 +348,49 @@ every game but needs a wait state has not succeeded.
   written three hours ago.]`
 - The decision belongs in Phase 7's memory selection, and it should be made
   against measured numbers from Phase 5 rather than datasheet optimism.
+
+### Answered from real cartridges `[MEASURED: 2026-09-23]`
+
+Step 2 below asked "check whether any documented AES cartridge asserts these
+signals". Community members have, with a meter, across several carts. The
+answer is yes, and the details are more specific than we would have guessed.
+
+**Real cartridges drive all four, through a 220 ohm series resistor.** Not a
+direct tie - a resistor. `[ANECDOTAL: consistent across multiple reports, not
+measured by us]`
+
+| Cartridge | ROMWAIT | PWAIT0 | PWAIT1 / PDTACK | Meaning |
+|---|---|---|---|---|
+| Bubble Bobble (MVS) | 220R to 5V | 220R to 5V | tied together, 220R to 5V | both zones full speed |
+| Pulsar | 220R to 5V | 220R to 5V | tied together, 220R to 5V | both zones full speed |
+| KOF2003 | 220R to 5V | to NEO-PVC pin 32 | tied together, 220R to 5V | PORT zone possibly configurable by the PVC |
+| **KOF98** | 220R to 5V | **220R to GND** | tied together, 220R to 5V | **PORT zone: one wait cycle** |
+| **Sengoku (AES)** | **floating** | **floating** | **floating** | nothing driven - and the MVS version of the same game ties them to 5V |
+
+**So sub-question 3 is answered: yes, real carts vary.** KOF98 deliberately
+asks for a wait cycle on the PORT zone. "Zero added wait states" is a target a
+cartridge *chooses*, not a property of the machine - which means NeoForge
+should make it configurable rather than hard-wired, and the safe default is
+whatever the original of a given game did.
+
+**Early AES cartridges got it wrong.** Sengoku leaves all four floating on AES
+while the MVS release drives them; later AES PCBs fixed it. A floating input
+into NEO-C1 has no defined state, and the reported consequence is graphical
+corruption. The original 161-in-1 designers apparently copied the early carts'
+floating arrangement, and V3 boards still leave ROMWAIT and PWAIT0 floating
+while tying PWAIT1 to PDTACK.
+
+**The field repair, reported to fix a badly glitching AES completely:** tie each
+of the three wait lines through 220 ohms to a 5V pin. **Note the pin numbers in
+the reports do not match ours** - see the conflict recorded at the top of
+[`aes-connector.md`](aes-connector.md), which is now the most urgent unverified
+item in the repository.
+
+**Design consequence for NeoForge.** Drive all four deliberately, through series
+resistors, with the ability to select 5V or GND per signal - a jumper or a
+register bit. Leaving them floating is a documented way to produce a cartridge
+that glitches on some consoles and not others, and we now know it is a mistake
+SNK themselves shipped.
 
 ### Somebody has already built the stimulus rig `[MEASURED: 2026-09-20]`
 

@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 44 |
-| Anecdotal | 14 |
-| Measured | 50 |
-| Verified | 121 |
-| **Total** | **229** |
+| Unverified | 45 |
+| Anecdotal | 15 |
+| Measured | 54 |
+| Verified | 122 |
+| **Total** | **236** |
 
 ---
 
-## Unverified — 44
+## Unverified — 45
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -30,11 +30,13 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/aes-connector.md`
 
-- **L83**  
+- **L68**  
+  Until then, treat the wait-state pins in the CSV as and do not
+- **L139**  
   What is still not established** is which physical end SNK's own numbering calls pin 1. This document uses Board-Folk's, which is internally consistent and tied to a real footprint, but that is a reproduction's convention and not necessarily SNK's. It does not affect wiring — the signal at each
-- **L110**  
+- **L166**  
   Row `a` = top face, `b` = bottom | — inferred from signal content matching A's face labels. Consistent across all four faces, but not independently stated |
-- **L262**  
+- **L318**  
   The other four — `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom) — are almost certainly a limitation of the extraction, not real. The sheet carries 74LS04 and 74HC04 inverters, and those four are inverted or buffered clocks whose labels sit on the far side of an IC the wire-tracer does not cross. Do not treat them as no-connects.
 
 ### `docs/cartridge-architecture.md`
@@ -48,9 +50,9 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L83**  
   — this is the rate during active pixel output. Whether the LSPC
-- **L241**  
+- **L291**  
   The speed grade is assumed, not established.** The 12.5 MHz column is the conservative choice for a part clocked at 12.084 MHz, but we do not know what SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several contemporary systems used one - some specs improve. The wiki says only "runs at 12MHz" and does not name the part. **The Fatal Fury Special teardown settles this by ...
-- **L386**  
+- **L436**  
   — and there is a cheap way to settle it that does not need our
 
 ### `docs/measurement-cart.md`
@@ -68,11 +70,11 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   Status:** · Opened 2026-09-06 · **Blocks:** Phases 7, 8, 9 ·
 - **L258**  
   What is still unknown** is the part that actually gates the design: the *access time* a cartridge must meet to be read at zero added wait states. That is a nanosecond figure nobody has published, and it stays until
-- **L296**  
+- **L307**  
   arbitrating shared memory — has to hide that latency completely or assert wait states. This is a plausible reason Terraonion's NeoSD carries two FPGAs and substantial RAM rather than streaming on demand.
-- **L310** — *the wiki's own tag*  
+- **L321** — *the wiki's own tag*  
   shorter than it sounds.** The watchdog is a frame counter kicked by writing any value to `REG_DIPSW`, usually from the VBlank routine. The wiki puts the timeout at roughly 8-20 frames and records a measurement of a 0.128762 s loop sometimes resetting the system - about 7.6 frames - with a continuous reset cycle running at 3.7 Hz, ~135 ms apart. **The wiki tags its own timings unverified**, and ...
-- **L621**  
+- **L675**  
   Current guess: the second.** One chip in the console beats one
 
 ### `docs/prior-art.md`
@@ -91,7 +93,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   NeoGeo MiSTer core** | An FPGA implementation, so it models timing in a way software emulators do not. The closest thing to hardware that is not hardware. |
 - **L104** — *that no multislot-cabinet support exists; only that the manual does not mention it*  
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
-- **L289**  
+- **L337**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to
 
 ### `docs/rom-format.md`
@@ -161,7 +163,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 14
+## Anecdotal — 15
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
 
@@ -176,11 +178,16 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 - **L187** — *AssemblerGames thread*  
   — Whether that specific mismatch is the cause of the 161-in-1's known ADPCM audio failures through MVS-to-AES converters is not established. The observation that the failure persisted after a converter was repaired with a ZMC2 — while original carts and other bootlegs worked — points at the multicart's own FPGA rather than the conversion, since the ADPCM ROM is on the cartridge and the serializer ...
 
+### `docs/hardware-constraints.md`
+
+- **L278**  
+  throughout: these figures are relayed from a forum comparison of
+
 ### `docs/open-questions.md`
 
-- **L545**  
+- **L599**  
   A second audio report, and the check it needs first.** After the
-- **L648** — *press reporting of third-party comment, 2026*  
+- **L702** — *press reporting of third-party comment, 2026*  
   Press coverage reports that the AES+ ASICs are "based on existing code from FPGA developers like Furrtek and Jotego", with one developer quoted describing the result as a fragmented version of open FPGA designs.
 
 ### `docs/prior-art.md`
@@ -191,9 +198,9 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
   Generic "161-in-1" style multicarts | Community reports a persistent 3V3-vs-5V flash issue in current revisions. | A worked example of the electrical mistake NeoForge must not make. |
 - **L108** — *public product photo, 2026-09-22*  
   What a NeoSD board actually looks like
-- **L207** — *arcade-museum forum thread*  
+- **L248** — *arcade-museum forum thread*  
   Field report worth heeding:** NeoSD MVS was reported to be picky about motherboard revision — corruption and resets on NEO-MVH boards while working on MVS-1A/1B/1C. Whatever the true
-- **L234** — *AssemblerGames thread*  
+- **L275** — *AssemblerGames thread*  
   Historical note:** PRO-CT0's logic was reverse-engineered and published to the dev wiki by Calpis, which is what made non-donor converters possible in the first place. NeoForge exists downstream of
 
 ### `roadmap.md`
@@ -213,7 +220,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 50
+## Measured — 54
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -221,6 +228,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 - **L203** — *2026-09-10*  
   The same reasoning covers the M ROMs, which link `nullsound-aes.lib` — also LGPL-3.0-or-later, also part of ngdevkit. Both `rom/sound-driver.s` and `rom-sound/sound-driver.s` are derived from ngdevkit-examples (`base-sound-driver.s` and `user_commands.s`) and carry that licence themselves, which is why they are called out as an exception in the table above. Everything else under `rom/` and ...
+
+### `docs/aes-connector.md`
+
+- **L15** — *2026-09-23*  
+  CONFLICT: field measurements disagree with this file's pin numbering
 
 ### `docs/hardware-constraints.md`
 
@@ -232,9 +244,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   One of these is now known to be wrong.** A Fatal Fury
 - **L166** — *2026-09-20*  
   How much of that envelope is actually the ROM's
-- **L293** — *2026-09-23*  
+- **L234** — *2026-09-23*  
+  There are three different 68000s, and we must budget for the slowest
+- **L343** — *2026-09-23*  
   The part, named
-- **L318** — *2026-09-23*  
+- **L368** — *2026-09-23*  
   And somebody did it on an AES cartridge
 
 ### `docs/open-questions.md`
@@ -245,9 +259,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   development cartridge. The AES BIOS boot animation is sprite-based, so expect it to be absent or backdrop-coloured; the system should still run. - Nothing here has been checked against real silicon. It becomes
 - **L105** — *GnGeo AES mode, 2026-09-09*  
   — see `rom/`. An opaque fix field
-- **L303** — *2026-09-20*  
+- **L314** — *2026-09-20*  
   shorter than it sounds.** The watchdog is a frame
-- **L341** — *2026-09-20*  
+- **L352** — *2026-09-23*  
+  Answered from real cartridges
+- **L395** — *2026-09-20*  
   Somebody has already built the stimulus rig
 
 ### `docs/prior-art.md`
@@ -256,6 +272,8 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   A NeoSD Pro **AES** PROG board, legible
 - **L170** — *2026-09-23*  
   A Darksoft AES multi board, and it names the translator
+- **L205** — *2026-09-23*  
+  Vortex / VTXCart - a third architecture we had not catalogued
 
 ### `docs/rom-format.md`
 
@@ -379,7 +397,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 121
+## Verified — 122
 
 Traced to a source that is not us.
 
@@ -390,23 +408,23 @@ Traced to a source that is not us.
 
 ### `docs/aes-connector.md`
 
-- **L15** — *wiki Cartridge orientation*  
+- **L71** — *wiki Cartridge orientation*  
   Which board goes where, physically
-- **L50** — *cross-check, 2026-09-07*  
+- **L106** — *cross-check, 2026-09-07*  
   Detected by scoring both directions against machine-extracted schematic nets: PROG top matched 6 signals forward and 24 reversed; CHA top 6 and 18; both bottom faces matched forward (20 and 17) against 6 reversed. Not ambiguous.
-- **L53** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
+- **L109** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
   The comparison is fair, because rows `a` and `b` are numbered from the same physical end. From Board-Folk's footprint:
-- **L105**  
+- **L161**  
   Signal → board face | — A, B and C agree |
-- **L106**  
+- **L162**  
   Signal names | — all three agree |
-- **L107**  
+- **L163**  
   Active-low polarity | — from B |
-- **L108**  
+- **L164**  
   Pin numbers and ordering** | — from C, machine-extracted, and A agrees once orientation is corrected |
-- **L109**  
+- **L165**  
   Which end is pin 1** | — C's numbering is authoritative |
-- **L121**  
+- **L177**  
   The audio-loop duplication was real, not a misreading.** A shows `L in`/`L out` on both top faces and `R out`/`R in` on both bottom faces. C shows all four pairs **unconnected** on the AES 3.5 — corroborating the wiki's note that these loops are "only used on the NEO-AES board revision." Two sources, agreeing, on a detail that looked like a transcription error.
 
 ### `docs/cartridge-architecture.md`
@@ -450,15 +468,15 @@ Traced to a source that is not us.
   NEO-D0 divides it by 2, 4 and 8 for the 12 MHz
 - **L140** — *Toshiba datasheet*  
   One of these is now known to be wrong.** A Fatal Fury Special cartridge in hand carries a **`TC531001CP-12`** at M1 - the `-12` is a 120 ns speed suffix - against the 100 ns this
-- **L278** — *NESdev, Implementing Mappers In Hardware*  
+- **L328** — *NESdev, Implementing Mappers In Hardware*  
   For the easy direction, the relevant thresholds are:
-- **L298** — *TI SN74LVC4245A datasheet*  
+- **L348** — *TI SN74LVC4245A datasheet*  
   A Darksoft AES multi board (`PCB00246-01`) carries several TSSOP packages marked **`LJ245A`**, which is **`SN74LVC4245A`** - a part TI's own datasheet titles *"Octal Bus Transceiver and 3.3V to 5V Shifter With 3-State Outputs"*.
-- **L327** — *LatticeXP2 family product brief*  
+- **L377** — *LatticeXP2 family product brief*  
   A clear photograph of a **NeoSD Pro AES PROG board** (`NEOSD_PRO_AES_PROG`, Rev.B) shows a **`LATTICE LFXP2-5E 5QN208C`** and, silkscreened beside two regulators, the rails **`VCC 3V3`** and **`1V2`**. LatticeXP2 runs a 1.2V core and tops out at LVCMOS 3.3 / LVTTL, with no 5V tolerance stated in the family datasheet.
-- **L343** — *FusionConverter BOM*  
+- **L393** — *FusionConverter BOM*  
   Somebody already did it, and it works
-- **L356** — *Lattice DS1022, ispMACH 4000ZE family*  
+- **L406** — *Lattice DS1022, ispMACH 4000ZE family*  
   The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for 3.3 V operation."
 
 ### `docs/measurement-cart.md`
@@ -488,13 +506,15 @@ Traced to a source that is not us.
   NEO-C1 consumes them and inserts wait cycles into 68000 bus accesses accordingly (`System/c1_wait.v`).
 - **L235** — *wiki 68k memory map, 2026-09-08*  
   Partial answer — the numbers
-- **L420** — *Time Extension, 2026*  
+- **L296** — *Micron M29EW / DigiKey listing*  
+  conservative choice for early hardware. **Confirmed with a part, 2026-09-23.** Vortex's flash adapter boards carry a **`JS28F512`** footprint - Micron/Numonyx M29EW, **512 Mbit (64 MB) parallel NOR in 56-TSOP at 95 ns**, and current distributor stock lists it. That is comfortably inside the
+- **L474** — *Time Extension, 2026*  
   The ten re-released games "are confirmed to be compatible with original Neo > Geo AES systems, too."
-- **L431** — *PLAION press release, 2026*  
+- **L485** — *PLAION press release, 2026*  
   Delayed 2026-09-09.** The worldwide release moved from 12 November 2026 to **16 September 2027** — nearly a year — which PLAION attribute to a component shortage while expanding manufacturing.
-- **L469** — *arithmetic against wiki Clock*  
+- **L523** — *arithmetic against wiki Clock*  
   The 48.33 MHz figure is not a speed difference.** It is 2 x 24.167829 = 48.3357 MHz - the AES master clock doubled. Doubling the *AES* crystal rather than the MVS 24.000 MHz means they cloned the right machine. Several people repeated it as evidence of inaccuracy; it is an internal core clock. See
-- **L604** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
+- **L658** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
   SNK and PLAION announced the **NEOGEO AES+**, shipping 12 November 2026. $249 console, ten launch cartridges at $90, a $1000 ultimate edition. It uses **custom ASICs rather than software emulation**, and is stated to be **backward-compatible with original AES cartridges**.
 
 ### `docs/prior-art.md`
@@ -561,13 +581,13 @@ Traced to a source that is not us.
   The rails are the find.** LatticeXP2 runs a **1.2V core** and tops out at **LVCMOS 3.3 / LVTTL** on its I/O, with no 5V tolerance stated anywhere in the family datasheet. The silkscreen
 - **L181** — *TI SN74LVC4245A datasheet*  
   Level translation** | several TSSOP packages marked **`LJ245A`** = **`SN74LVC4245A`**, whose TI datasheet is titled *"Octal Bus Transceiver and 3.3V to 5V Shifter"* |
-- **L226** — *thread read*  
+- **L267** — *thread read*  
   [development cartridge thread](https://www.yaronet.com/topics/171618-development-cartridge-for-neo-geo-aes-mvs) documents the donor-cart-plus-EPROM approach with photos of working AES dev carts on NEO-AEG PROGGS / NEO-AEG CHA42G-4 boards.
-- **L228** — *article read*  
+- **L269** — *article read*  
   they appear; useful for staying current.
-- **L254** — *neogeoforever thread 652*  
-  closed commercial carts exist. A published board that anyone can order and populate does not. **Second pass 2026-09-21, and it holds up.** New AES cartridges *are* being manufactured for homebrew - The Eye of the Typhoon Tsunami Edition had its boards made by **Japangameonline** - but the design files are not published. A community thread asking directly for "PCB design files to share for a ...
-- **L290**  
+- **L302** — *neogeoforever thread 652*  
+  closed commercial carts exist. A published board that anyone can order and populate does not. **Qualified 2026-09-23.** Still true of a *complete* cartridge PCB, but no longer true of Neo Geo cartridge hardware in general: `jwestfall69/neogeo-161in1-dual-daughterboard` publishes full KiCad sources for a flash daughterboard under the Unlicense. A daughterboard is not a cartridge - it has no edge ...
+- **L338**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to only after actually reading the repository.
 
 ### `docs/prom-banking.md`
