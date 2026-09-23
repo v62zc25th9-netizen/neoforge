@@ -176,6 +176,58 @@ Only the mechanism, not the motive. The pin arithmetic is arithmetic; the
 
 ---
 
+## The two boards share six signals, and four of them go nowhere `[MEASURED: 2026-09-23]`
+
+Asked directly of [`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv):
+which signal names appear on **both** CN4 (CHA) and CN5 (PROG)?
+
+    GND, VCC, L in, L out, R in, R out
+
+Six. And the four audio pins are recorded as **unconnected on the AES 3.5
+motherboard** `[VERIFIED: AES 3.5 KiCad schematic, nets machine-extracted]`, so
+in practice:
+
+> **The two cartridge boards share power and ground. Nothing else. Not one
+> address, data, control, clock or timing line in common.**
+
+CHA gets PBUS, the Z80 bus, the LSPC video timing and the fix/sprite outputs -
+81 signals PROG never sees. PROG gets the 68000 bus, the wait-state controls and
+both ADPCM buses - 82 signals CHA never sees. The split is not a packaging
+convenience with a shared backbone. **They are two electrically independent
+devices that happen to be sold in the same shell.**
+
+### Which creates a problem original cartridges never had
+
+A mask-ROM cartridge needs no coordination. Its data is fixed at manufacture and
+both halves simply respond when addressed. **A loader has to agree with itself:**
+when someone picks a game, PROG and CHA both need to know which one, and they
+have no wire between them to say so.
+
+Three ways out, and the ranking is not obvious:
+
+1. **Through the Z80.** The only console-mediated path that exists. The 68000
+   runs code from PROG's P ROM and writes a sound command; the Z80 runs code
+   from CHA's M1 and reads it. CHA also sees the whole Z80 bus (`SDA0-15`,
+   `SDD0-7`, `SDROM`, `SDMRD`, `SDRD0/1`), so a CHA-side FPGA can simply watch
+   what the Z80 fetches and act on a recognisable pattern. Narrow, slow, and it
+   only works once the console is running our code on both processors - which is
+   a chicken-and-egg problem at power-on unless the cart always presents a fixed
+   menu M1 before a game is chosen.
+2. **A direct link between the boards.** A wire, a flex, a board-to-board
+   connector. Removes the dependency on the console entirely and works before
+   anything boots, which is exactly when a loader most needs it. Costs
+   mechanical hassle inside a shell that was never designed to accommodate it,
+   and departs from the original in a visible way.
+3. **Independent storage.** Each board carries its own copy of the selection -
+   two SD cards, or one card read twice. Avoids the problem rather than solving
+   it, and doubles a chunk of the BOM.
+
+**Worth looking for in the next NeoSD photograph.** The
+[`prior-art.md`](prior-art.md) entry notes pin headers along the left edge of
+`NEOSD_PRO_AES_PROG`. Those are probably programming and debug access - but if
+any of them is a board-to-board link, that answers which of the three a shipping
+product chose, and it is a cheap thing to look for. `[UNVERIFIED]`
+
 ## Consequences for NeoForge
 
 Not merely historical — the placement is the project's central constraint:

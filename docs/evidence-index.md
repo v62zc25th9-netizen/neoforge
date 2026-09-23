@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 43 |
+| Unverified | 44 |
 | Anecdotal | 14 |
-| Measured | 47 |
-| Verified | 118 |
-| **Total** | **222** |
+| Measured | 48 |
+| Verified | 119 |
+| **Total** | **225** |
 
 ---
 
-## Unverified — 43
+## Unverified — 44
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -118,6 +118,8 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   For an arcade format where cartridges vastly outnumber motherboards, on the board is not a close call.
 - **L146**  
   That said, the friction was real regardless of intent**, and it is hard to imagine SNK minding. It is exactly why MVS-to-AES converters cannot be passive devices. A convenient side effect is not the same as a design goal — but it is not evidence against one either. We simply have no source.
+- **L229**  
+  Worth looking for in the next NeoSD photograph.** The [`prior-art.md`](prior-art.md) entry notes pin headers along the left edge of `NEOSD_PRO_AES_PROG`. Those are probably programming and debug access - but if any of them is a board-to-board link, that answers which of the three a shipping product chose, and it is a cheap thing to look for.
 
 ### `roadmap.md`
 
@@ -211,7 +213,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 47
+## Measured — 48
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -284,6 +286,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   The first correction from silicon
 - **L88** — *2026-09-21*  
   A diagnostic ladder, learned by accident
+
+### `docs/why-the-split.md`
+
+- **L179** — *2026-09-23*  
+  The two boards share six signals, and four of them go nowhere
 
 ### `hardware/README.md`
 
@@ -368,7 +375,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 118
+## Verified — 119
 
 Traced to a source that is not us.
 
@@ -606,6 +613,8 @@ Traced to a source that is not us.
   "The Neo Geo AES was originally released solely as a rental console for video > game stores in Japan called the Neo Geo Rental System, with its high > manufacturing costs causing SNK not to release it for retail sale." >
 - **L136** — *wiki PRO-CT0, wiki MVS cartridge, MAME chip notes*  
   SNK's real anti-piracy work looks nothing like this.** We know what it looks like because it is documented: PRO-CT0 used as a challenge-response security device on PROG-G2 boards for *Fatal Fury 2* and *Super Sidekicks*, and Altera MAX CPLDs (EPM7128SQC100-15) on *KOF '98* and *Metal Slug X*.
+- **L187** — *AES 3.5 KiCad schematic, nets machine-extracted*  
+  Six. And the four audio pins are recorded as **unconnected on the AES 3.5 motherboard** , so
 
 ### `hardware/README.md`
 
