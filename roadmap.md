@@ -559,6 +559,39 @@ brought in the contributors and testers the loader will eventually want. **The
 risk we are accepting is arriving at the flash cart with no community around the
 project.** If that starts to look like the binding constraint, revisit this.
 
+### Funding and pre-orders — considered 2026-09-24, not adopted
+
+Raised for two honest reasons: research hardware costs money one item at a time,
+and a pre-order list would gauge whether anyone wants this.
+
+**Against, and these are not small:**
+
+- **Taking money converts an evenings project into an obligation.** Retro
+  hardware has a long history of campaigns that took deposits and did not
+  deliver, and the people burned by them are exactly this project's audience.
+- **It contradicts the decision above.** v0.1 is explicitly not a product. You
+  cannot take pre-orders for a thing you have decided not to package or support
+  without first reversing that.
+- **The demand signal would not be real.** People say yes to an idea and no to a
+  product. A list gathered before anyone has held a cartridge measures goodwill,
+  not intent — which is the maintainer's own objection and it is correct.
+- **There is nothing to show.** A campaign now sells a plan.
+
+**The distinction worth keeping:** buying a NeoSD or a 161-in-1 is a **research
+expense**, not a product decision. It needs no campaign and creates no
+obligation. One at a time is a perfectly good rate.
+
+**If support ever is wanted, the honest ask is different.** This project's
+outputs are already useful with no hardware at all — the pinout verified against
+two sources, `rominfo`, the evidence index, the timing budget. "Fund the
+documentation" is a truthful pitch. "Pre-order a cartridge that does not exist"
+is not.
+
+**The trigger that would change this** is the one named above: arriving at the
+flash cart with no community. Phase 12's beta programme — a few cartridges in
+other people's hands — is the right first contact with demand, and it comes
+after hardware exists rather than before.
+
 Budget for three board revisions. First-spin success on a 200-pin 5V edge
 connector board would be luck, not skill.
 

@@ -14,8 +14,8 @@ the file carrying it. Weakest first, because those have work attached.
 | Unverified | 48 |
 | Anecdotal | 20 |
 | Measured | 57 |
-| Verified | 126 |
-| **Total** | **251** |
+| Verified | 127 |
+| **Total** | **252** |
 
 ---
 
@@ -419,7 +419,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 126
+## Verified — 127
 
 Traced to a source that is not us.
 
@@ -544,6 +544,8 @@ Traced to a source that is not us.
   The 48.33 MHz figure is not a speed difference.** It is 2 x 24.167829 = 48.3357 MHz - the AES master clock doubled. Doubling the *AES* crystal rather than the MVS 24.000 MHz means they cloned the right machine. Several people repeated it as evidence of inaccuracy; it is an internal core clock. See
 - **L672** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
   SNK and PLAION announced the **NEOGEO AES+**, shipping 12 November 2026. $249 console, ten launch cartridges at $90, a $1000 ultimate edition. It uses **custom ASICs rather than software emulation**, and is stated to be **backward-compatible with original AES cartridges**.
+- **L770** — *our own rom-format.md*  
+  NeoSD ships new games and has no technical lock
 
 ### `docs/prior-art.md`
 

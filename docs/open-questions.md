@@ -767,6 +767,24 @@ Every one of those games runs in MAME today. The bus is fully documented, the
 console is dumb, and a cartridge is memory answering addresses. **There is no
 published example of Neo Geo cartridge protection that held.**
 
+### NeoSD ships new games and has no technical lock `[VERIFIED: our own rom-format.md]`
+
+Worth settling early, because it is the obvious counter-example. NeoSD carries
+commercial homebrew, so something must be working - but it is not protection.
+
+[`rom-format.md`](rom-format.md) documents the `.neo` container from **two
+independent implementations** and records that its header carries sizes, year,
+genre, screenshot and NGH number and **does not carry a protection type or an
+encryption flag**. And `city41/neosdconv` is a third-party reimplementation of
+the format - which on its own demonstrates there was nothing to defeat. Our own
+`neoforge-rominfo` reads `.neo` files without any key.
+
+**So the answer is trust, distribution and goodwill**, not technology. Authors
+choose to release on the platform, commercial homebrew sells as physical
+cartridges regardless, and the flash cart is simply where people also play it.
+That is a real answer, and it is evidence that a platform can attract new games
+without cartridge DRM.
+
 ### The case for taking it seriously anyway
 
 Worth stating properly rather than dismissing:
