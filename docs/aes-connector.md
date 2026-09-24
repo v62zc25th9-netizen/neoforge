@@ -12,7 +12,47 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
-## CONFLICT: field measurements disagree with this file's pin numbering `[MEASURED: 2026-09-23]`
+## DOWNGRADED: the "conflict" is probably two different connectors `[MEASURED: 2026-09-24]`
+
+**Read this before the alarm below it.** Yesterday's conflict was recorded as
+"our CSV may have the wait-state pins wrong." One evening of checking makes that
+much less likely, for a reason neither of us considered.
+
+**The MVS and AES cartridge connectors are not the same connector.**
+
+`pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering` publishes MIT-licensed
+4103x3184 scans of a 161-in-1 v3 board. Its PROG edge is silkscreened **`J5`**
+and numbered **60, 55, 50 ... 10, 5**, running right to left: **sixty pins per
+row, one connector.** `[MEASURED: read off the scan, 2026-09-24]`
+
+The AES cartridge has **two** connectors of **fifty** pins per row - CN4 and
+CN5, `a1`-`a50` and `b1`-`b50` - which is what this file and the CSV describe.
+The NeoGeo Development Wiki maintains **separate pages** for "AES cartridge
+pinout" and "MVS cartridge pinout"; they are not one document.
+
+**And the field reports were largely about MVS carts.** The clearest of them
+opens *"just check a real MVS cart (Bubble Bobble)"*, and the same B-numbers
+then get applied to AES carts in the same breath. Two machines, two connectors,
+one numbering vocabulary borrowed across both.
+
+**So the likeliest reading is that both sources are right about their own
+machine**, and our AES data is untouched. That is a very different situation
+from "do not fabricate anything."
+
+### What would close it properly
+
+Read the wiki's **MVS cartridge pinout** page and confirm it puts ROMWAIT on
+B25, PWAIT0 on B26, PWAIT1 on B27 and PDTACK on B28. If it does, the conflict
+dissolves entirely and the table below becomes a note about vocabulary rather
+than a warning. The page was unreachable from here tonight - robots and a
+permission prompt - so **this is downgraded, not closed.** `[UNVERIFIED]`
+
+**Interim status:** the wait-state pins in the CSV are no longer flagged as
+probably wrong, but they are not confirmed either. The cheap physical check -
+a meter from the Fatal Fury Special cartridge's edge fingers to a known VCC pin -
+still settles the VCC block in minutes and is worth doing before any board.
+
+## Superseded alarm, retained for the record `[MEASURED: 2026-09-23]`
 
 **Read this before generating anything from
 [`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv).**
