@@ -12,7 +12,50 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
-## DOWNGRADED: the "conflict" is probably two different connectors `[MEASURED: 2026-09-24]`
+## RESOLVED: it was the MVS connector all along `[VERIFIED: wiki MVS cartridge pinout, 2026-09-24]`
+
+**No conflict. Our AES data stands.** Recorded in full because the alarm was
+loud for a day and the resolution is worth more than the alarm.
+
+The NeoGeo Development Wiki's **MVS cartridge pinout** gives the PROG B row as:
+
+| MVS pin | Signal |
+|---|---|
+| B24 | `68KCLKB` |
+| **B25** | **`ROMWAIT`** |
+| **B26** | **`PWAIT0`** |
+| **B27** | **`PWAIT1`** |
+| **B28** | **`PDTACK`** |
+| B29-B32 | **`VCC`** x4 |
+| B33 | `ROMOE` |
+
+That is character for character what the field reports said - because **they were
+quoting MVS pin numbers.** Our CSV describes the AES connector, which is a
+different connector with different numbering:
+
+| | MVS cartridge | AES cartridge |
+|---|---|---|
+| Connectors | 2 (PROG, CHA) | 2 (CN5 PROG, CN4 CHA) |
+| Pins per row | **60** | **50** |
+| Rows | A and B | a and b |
+| Total | **240** | **200** |
+| `ROMWAIT` on PROG | **B25** | **b28** |
+| VCC block on PROG | **B29-B32** | **b25-b27** |
+
+Both sources were right about their own machine. The vocabulary - "B25" - is
+shared across two incompatible numbering schemes, which is how a day got spent.
+
+**One residual oddity, not a problem.** The *order* within the group differs:
+MVS runs ROMWAIT, PWAIT0, PWAIT1, PDTACK; ours runs ROMWAIT, PDTACK, PWAIT0,
+PWAIT1. Different connectors may simply be laid out differently, and our AES
+data comes from a machine-extracted AES 3.5 schematic. Worth a glance if anyone
+is ever checking the AES pinout for other reasons, but nothing here contradicts
+it. `[UNVERIFIED]`
+
+**The meter check is no longer needed for this question.** It remains a cheap
+sanity check before fabricating, but it is not the blocker it was yesterday.
+
+## Superseded: the downgrade `[MEASURED: 2026-09-24]`
 
 **Read this before the alarm below it.** Yesterday's conflict was recorded as
 "our CSV may have the wait-state pins wrong." One evening of checking makes that

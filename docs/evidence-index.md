@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 47 |
-| Anecdotal | 19 |
-| Measured | 56 |
-| Verified | 123 |
-| **Total** | **245** |
+| Unverified | 48 |
+| Anecdotal | 20 |
+| Measured | 57 |
+| Verified | 125 |
+| **Total** | **250** |
 
 ---
 
-## Unverified — 47
+## Unverified — 48
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -30,15 +30,17 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/aes-connector.md`
 
-- **L48**  
+- **L53**  
+  One residual oddity, not a problem.** The *order* within the group differs: MVS runs ROMWAIT, PWAIT0, PWAIT1, PDTACK; ours runs ROMWAIT, PDTACK, PWAIT0, PWAIT1. Different connectors may simply be laid out differently, and our AES data comes from a machine-extracted AES 3.5 schematic. Worth a glance if anyone is ever checking the AES pinout for other reasons, but nothing here contradicts it.
+- **L91**  
   Read the wiki's **MVS cartridge pinout** page and confirm it puts ROMWAIT on B25, PWAIT0 on B26, PWAIT1 on B27 and PDTACK on B28. If it does, the conflict dissolves entirely and the table below becomes a note about vocabulary rather than a warning. The page was unreachable from here tonight - robots and a permission prompt - so **this is downgraded, not closed.
-- **L108**  
+- **L151**  
   Until then, treat the wait-state pins in the CSV as and do not
-- **L179**  
+- **L222**  
   What is still not established** is which physical end SNK's own numbering calls pin 1. This document uses Board-Folk's, which is internally consistent and tied to a real footprint, but that is a reproduction's convention and not necessarily SNK's. It does not affect wiring — the signal at each
-- **L206**  
+- **L249**  
   Row `a` = top face, `b` = bottom | — inferred from signal content matching A's face labels. Consistent across all four faces, but not independently stated |
-- **L358**  
+- **L401**  
   The other four — `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom) — are almost certainly a limitation of the extraction, not real. The sheet carries 74LS04 and 74HC04 inverters, and those four are inverted or buffered clocks whose labels sit on the far side of an IC the wire-tracer does not cross. Do not treat them as no-connects.
 
 ### `docs/cartridge-architecture.md`
@@ -52,9 +54,9 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L83**  
   — this is the rate during active pixel output. Whether the LSPC
-- **L291**  
+- **L325**  
   The speed grade is assumed, not established.** The 12.5 MHz column is the conservative choice for a part clocked at 12.084 MHz, but we do not know what SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several contemporary systems used one - some specs improve. The wiki says only "runs at 12MHz" and does not name the part. **The Fatal Fury Special teardown settles this by ...
-- **L436**  
+- **L470**  
   — and there is a cheap way to settle it that does not need our
 
 ### `docs/measurement-cart.md`
@@ -76,7 +78,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   arbitrating shared memory — has to hide that latency completely or assert wait states. This is a plausible reason Terraonion's NeoSD carries two FPGAs and substantial RAM rather than streaming on demand.
 - **L321** — *the wiki's own tag*  
   shorter than it sounds.** The watchdog is a frame counter kicked by writing any value to `REG_DIPSW`, usually from the VBlank routine. The wiki puts the timeout at roughly 8-20 frames and records a measurement of a 0.128762 s loop sometimes resetting the system - about 7.6 frames - with a continuous reset cycle running at 3.7 Hz, ~135 ms apart. **The wiki tags its own timings unverified**, and ...
-- **L675**  
+- **L689**  
   Current guess: the second.** One chip in the console beats one
 
 ### `docs/prior-art.md`
@@ -167,7 +169,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 19
+## Anecdotal — 20
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
 
@@ -190,14 +192,16 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L278**  
   throughout: these figures are relayed from a forum comparison of
-- **L455** — *2026-09-23*  
+- **L489** — *2026-09-23*  
   2b. Power: a constraint we had not written down at all
 
 ### `docs/open-questions.md`
 
-- **L599**  
+- **L586**  
+  On provenance - and this is now close to first-hand.** A reviewer who spent extended time with the hardware and spoke to the team came away saying these are built on a reverse-engineered understanding of the chips, that the original designers are no longer in the field, and that there is no original SNK data to work from. That is the same conclusion this file reached from the outside on ...
+- **L613**  
   A second audio report, and the check it needs first.** After the
-- **L702** — *press reporting of third-party comment, 2026*  
+- **L716** — *press reporting of third-party comment, 2026*  
   Press coverage reports that the AES+ ASICs are "based on existing code from FPGA developers like Furrtek and Jotego", with one developer quoted describing the result as a fragmented version of open FPGA designs.
 
 ### `docs/prior-art.md`
@@ -232,7 +236,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 56
+## Measured — 57
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -243,11 +247,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ### `docs/aes-connector.md`
 
-- **L15** — *2026-09-24*  
-  DOWNGRADED: the "conflict" is probably two different connectors
-- **L26** — *read off the scan, 2026-09-24*  
+- **L58** — *2026-09-24*  
+  Superseded: the downgrade
+- **L69** — *read off the scan, 2026-09-24*  
   pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering` publishes MIT-licensed 4103x3184 scans of a 161-in-1 v3 board. Its PROG edge is silkscreened **`J5`** and numbered **60, 55, 50 ... 10, 5**, running right to left: **sixty pins per row, one connector.
-- **L55** — *2026-09-23*  
+- **L98** — *2026-09-23*  
   Superseded alarm, retained for the record
 
 ### `docs/hardware-constraints.md`
@@ -262,9 +266,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   How much of that envelope is actually the ROM's
 - **L234** — *2026-09-23*  
   There are three different 68000s, and we must budget for the slowest
-- **L343** — *2026-09-23*  
+- **L284** — *2026-09-24*  
+  AES is the harder timing environment, and both factors push the same way
+- **L377** — *2026-09-23*  
   The part, named
-- **L368** — *2026-09-23*  
+- **L402** — *2026-09-23*  
   And somebody did it on an AES cartridge
 
 ### `docs/open-questions.md`
@@ -413,7 +419,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 123
+## Verified — 125
 
 Traced to a source that is not us.
 
@@ -424,23 +430,25 @@ Traced to a source that is not us.
 
 ### `docs/aes-connector.md`
 
-- **L111** — *wiki Cartridge orientation*  
+- **L15** — *wiki MVS cartridge pinout, 2026-09-24*  
+  RESOLVED: it was the MVS connector all along
+- **L154** — *wiki Cartridge orientation*  
   Which board goes where, physically
-- **L146** — *cross-check, 2026-09-07*  
+- **L189** — *cross-check, 2026-09-07*  
   Detected by scoring both directions against machine-extracted schematic nets: PROG top matched 6 signals forward and 24 reversed; CHA top 6 and 18; both bottom faces matched forward (20 and 17) against 6 reversed. Not ambiguous.
-- **L149** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
+- **L192** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
   The comparison is fair, because rows `a` and `b` are numbered from the same physical end. From Board-Folk's footprint:
-- **L201**  
+- **L244**  
   Signal → board face | — A, B and C agree |
-- **L202**  
+- **L245**  
   Signal names | — all three agree |
-- **L203**  
+- **L246**  
   Active-low polarity | — from B |
-- **L204**  
+- **L247**  
   Pin numbers and ordering** | — from C, machine-extracted, and A agrees once orientation is corrected |
-- **L205**  
+- **L248**  
   Which end is pin 1** | — C's numbering is authoritative |
-- **L217**  
+- **L260**  
   The audio-loop duplication was real, not a misreading.** A shows `L in`/`L out` on both top faces and `R out`/`R in` on both bottom faces. C shows all four pairs **unconnected** on the AES 3.5 — corroborating the wiki's note that these loops are "only used on the NEO-AES board revision." Two sources, agreeing, on a detail that looked like a transcription error.
 
 ### `docs/cartridge-architecture.md`
@@ -484,17 +492,17 @@ Traced to a source that is not us.
   NEO-D0 divides it by 2, 4 and 8 for the 12 MHz
 - **L140** — *Toshiba datasheet*  
   One of these is now known to be wrong.** A Fatal Fury Special cartridge in hand carries a **`TC531001CP-12`** at M1 - the `-12` is a 120 ns speed suffix - against the 100 ns this
-- **L328** — *NESdev, Implementing Mappers In Hardware*  
+- **L362** — *NESdev, Implementing Mappers In Hardware*  
   For the easy direction, the relevant thresholds are:
-- **L348** — *TI SN74LVC4245A datasheet*  
+- **L382** — *TI SN74LVC4245A datasheet*  
   A Darksoft AES multi board (`PCB00246-01`) carries several TSSOP packages marked **`LJ245A`**, which is **`SN74LVC4245A`** - a part TI's own datasheet titles *"Octal Bus Transceiver and 3.3V to 5V Shifter With 3-State Outputs"*.
-- **L377** — *LatticeXP2 family product brief*  
+- **L411** — *LatticeXP2 family product brief*  
   A clear photograph of a **NeoSD Pro AES PROG board** (`NEOSD_PRO_AES_PROG`, Rev.B) shows a **`LATTICE LFXP2-5E 5QN208C`** and, silkscreened beside two regulators, the rails **`VCC 3V3`** and **`1V2`**. LatticeXP2 runs a 1.2V core and tops out at LVCMOS 3.3 / LVTTL, with no 5V tolerance stated in the family datasheet.
-- **L393** — *FusionConverter BOM*  
+- **L427** — *FusionConverter BOM*  
   Somebody already did it, and it works
-- **L406** — *Lattice DS1022, ispMACH 4000ZE family*  
+- **L440** — *Lattice DS1022, ispMACH 4000ZE family*  
   The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for 3.3 V operation."
-- **L478** — *JLCPCB design rules*  
+- **L512** — *JLCPCB design rules*  
   2c. Manufacturing limits, from a fab's own rules
 
 ### `docs/measurement-cart.md`
@@ -532,7 +540,7 @@ Traced to a source that is not us.
   Delayed 2026-09-09.** The worldwide release moved from 12 November 2026 to **16 September 2027** — nearly a year — which PLAION attribute to a component shortage while expanding manufacturing.
 - **L523** — *arithmetic against wiki Clock*  
   The 48.33 MHz figure is not a speed difference.** It is 2 x 24.167829 = 48.3357 MHz - the AES master clock doubled. Doubling the *AES* crystal rather than the MVS 24.000 MHz means they cloned the right machine. Several people repeated it as evidence of inaccuracy; it is an internal core clock. See
-- **L658** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
+- **L672** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
   SNK and PLAION announced the **NEOGEO AES+**, shipping 12 November 2026. $249 console, ten launch cartridges at $90, a $1000 ultimate edition. It uses **custom ASICs rather than software emulation**, and is stated to be **backward-compatible with original AES cartridges**.
 
 ### `docs/prior-art.md`
@@ -644,6 +652,8 @@ Traced to a source that is not us.
 
 - **L239** — *NeoGeoFPGA-sim aes_cha.v, neo_273.v*  
   But it does need NEO-273
+- **L298** — *wiki MVS + AES cartridge pinouts, 2026-09-24*  
+  The MVS and AES connectors prove the argument
 
 ### `docs/why-the-split.md`
 

@@ -293,3 +293,31 @@ What stays hard is unchanged and is where the effort should go:
 ---
 
 *Corrections welcome and actively wanted. Open an issue.*
+
+
+## The MVS and AES connectors prove the argument `[VERIFIED: wiki MVS + AES cartridge pinouts, 2026-09-24]`
+
+This file argues that an AES cartridge must serialize its own sprite data
+because the console cannot. Comparing the two cartridge pinouts shows it
+directly, as a difference in what each connector carries:
+
+| | MVS cartridge CHA | AES cartridge CHA |
+|---|---|---|
+| Sprite data out | **`CR0`-`CR31`** - thirty-two raw lines | **`GAD0-3`, `GBD0-3`, `DOTA`, `DOTB`** - ten serialized |
+| Fix data out | `FIXD0-7` | `FIXD0-7` |
+| Video timing in | `PCK1B`, `PCK2B`, `CA4`, `2H1`, clocks | the same |
+
+**The MVS hands the motherboard raw 32-bit C data and lets the board deal with
+it. The AES will only accept it pre-serialized.** Same video timing, same fix
+path, completely different data path - and that difference is the entire reason
+NEO-ZMC2 sits on an AES CHA board.
+
+It also explains the 32-bit C width recorded in
+[`cartridge-architecture.md`](cartridge-architecture.md) without any inference:
+the MVS connector simply exposes all thirty-two lines and names them.
+
+**Why this matters beyond confirming what we already believed.** It means MVS
+prior art is not transferable on the CHA side. An MVS flash cart can be a memory
+system with address decoding; an AES one has to be that *plus* a serializer.
+Anyone reasoning from an MVS design - and much of the community's published work
+is MVS - is reasoning about a simpler problem.
