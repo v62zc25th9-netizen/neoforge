@@ -281,6 +281,40 @@ Hitachi HD68HC000 datasheet directly before any board is fabricated - and note
 our own `tCLAV` of 50 ns came from the *Motorola* document, so we have been
 designing to the fastest of the three without knowing it.
 
+### AES is the harder timing environment, and both factors push the same way `[MEASURED: 2026-09-24]`
+
+Two facts already in this file, put together for the first time:
+
+| | MVS | AES |
+|---|---|---|
+| Master clock | 24.000 MHz | **24.167829 MHz** (0.7% faster) |
+| 68000 fitted | Motorola `MC68HC000FN12` | Toshiba `TMP68HC000N-12` **or Hitachi `HD68HC000PS12`** |
+| `tCLAV` | 50 ns | 50 ns, **or 57 ns on a Hitachi** |
+
+**The AES runs a slightly faster clock and sometimes a slower CPU.** Both squeeze
+the same budget from opposite ends:
+
+| Machine | `3 x tCYC` | `tCLAV` | `tacc` (tDICL = 10 ns) |
+|---|---|---|---|
+| MVS, Motorola | 250.00 ns | 50 ns | **190.0 ns** |
+| AES, Toshiba | 248.26 ns | 50 ns | **188.3 ns** |
+| **AES, Hitachi** | 248.26 ns | **57 ns** | **181.3 ns** |
+
+**A Hitachi AES has about 8.7 ns less than a Motorola MVS** - roughly 4.6% of the
+budget. Small in absolute terms, and exactly the size of thing that separates a
+cartridge that works everywhere from one that works on most machines.
+
+**It is a coherent explanation for why multicarts glitch on AES and not MVS**,
+which is what the field reports describe. Coherent, not proven: nobody has
+demonstrated that this particular 8.7 ns is the mechanism, and there are other
+differences between the machines. But it is the arithmetic pointing the same way
+as the symptom, from two facts gathered for unrelated reasons. `[UNVERIFIED as
+causation; the component figures are individually sourced above.]`
+
+**For NeoForge this collapses to one rule already stated: design to the Hitachi
+AES.** It is the worst case of the four combinations, and a cartridge that meets
+it meets the others.
+
 ### Two caveats, both real
 
 **The speed grade is assumed, not established.** The 12.5 MHz column is the

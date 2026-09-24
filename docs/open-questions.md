@@ -528,6 +528,13 @@ old board out of new parts.** Reported: the cartridge PCB was redesigned with
 new components, moving from *"Nord Flash Parallel"* to *"Nord Flash Series"* -
 almost certainly a phonetic rendering of **NOR flash, parallel to serial**.
 `[UNVERIFIED - one garbled second-hand line, no photo or spec]`
+**Upgraded 2026-09-24: PLAION have said it themselves.** In interviews around
+the TGS showing they confirmed the cartridge moved from parallel NOR to serial
+NOR and that the board had to be redone for it, that **features are finalised
+but the PCB is not**, and - relevant to Q3 - that **the cycles are a challenge**.
+The last of those is the people building a commercial recreation saying the
+wait-state timing is hard, independently of us. `[ANECDOTAL: reported from
+video interviews, not read by us in primary form]`
 
 If that reading is right it is the most consequential item on the list, because
 serial NOR **cannot** feed a 68000 bus: command and address phases alone exceed
@@ -571,7 +578,14 @@ It is *not* established evidence that parallel NOR is hard to source, and
 NeoForge should not retire that option on this basis alone. Worth checking
 directly against distributor stock before any board decision.
 
-**On provenance.** Several people have suggested the AES+ is built on the
+**On provenance - and this is now close to first-hand.** A reviewer who spent
+extended time with the hardware and spoke to the team came away saying these are
+built on a reverse-engineered understanding of the chips, that the original
+designers are no longer in the field, and that there is no original SNK data to
+work from. That is the same conclusion this file reached from the outside on
+2026-09-18, now reported by someone who asked. `[ANECDOTAL]`
+
+Several people have suggested the AES+ is built on the
 community's reverse engineering rather than on SNK's own 1990s files. Consistent
 with what exists publicly: knowledge of these custom chips comes from silicon -
 `furrtek/SiliconRE` is traces and schematics recovered by decapping - and no SNK
