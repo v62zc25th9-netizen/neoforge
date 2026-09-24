@@ -12,7 +12,53 @@ A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**
 
 ---
 
-## RESOLVED: it was the MVS connector all along `[VERIFIED: wiki MVS cartridge pinout, 2026-09-24]`
+## VERIFIED END TO END: all 200 pins, against the wiki's own images `[VERIFIED: wiki AES cartridge pinout, 2026-09-24]`
+
+The "second human reading of the wiki images" that the open list at the bottom
+of this file has been asking for since it was written. Done, and **every one of
+the 200 pins in
+[`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv) matches.**
+
+Four faces, compared signal by signal:
+
+| Face | Result |
+|---|---|
+| PROG bottom | 50/50 match |
+| PROG top | 50/50 match, image drawn in the opposite direction |
+| CHA bottom | 50/50 match |
+| CHA top | 50/50 match, image drawn in the opposite direction |
+
+**Two faces are drawn one way and two the other**, which is exactly the quirk
+this file documents below under "the top-face images run the other way". Seeing
+it reproduce independently is a small confirmation that the orientation handling
+was right too.
+
+### Three open items retired by this
+
+**1. The wait-state pins are ours as written.** `b25`-`b27` VCC, `b28` ROMWAIT,
+`b29` PDTACK, `b30` PWAIT0, `b31` PWAIT1. The order that looked wrong next to
+the MVS connector - PDTACK second rather than fourth - **is real.** AES and MVS
+genuinely differ there. The residual oddity logged yesterday is closed, not
+explained away.
+
+**2. The four "inverter-shadowed" pins are real signals, not no-connects.**
+This file recorded `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom)
+as *"almost certainly a limitation of the extraction"* rather than genuine
+no-connects, and warned against treating them as NC. All four appear on the
+wiki's images as named signals. The inference was right.
+
+**3. The only real no-connects are CHA bottom 28 and 29**, and the images show
+`NC`, `NC` in precisely that position.
+
+### What this means for the board
+
+`hardware/lib/neoforge-aes.kicad_sym` is generated from this CSV. Until today
+that CSV rested on one machine-extracted schematic plus a transcription of wiki
+images by one reader. **It now rests on two independent readings that agree on
+every pin.** That is the difference between a pinout we believe and a pinout we
+can build from.
+
+## Also resolved: the MVS numbering `[VERIFIED: wiki MVS cartridge pinout, 2026-09-24]`
 
 **No conflict. Our AES data stands.** Recorded in full because the alarm was
 loud for a day and the resolution is worth more than the alarm.
@@ -427,7 +473,7 @@ cycles to insert. See [Q3](open-questions.md#q3).
 - [ ] Confirm the row `a` = top / row `b` = bottom naming against a physical
       cartridge or the arcade-collector board scans.
 - [ ] Resolve the four inverter-shadowed pins by tracing through the 74xx04s.
-- [ ] Second human reading of the wiki images, now that orientation is known.
+- [x] ~~Second human reading of the wiki images, now that orientation is known.~~ **Done 2026-09-24 — all 200 pins match. See the top of this file.**
 - [ ] Compare against the MVS pinout to document what the AES connector drops.
 
 ## Sources
