@@ -97,6 +97,45 @@ tied to ground.**
   qualifying throughout the docs. The accurate statement is that there is no
   dumb AES cart *that can display sprites*.
 
+### Correction to scope: "the fix-only first board" is a *pair* `[MEASURED: 2026-09-24]`
+
+Q1's design consequence says the first NeoForge PCB needs no serializer -
+P/S/M/V ROMs, address decoding, DOTA and DOTB grounded. True, but it hides a
+detail: **the S ROM is on CHA, not PROG.** `[VERIFIED: aes_cha.v instantiates
+rom_s1 and rom_m1; confirmed on the Fatal Fury Special teardown, where S1 and M1
+sit on the CHA board]` So a fix-layer test needs **two** boards fabricated, not
+one.
+
+### Board zero: PROG alone, and the watchdog is the whole test
+
+There is a smaller first step that had not occurred to us.
+
+**Fabricate the PROG board only.** P ROM, address decode, wait-state resistors,
+connector. No CHA board at all. There is no fix data, no sprites, no sound - the
+display will show nothing useful.
+
+**And it does not need to, because the test is audible.** The watchdog resets
+the console unless software kicks it by writing to `REG_DIPSW`, and that
+register is *in the console*, not on the cartridge. So:
+
+- our P code runs and kicks the watchdog → **silence**
+- our P code does not run → **the click of death**, ~3.7 Hz
+
+A binary pass/fail for "does our board satisfy the 68000 bus", with no video, no
+CHA board, and no oscilloscope. See the triage ladder in
+[`teardown-fatal-fury-special.md`](teardown-fatal-fury-special.md).
+
+**Better still, make it say something.** Have the ROM kick the watchdog for a
+known interval and then deliberately stop. Five seconds of silence followed by
+clicking proves not just that the code ran, but that it ran for a counted
+duration - a timing check with no instrument beyond your ears.
+
+**One risk to check before committing to this.** `nullbios` does not validate a
+cartridge, but a real AES BIOS may. If it refuses to hand off with no CHA board
+present, board zero will not run and the first fabrication has to be the pair
+after all. **Cheap to settle in emulation, and it should be settled before any
+board is ordered.** `[UNVERIFIED]`
+
 ### Still to confirm
 
 - [ ] Update `docs/cartridge-architecture.md` §1, which currently states the
