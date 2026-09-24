@@ -592,6 +592,46 @@ flash cart with no community. Phase 12's beta programme — a few cartridges in
 other people's hands — is the right first contact with demand, and it comes
 after hardware exists rather than before.
 
+### If boards are ever sold, the shape — sketched 2026-09-24
+
+**Two announcements, two purposes, and they are not the same event.**
+
+1. **At schematic stage: "please review this."** Aimed at the technical
+   community, not at buyers. It costs nothing, it is honest about what exists,
+   and someone spotting a mistake in a schematic is worth more than a board
+   revision at $200-500 a spin. This also addresses the accepted risk above —
+   contributors, not customers.
+2. **After the first board boots: "these work, here is how to get one."** Only
+   then is there a thing rather than a plan.
+
+**Tiers, and what each actually costs the maintainer:**
+
+| Tier | Support burden |
+|---|---|
+| **Bare PCB** | Near zero. You ship fibreglass and publish the BOM. Best fit for an open project. |
+| **PCB + case** | Moderate. Needs a case that exists — a print, a sourced shell — and adds fulfilment. |
+| **Assembled and tested** | **A different business entirely.** |
+
+**The assembled tier deserves a specific warning from this project's own
+findings.** We have documented that multicarts work on some AES consoles and not
+others; that the fitted 68000 varies between Toshiba, Hitachi and Motorola with
+7 ns of `tCLAV` between them; that revisions 3-3 and 3-4 have a known audio
+fault; and that early SNK cartridges shipped with wait-state pins floating.
+**Selling assembled units means owning all of that as a support problem** — "it
+does not work on my AES" arriving from a machine you cannot see. Bare boards
+hand that variability to someone who chose to take it on.
+
+**What the licence does and does not do.** CERN-OHL-S-2.0 permits selling
+boards; that is normal and intended. It does **not** stop anyone else making and
+selling the same board from our published files. That is the deal, not a
+loophole — but it means no financial plan should assume exclusivity.
+
+**On selling for tax reasons:** whether a project counts as a business, and what
+that implies, is jurisdiction-specific and not something this repository should
+opine on. Worth one conversation with an accountant *before* structuring
+anything around it, because the answer may change what you do rather than just
+how you record it.
+
 Budget for three board revisions. First-spin success on a 200-pin 5V edge
 connector board would be luck, not skill.
 
