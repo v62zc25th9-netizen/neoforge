@@ -733,6 +733,78 @@ Do not repeat the allegation as fact. Do watch how it resolves.
 
 ---
 
+## Q5 — Should NeoForge do anything about content protection?
+
+**Status:** `[OPEN]` · Opened 2026-09-24 · **Blocks:** nothing yet ·
+**Explicitly not a question for v0.1.**
+
+Raised because PLAION have said they want *new* games on the AES+, and a
+platform that expects new commercial releases raises the question of whether a
+cartridge should be able to lock one.
+
+### The structural problem, stated first
+
+**NeoForge's hardware is CERN-OHL-S-2.0.** Board files, schematics and HDL are
+published. Any locking mechanism we build is a mechanism we also publish, along
+with the board that implements it - so anyone can read exactly how it works and
+fabricate the same board without it. A lock whose complete design is in the
+repository is not a lock.
+
+That is not an argument against caring. It is a constraint on what "caring"
+could mean.
+
+### What actually protected Neo Geo games, and how it went
+
+The platform has a protection tradition and it was comprehensively defeated:
+
+- a **security code** in the cartridge header, and an NGH number
+- per-game protection silicon - NEO-PVC, NEO-CMC and relatives
+- encrypted C, M and V data on later titles
+- the **numbered bankswitching and graphics modes** catalogued in
+  [`../tools/README.md`](../tools/README.md), which are the protection
+
+Every one of those games runs in MAME today. The bus is fully documented, the
+console is dumb, and a cartridge is memory answering addresses. **There is no
+published example of Neo Geo cartridge protection that held.**
+
+### The case for taking it seriously anyway
+
+Worth stating properly rather than dismissing:
+
+- A developer deciding whether to fund a new AES release is making a commercial
+  judgement, and "it will be on every multicart within a week" is a real input
+  to it.
+- Protection does not have to be unbreakable to be economically useful. It has
+  to be inconvenient for long enough.
+- If the platform's future depends on new games, and new games depend on
+  developers feeling safe, then the question is upstream of anything technical.
+
+### What an open project could honestly offer instead
+
+Not prevention - **provenance**:
+
+- A **signed manifest** in the cartridge image, so a board can report who built
+  it and whether the contents match what that author published.
+- That cannot stop anyone copying a ROM. It can stop a copy being passed off as
+  the author's own build, let a homebrew developer prove a given image is
+  theirs, and give a buyer a way to check what they have.
+- It is compatible with an open design, because it relies on a private key the
+  author holds rather than on a secret in the hardware.
+
+### The risk of getting this wrong
+
+An undocumented locking mechanism in a cartridge that exists to be documented
+would undermine the thing the project is for, and would sit badly with the
+homebrew community who are its most likely users. **Whatever we do here has to
+be something we can publish in full and still have work.** Signing meets that
+test; obscurity does not.
+
+### Not deciding now
+
+Nothing in Phases 1-9 depends on this, and v0.1 is a single-game board with no
+storage to protect. Recorded so it is thought about before it is urgent rather
+than after.
+
 ## Adding a question
 
 Open one when a decision is being made on an assumption nobody has checked.
