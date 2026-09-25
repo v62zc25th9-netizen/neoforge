@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 49 |
 | Anecdotal | 20 |
-| Measured | 63 |
+| Measured | 67 |
 | Verified | 127 |
-| **Total** | **259** |
+| **Total** | **263** |
 
 ---
 
@@ -238,7 +238,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 63
+## Measured — 67
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -346,6 +346,10 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 - **L11** — *2026-09-13*  
   KiCad symbols for the two AES cartridge connectors: **CN4** on the CHA board and **CN5** on the PROG board, 100 pins each.
+- **L130**  
+  Opened and verified in KiCad 2026-09-25.** All 100 pins per
+- **L137**  
+  Netlist verified 2026-09-25** — exported from KiCad and checked
 
 ### `roadmap.md`
 
@@ -421,10 +425,20 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 - **L240** — *2026-09-15*  
   37 checks, 0 failures.
 
+### `tools/gen-kicad-sch.py`
+
+- **L65** — *2026-09-25*  
+  touched. Text clearance is what `justify` is for.
+
 ### `tools/neoforge-evidence`
 
 - **L10** — *date*  
   NeoForge tags claims with their standard of evidence - , , , - and applies the convention well
+
+### `tools/neoforge-netcheck`
+
+- **L75** — *2026-09-25*  
+  ourselves. Found on the first real netlist.
 
 ### `tools/neoforge-rominfo`
 

@@ -552,7 +552,13 @@ it unblocks Phases 7–9 while the serializer work continues in parallel.
 Only now does a PCB make sense: every function on it has already been proven on
 a board that works.
 
-- [ ] Design the edge connector and mechanical fit (verify against a real shell).
+- [~] Design the edge connector and mechanical fit (verify against a real shell).
+      **Electrically done 2026-09-25; mechanically still open.**
+      Both connector sheets are generated from the pinout CSV, open in KiCad,
+      and their exported netlists check back against that CSV at **100/100 pins,
+      no issues** (`tools/neoforge-netcheck`). Nothing in the chain — CSV to
+      symbol to sheet to netlist — was transcribed by hand. The **footprint**
+      still needs measuring off a real cartridge.
       **Started 2026-09-13:** `hardware/lib/neoforge-aes.kicad_sym` has KiCad
       symbols for both connectors, generated from the pinout CSV, with pin
       directions from the cartridge's point of view so ERC can catch bus

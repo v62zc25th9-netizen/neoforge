@@ -26,7 +26,12 @@ CSVP = os.path.join(ROOT, "docs", "data", "aes-cartridge-pinout.csv")
 # Independent copies of the geometry. If the generator's constants drift from
 # gen-kicad-symbol.py these tests should fail, so they are NOT imported.
 PITCH, PIN_LEN, HALF_W = 2.54, 5.08, 30.48
-OX, OY, GAP = 150.0, 160.0, 2.54
+OX, OY = 150.0, 160.0
+# Zero deliberately. A global label connects at its anchor, so the anchor must
+# land exactly on the pin. An earlier version offset it 2.54 mm for text
+# clearance; the sheet looked right and KiCad reported every pin unconnected.
+# This constant existing at all is the reminder.
+GAP = 0.0
 
 passed = failed = 0
 

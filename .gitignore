@@ -27,3 +27,6 @@ sim/*_tb
 
 # Python bytecode from running the tools' self-tests
 __pycache__/
+
+# KiCad netlists are build artifacts - regenerate from the schematic
+*.net

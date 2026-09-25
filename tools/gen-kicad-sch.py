@@ -58,7 +58,12 @@ HALF_W = 30.48
 
 ORIGIN_X = 150.0      # where the connector body sits on the sheet, mm
 ORIGIN_Y = 160.0
-LABEL_GAP = 2.54      # how far past the pin end the label text starts
+# Zero, and it must stay zero. A global label connects at its anchor point, so
+# the anchor has to land exactly on the pin's connection point. The first
+# version offset it by 2.54 mm "so the text clears the pin" - the sheet looked
+# perfect and KiCad named every net unconnected-(J1-D0-Pada3), because nothing
+# touched. Text clearance is what `justify` is for. `[MEASURED: 2026-09-25]`
+LABEL_GAP = 0.0
 
 LIB = "neoforge-aes"
 CSV_DEFAULT = "docs/data/aes-cartridge-pinout.csv"

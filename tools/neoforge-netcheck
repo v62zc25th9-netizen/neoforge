@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import glob
 import json
 import os
 import re
@@ -68,6 +69,11 @@ def canon(net: str) -> str:
     n = re.sub(r"^Net-", "", n)
     n = n.strip().upper()
     n = n.replace(" ", "_")
+    # KiCad reserves "/" as the hierarchical path separator, so a signal like
+    # R/W cannot be a net name and gen-kicad-sch.py writes it as R_W. Treat the
+    # two spellings as one, or every schematic fails on a signal we renamed
+    # ourselves. Found on the first real netlist. `[MEASURED: 2026-09-25]`
+    n = n.replace("/", "_")
     # active-low spellings, all equivalent
     n = re.sub(r"^[N~!/]", "", n)
     n = re.sub(r"_N$|_L$", "", n)
@@ -133,9 +139,14 @@ def attr(node, key, default=None):
 
 
 def load_netlist(path: str):
-    """Return {ref: {pin: netname}} from a KiCad .net file."""
+    """Return ({ref: {pin: netname}}, {ref: value}) from a KiCad .net file."""
     with open(path, encoding="utf-8") as f:
         tree = sexp(f.read())
+    values = {}
+    for comp in find_all(tree, "comp"):
+        r = attr(comp, "ref")
+        if r:
+            values[r] = attr(comp, "value") or ""
     pins = defaultdict(dict)
     for net in find_all(tree, "net"):
         name = attr(net, "name")
@@ -146,10 +157,22 @@ def load_netlist(path: str):
             pin = attr(node, "pin")
             if ref and pin:
                 pins[ref][str(pin)] = name
-    return pins
+    return pins, values
 
 
 # ---- the check -------------------------------------------------------------
+
+def board_from_value(value: str):
+    """Identify the connector from the symbol's Value, e.g. AES_CN5_PROG.
+
+    Guessing by best-match score is fine when the schematic is nearly right and
+    useless when it is nearly wrong - with everything mismatched the scores tie
+    and the tool blames the wrong board, which is exactly the moment the user
+    needs a straight answer.
+    """
+    m = re.match(r"AES_(CN\d)_(PROG|CHA)$", (value or "").strip())
+    return (m.group(2), m.group(1)) if m else None
+
 
 def check(expected, actual_pins, ref, board_hint=None):
     """Score this connector against every candidate board/connector; keep the best."""
@@ -194,8 +217,28 @@ def main():
 
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     csv_path = a.csv or os.path.join(root, CSV_DEFAULT)
+
+    if not os.path.exists(a.netlist):
+        print(f"netcheck: no such file: {a.netlist}")
+        found = sorted(glob.glob(os.path.join(root, "**", "*.net"),
+                                 recursive=True))[:10]
+        if found:
+            print("\nNetlists in the repository:")
+            for f in found:
+                print(f"  {os.path.relpath(f, root)}")
+        else:
+            print("\nNo .net file anywhere in the repository.")
+            print("Export one from KiCad: File -> Export -> Netlist, KiCad format.")
+        return 1
+
     expected = load_expected(csv_path)
-    nets = load_netlist(a.netlist)
+    try:
+        nets, values = load_netlist(a.netlist)
+    except (UnicodeDecodeError, IndexError, ValueError) as e:
+        print(f"netcheck: {a.netlist} does not parse as a KiCad netlist ({e}).")
+        print("          Export with File -> Export -> Netlist and pick the")
+        print("          KiCad format, not Spice or Cadstar.")
+        return 1
 
     # A connector is any component carrying a pin name the pinout uses.
     known_pins = set()
@@ -206,7 +249,16 @@ def main():
     if a.ref:
         candidates = [r for r in candidates if r in a.ref]
 
-    results = [check(expected, nets[r], r, a.board) for r in sorted(candidates)]
+    results = []
+    for r in sorted(candidates):
+        hint = a.board
+        ident = board_from_value(values.get(r, ""))
+        if ident and not hint:
+            hint = ident[0]
+        res = check(expected, nets[r], r, hint)
+        if res:
+            res["identified"] = bool(ident)
+        results.append(res)
     results = [r for r in results if r]
 
     if a.json:
@@ -223,7 +275,13 @@ def main():
         head = f"{r['ref']}  ->  {r['board']} {r['connector']}"
         print(head)
         print("-" * len(head))
+        how = "from the symbol's Value" if r.get("identified") else "by best match - UNRELIABLE"
+        print(f"  identified {how}")
         print(f"  {r['matched']}/{r['pins']} pins match the pinout")
+        if r["matched"] < r["pins"] // 2:
+            print("  NOTE: almost nothing matches. Before reading the list below,")
+            print("        check the labels actually touch the pins - KiCad names an")
+            print("        unconnected pin's net 'unconnected-(REF-PINNAME-PadNN)'.")
         if not r["issues"]:
             print("  no issues")
         for pin, signal, got, why in r["issues"]:

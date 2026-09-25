@@ -115,6 +115,57 @@ as insurance.
 Nothing in the BOM above needs a CPLD at all — a fix-only cartridge has no
 serializer to implement.
 
+## `neoforge-prog-connector.kicad_sch` / `neoforge-cha-connector.kicad_sch`
+
+The connector sheets. **Generated. Do not hand-edit — and do not save them from
+KiCad**, which will rewrite the format and leave the file disagreeing with the
+generator. Changes go in the CSV.
+
+```sh
+python3 tools/gen-kicad-sch.py PROG hardware/neoforge-prog-connector.kicad_sch
+python3 tools/gen-kicad-sch.py CHA  hardware/neoforge-cha-connector.kicad_sch
+python3 tools/test_gen_sch.py          # 20 checks
+```
+
+**Opened and verified in KiCad 2026-09-25.** `[MEASURED]` All 100 pins per
+connector render with the correct net on the correct pin, checked by eye against
+[`../docs/data/aes-cartridge-pinout.csv`](../docs/data/aes-cartridge-pinout.csv)
+— including `b25`-`b27` VCC and `b28`-`b31` ROMWAIT/PDTACK/PWAIT0/PWAIT1, the
+ordering that [`../docs/aes-connector.md`](../docs/aes-connector.md) spent three
+days confirming.
+
+**Netlist verified 2026-09-25** `[MEASURED]` — exported from KiCad and checked
+back against the CSV:
+
+```
+J1  ->  PROG CN5
+  identified from the symbol's Value
+  100/100 pins match the pinout
+  no issues
+```
+
+**Nobody transcribed anything.** The CSV was verified pin for pin against two
+independent sources; the symbol is generated from it; the sheet is generated from
+it; and `tools/neoforge-netcheck` will assert the exported netlist still agrees.
+The one place a human hand enters is the logic sheet, which is where judgement
+belongs.
+
+Two things learned getting here, both recorded in the generator:
+
+- **Symbol libraries measure Y upwards, schematic sheets measure Y downwards.**
+  Get it backwards and the connector mirrors top to bottom, every label lands on
+  the wrong pin, and it looks entirely plausible.
+- **A sheet must embed the symbols it uses.** The first version emitted an empty
+  `lib_symbols` and KiCad drew a `??` placeholder. Embedding also makes the sheet
+  self-contained, so it opens with no library configuration.
+- **A global label connects at its anchor.** The first version offset each label
+  2.54 mm from its pin so the text would clear it. The sheet rendered perfectly
+  and KiCad named every net `unconnected-(J1-D0-Pada3)`, because nothing
+  touched. Text clearance is what `justify` is for. **This is the one that
+  matters**: a schematic that looks right and connects nothing is precisely what
+  `neoforge-netcheck` exists to catch, and it caught it on first contact with a
+  real netlist.
+
 ## What is not here yet
 
 - **The footprint.** Pad geometry, pitch and mechanical outline need measuring

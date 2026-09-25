@@ -17,6 +17,7 @@ from __future__ import annotations
 import csv
 import importlib.util
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -166,8 +167,25 @@ check("/AS == AS", nc.family("/AS") == nc.family("AS"))
 check("AS_N == AS", nc.family("AS_N") == nc.family("AS"))
 check("+5V == VCC", nc.family("+5V") == nc.family("VCC"))
 check("VSS == GND", nc.family("VSS") == nc.family("GND"))
+check("R/W == R_W", nc.family("R/W") == nc.family("R_W"))
+check("L in == L_in", nc.family("L in") == nc.family("L_in"))
 check("D0 != D1", nc.family("D0") != nc.family("D1"))
 check("VCC != GND", nc.family("VCC") != nc.family("GND"))
+
+# ---- 10. round trip: the generator's net names must satisfy the checker ----
+print("\n10. round trip against gen-kicad-sch's naming")
+def gen_netname(sig):
+    """Mirror of netname() in gen-kicad-sch.py."""
+    return re.sub(r"\s+", "_", sig.strip().replace("/", "_"))
+
+mismatched = [s for s in set(prog.values()) | set(cha.values())
+              if s.upper() != "NC" and nc.family(gen_netname(s)) != nc.family(s)]
+check("every CSV signal survives the generator's renaming",
+      not mismatched, str(sorted(mismatched)[:5]))
+
+renamed = {p: gen_netname(s) for p, s in prog.items()}
+rc, out = run(netlist("J1", renamed))
+check("a sheet built with generated names passes clean", rc == 0, out[:300])
 
 print()
 print(f"{passed + failed} checks, {failed} failures")
