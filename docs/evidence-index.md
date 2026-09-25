@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 49 |
 | Anecdotal | 20 |
-| Measured | 59 |
+| Measured | 61 |
 | Verified | 127 |
-| **Total** | **255** |
+| **Total** | **257** |
 
 ---
 
@@ -66,21 +66,21 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/open-questions.md`
 
-- **L137**  
-  One risk to check before committing to this.** `nullbios` does not validate a cartridge, but a real AES BIOS may. If it refuses to hand off with no CHA board present, board zero will not run and the first fabrication has to be the pair after all. **Cheap to settle in emulation, and it should be settled before any board is ordered.
-- **L171**  
+- **L152**  
+  So the real answer needs hardware**, and the cheapest form of it is a CHA connector left empty on a real AES with a working PROG cartridge in place - which is Phase 4, not something we can front-run. Board zero stays an attractive idea with an unresolved precondition.
+- **L186**  
   Status:** · Carried over from `CLAUDE.md` · **Blocks:** Phase 6
-- **L207**  
+- **L222**  
   Neither project states a version anywhere but the licence file, which under GPLv2 section 9 arguably lets a recipient choose any version. See `LICENSE.md`. — **ask Furrtek rather than assume.** This is the single cheapest
-- **L241**  
+- **L256**  
   Status:** · Opened 2026-09-06 · **Blocks:** Phases 7, 8, 9 ·
-- **L297**  
+- **L312**  
   What is still unknown** is the part that actually gates the design: the *access time* a cartridge must meet to be read at zero added wait states. That is a nanosecond figure nobody has published, and it stays until
-- **L346**  
+- **L361**  
   arbitrating shared memory — has to hide that latency completely or assert wait states. This is a plausible reason Terraonion's NeoSD carries two FPGAs and substantial RAM rather than streaming on demand.
-- **L360** — *the wiki's own tag*  
+- **L375** — *the wiki's own tag*  
   shorter than it sounds.** The watchdog is a frame counter kicked by writing any value to `REG_DIPSW`, usually from the VBlank routine. The wiki puts the timeout at roughly 8-20 frames and records a measurement of a 0.128762 s loop sometimes resetting the system - about 7.6 frames - with a continuous reset cycle running at 3.7 Hz, ~135 ms apart. **The wiki tags its own timings unverified**, and ...
-- **L728**  
+- **L743**  
   Current guess: the second.** One chip in the console beats one
 
 ### `docs/prior-art.md`
@@ -133,11 +133,11 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `roadmap.md`
 
-- **L205**  
+- **L227**  
   docs/rom-format.md` lays out the `.neo` container from two independent implementations (`romtool.py` and `city41/neosdconv`) and records where they disagree: `neosdconv` swaps the halves of a P region that is exactly 2 MB, and `romtool.py` does not. If our reading is right, a homebrew ROM with a 2 MB P built by `romtool.py` runs with its banks transposed. and cheap to test.
-- **L251**  
+- **L273**  
   convention is applied well *locally* - 119 / 35 / 12 / 46
-- **L253**  
+- **L275**  
   convention is applied well *locally* - 119 / 35 / 12 / 46 occurrences across the tree as of 2026-09-15 - but nothing lists them in one place. Only six of the twenty-eight lines carrying
 
 ### `sim/harness/mkdata.py`
@@ -199,11 +199,11 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ### `docs/open-questions.md`
 
-- **L625**  
+- **L640**  
   On provenance - and this is now close to first-hand.** A reviewer who spent extended time with the hardware and spoke to the team came away saying these are built on a reverse-engineered understanding of the chips, that the original designers are no longer in the field, and that there is no original SNK data to work from. That is the same conclusion this file reached from the outside on ...
-- **L652**  
+- **L667**  
   A second audio report, and the check it needs first.** After the
-- **L755** — *press reporting of third-party comment, 2026*  
+- **L770** — *press reporting of third-party comment, 2026*  
   Press coverage reports that the AES+ ASICs are "based on existing code from FPGA developers like Furrtek and Jotego", with one developer quoted describing the result as a fragmented version of open FPGA designs.
 
 ### `docs/prior-art.md`
@@ -221,7 +221,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ### `roadmap.md`
 
-- **L250**  
+- **L272**  
   → [`docs/evidence-index.md`](docs/evidence-index.md), which carries the current counts. Deliberately not repeated here: writing a tally into a tracked file changes the tally. `--check` fails on a stale index. Original note follows. - [x] ~~**An evidence index.**~~ The / / /
 
 ### `tools/README.md`
@@ -238,7 +238,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 59
+## Measured — 61
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -283,13 +283,13 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   development cartridge. The AES BIOS boot animation is sprite-based, so expect it to be absent or backdrop-coloured; the system should still run. - Nothing here has been checked against real silicon. It becomes
 - **L100** — *2026-09-24*  
   Correction to scope: "the fix-only first board" is a *pair
-- **L144** — *GnGeo AES mode, 2026-09-09*  
+- **L159** — *GnGeo AES mode, 2026-09-09*  
   — see `rom/`. An opaque fix field
-- **L353** — *2026-09-20*  
+- **L368** — *2026-09-20*  
   shorter than it sounds.** The watchdog is a frame
-- **L391** — *2026-09-23*  
+- **L406** — *2026-09-23*  
   Answered from real cartridges
-- **L434** — *2026-09-20*  
+- **L449** — *2026-09-20*  
   Somebody has already built the stimulus rig
 
 ### `docs/prior-art.md`
@@ -353,18 +353,22 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   collected in `rom/RESULTS.md`. Anyone with an AES and any flash cart can test most of Q1 with no soldering. - [x] Exercise the V ROM — `rom-sound/` plays one
 - **L157** — *2026-09-10*  
   rom/sound-driver.s` supplies the Z80 command
-- **L166** — *2026-09-05*  
+- **L166** — *2026-09-25*  
+  Homebrew must come FIRST on PATH** — the toolchain
+- **L188** — *2026-09-05*  
   macOS setup notes** — gotchas hit during the first
-- **L250**  
+- **L272**  
   → [`docs/evidence-index.md`](docs/evidence-index.md), which carries the current counts. Deliberately not repeated here: writing a tally into a tracked file changes the tally. `--check` fails on a stale index. Original note follows. - [x] ~~**An evidence index.**~~ The / / /
-- **L309** — *2026-09-05, 2026-09-10*  
+- **L331** — *2026-09-05, 2026-09-10*  
   from simulation. `zmc2_dot` (the sprite datapath): bitplane layout, `H` as shift direction rather than a separate path, `DOTA`/`DOTB` as opacity only. `zmc2_zmc` (the Z80 mapper): four bank windows, programmed by an I/O *read* rather than a write, no reset on the registers, and an alias at `F800`. 65 checks across two
-- **L460**  
+- **L482**  
   [ ] Publish captures and analysis under `docs/measured/` with
 
 ### `rom/Makefile`
 
-- **L182** — *2026-09-20*  
+- **L151** — *2026-09-25*  
+  WHAT THIS CAN AND CANNOT TELL US
+- **L204** — *2026-09-20*  
   difference cost us an evening:
 
 ### `rom/README.md`
@@ -534,23 +538,23 @@ Traced to a source that is not us.
   When `CLEARING` is asserted, `DATA_IN` is forced to all ones — palette entry `0xFFF`, the Neo Geo backdrop colour — regardless of what `COLOR_INDEX` (that is, `GAD`/`GBD`) happens to be.
 - **L79** — *HDL*  
   , not . NeoGeoFPGA-sim is an excellent
-- **L183** — *repo page, folder list, GPL-2.0 license*  
+- **L198** — *repo page, folder list, GPL-2.0 license*  
   NeoGeoFPGA-sim. The most work, and the only path that makes NeoForge's serializer a contribution rather than a dependency. 3. **`neogeodev/NeoChips` NEO-ZMC2.** An existing replacement in programmable logic, GPL-2.0, buyable assembled or built from published sources.
-- **L268** — *aes_prog.v, neo_c1.v, c1_wait.v*  
+- **L283** — *aes_prog.v, neo_c1.v, c1_wait.v*  
   NEO-C1 consumes them and inserts wait cycles into 68000 bus accesses accordingly (`System/c1_wait.v`).
-- **L274** — *wiki 68k memory map, 2026-09-08*  
+- **L289** — *wiki 68k memory map, 2026-09-08*  
   Partial answer — the numbers
-- **L335** — *Micron M29EW / DigiKey listing*  
+- **L350** — *Micron M29EW / DigiKey listing*  
   conservative choice for early hardware. **Confirmed with a part, 2026-09-23.** Vortex's flash adapter boards carry a **`JS28F512`** footprint - Micron/Numonyx M29EW, **512 Mbit (64 MB) parallel NOR in 56-TSOP at 95 ns**, and current distributor stock lists it. That is comfortably inside the
-- **L513** — *Time Extension, 2026*  
+- **L528** — *Time Extension, 2026*  
   The ten re-released games "are confirmed to be compatible with original Neo > Geo AES systems, too."
-- **L524** — *PLAION press release, 2026*  
+- **L539** — *PLAION press release, 2026*  
   Delayed 2026-09-09.** The worldwide release moved from 12 November 2026 to **16 September 2027** — nearly a year — which PLAION attribute to a component shortage while expanding manufacturing.
-- **L562** — *arithmetic against wiki Clock*  
+- **L577** — *arithmetic against wiki Clock*  
   The 48.33 MHz figure is not a speed difference.** It is 2 x 24.167829 = 48.3357 MHz - the AES master clock doubled. Doubling the *AES* crystal rather than the MVS 24.000 MHz means they cloned the right machine. Several people repeated it as evidence of inaccuracy; it is an internal core clock. See
-- **L711** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
+- **L726** — *PLAION/SNK announcement as reported by multiple outlets, 2026*  
   SNK and PLAION announced the **NEOGEO AES+**, shipping 12 November 2026. $249 console, ten launch cartridges at $90, a $1000 ultimate edition. It uses **custom ASICs rather than software emulation**, and is stated to be **backward-compatible with original AES cartridges**.
-- **L809** — *our own rom-format.md*  
+- **L824** — *our own rom-format.md*  
   NeoSD ships new games and has no technical lock
 
 ### `docs/prior-art.md`
@@ -695,13 +699,13 @@ Traced to a source that is not us.
   1. There is no dumb AES cartridge — that can display sprites.** On AES the sprite serializer (PRO-CT0 / NEO-ZMC2) lives inside the cartridge, not on the motherboard.
 - **L78** — *PLAION press release, 2026*  
   Unrelated to the audit, one dated claim in `docs/open-questions.md` Q4 and `docs/prior-art.md` had become false: the AES+ release slipped from 12 November 2026 to **16 September 2027**, which PLAION attribute to a component shortage.
-- **L250**  
+- **L272**  
   → [`docs/evidence-index.md`](docs/evidence-index.md), which carries the current counts. Deliberately not repeated here: writing a tally into a tracked file changes the tally. `--check` fails on a stale index. Original note follows. - [x] ~~**An evidence index.**~~ The / / /
-- **L348** — *FusionConverter BOM*  
+- **L370** — *FusionConverter BOM*  
   implementation, on a low-voltage 5 V-tolerant part.** Both GPL-2.0 options stay available as *components* and unusable as sources: NeoChips' NEO-ZMC2 can be bought or built, FusionConverter's bitstream can be programmed, neither can be read into our HDL. That leaves our own implementation, which we can already write — `docs/serializer.md` characterises both halves from the GPL-3.0 lineage with a ...
-- **L369** — *yAronet dev cart thread*  
+- **L391** — *yAronet dev cart thread*  
   The technique is established: desolder the mask ROMs from a donor AES cart and fit EPROMs in their place. Documented with photographs on working NEO-AEG PROGGS / NEO-AEG CHA42G-4 boards.
-- **L437** — *docs/data/aes-cartridge-pinout.csv*  
+- **L459** — *docs/data/aes-cartridge-pinout.csv*  
   coarse knob and can sweep wait states directly.
 
 ### `rom-sound/README.md`

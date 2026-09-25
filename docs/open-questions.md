@@ -130,11 +130,26 @@ known interval and then deliberately stop. Five seconds of silence followed by
 clicking proves not just that the code ran, but that it ran for a counted
 duration - a timing check with no instrument beyond your ears.
 
-**One risk to check before committing to this.** `nullbios` does not validate a
-cartridge, but a real AES BIOS may. If it refuses to hand off with no CHA board
-present, board zero will not run and the first fabrication has to be the pair
-after all. **Cheap to settle in emulation, and it should be settled before any
-board is ordered.** `[UNVERIFIED]`
+**Correction 2026-09-25: emulation cannot settle this, and saying it could was
+wrong.** Two limits, found by trying:
+
+1. **`romtool` will not describe a cartridge without all five regions.** `-m`,
+   `-s` and `-c` are mandatory. So the emulator cannot be asked about an
+   *absent* CHA board, only about **empty** regions - and those are not the
+   same thing. A missing board leaves the connector's inputs floating; an empty
+   region is zeros.
+2. **`nullbios` does not validate a cartridge and a real AES BIOS may.** Even a
+   clean pass under nullbios says nothing about the machine we care about.
+
+**What the test in `rom/` (`make boardzero`) can still do** is answer the weaker
+question - does the boot path need meaningful S/M/C *content*? A failure there
+kills board zero for free. A pass means only that the data is not needed, not
+that the chips can be absent.
+
+**So the real answer needs hardware**, and the cheapest form of it is a CHA
+connector left empty on a real AES with a working PROG cartridge in place -
+which is Phase 4, not something we can front-run. Board zero stays an attractive
+idea with an unresolved precondition. `[UNVERIFIED]`
 
 ### Still to confirm
 

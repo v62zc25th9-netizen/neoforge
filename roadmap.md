@@ -163,6 +163,28 @@ Prove the software half of the chain end to end before spending a dollar.
 **Exit:** a ROM we wrote, booting in two independent emulators, buildable from
 a clean checkout by a stranger.
 
+**Homebrew must come FIRST on PATH** `[MEASURED: 2026-09-25]` — the toolchain
+broke three weeks after it was working, with `romtool.py` dying on
+`AttributeError: module 'typing' has no attribute 'TypeAlias'`. That attribute
+arrived in **Python 3.10**, and the interpreter being used was macOS's own
+**3.9.6**, because `/opt/homebrew/bin` sat at the *end* of `PATH`:
+
+    /usr/local/bin:...:/usr/bin:/bin:/usr/sbin:/sbin:...:/opt/homebrew/bin
+
+`/opt/homebrew/bin/python3` was a perfectly good symlink to 3.14.7 and never got
+consulted. ngdevkit's wrapper `exec`s `romtool.py`, whose shebang is
+`#!/usr/bin/env python3`, so PATH decides - and `PYTHONPATH` in that same wrapper
+points at a **python3.14** site-packages, meaning ngdevkit was built against 3.14
+and was simply handed the wrong interpreter.
+
+**Fix:** `eval "$(/opt/homebrew/bin/brew shellenv)"` in `~/.zprofile`, which
+prepends. Look for a line that *appends* `/opt/homebrew/bin` and remove it.
+A one-shot workaround is `PATH="/opt/homebrew/bin:$PATH" make ...`.
+
+**Worth recording because nothing about the error mentions PATH**, the symptom
+appeared without anyone touching ngdevkit, and Homebrew being last shadows every
+system binary - so this breaks things far beyond this project.
+
 **macOS setup notes** `[MEASURED: 2026-09-05]` — gotchas hit during the first
 real install, worth capturing before they are forgotten:
 

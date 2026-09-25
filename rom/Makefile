@@ -145,30 +145,52 @@ $(CART): $(PROM) $(SROM) $(MROM) $(CROM1) $(CROM2) $(VROM)
 
 # --- board zero: what a PROG-only cartridge looks like ------------------------
 # docs/open-questions.md Q1 proposes fabricating the PROG board alone as the
-# smallest possible first hardware. PROG carries P and V; C, S and M are all on
-# CHA. So a PROG-only cartridge is this set with no -c, -s or -m.
+# smallest possible first hardware. PROG carries P and V; C, S and M all live on
+# CHA.
 #
-# The question this answers is narrow and worth stating exactly: **will the
-# machine hand off to a cartridge with no CHA half present at all?**  If romtool
-# or GnGeo refuses outright, board zero is dead and the first fabrication has to
-# be the PROG/CHA pair.
+# WHAT THIS CAN AND CANNOT TELL US  `[MEASURED: 2026-09-25]`
 #
-# What it CANNOT answer: whether a *real* AES BIOS accepts it. nullbios does not
-# validate a cartridge and a real BIOS may. This test can therefore falsify the
-# idea but not confirm it. Treat a pass as "not ruled out", not as "works".
+# romtool refuses to describe a cartridge without all five regions - -m, -s and
+# -c are mandatory. So we cannot ask the emulator about an *absent* CHA board;
+# we can only give it empty ones. Those are not the same thing. A missing board
+# means floating inputs at the connector. An empty region means zeros.
+#
+# So this target answers the weaker question: **does the boot path need
+# meaningful S/M/C content, or is it happy with empty regions?**
+#
+#   fails here  -> board zero is dead, no hardware needed to know it
+#   passes here -> the DATA is not needed. Says nothing about the CHIPS being
+#                  absent, and nothing about a real AES BIOS, which may validate
+#                  a cartridge where nullbios does not.
+#
+# Recorded plainly because a pass is easy to over-read, and over-reading it
+# would put a board on order for the wrong reason.
 BOARDZERO := $(BUILD)/boardzero
+BZ_S      := $(BOARDZERO)/empty.s1
+BZ_M      := $(BOARDZERO)/empty.m1
+BZ_C1     := $(BOARDZERO)/empty.c1
+BZ_C2     := $(BOARDZERO)/empty.c2
 
-boardzero: $(PROM) $(VROM)
-	@mkdir -p $(BOARDZERO)
+$(BOARDZERO):
+	@mkdir -p $@
+
+# Empty, correctly sized regions - the closest the toolchain allows to "no CHA".
+$(BZ_S) $(BZ_M) $(BZ_C1) $(BZ_C2): | $(BOARDZERO)
+	: > $@
+	$(call pad,$@,$(S_SIZE))
+
+boardzero: $(PROM) $(VROM) $(BZ_S) $(BZ_M) $(BZ_C1) $(BZ_C2)
 	$(ROMTOOL) -b hash -f gngeo -p $(PROM) -v $(VROM) \
-	  -n $(GAMEROM) -l "NeoForge board zero - PROG only" \
+	  -s $(BZ_S) -m $(BZ_M) -c $(BZ_C1) $(BZ_C2) \
+	  -n $(GAMEROM) -l "NeoForge board zero - empty CHA regions" \
 	  -x gngeo.data=$(GNGEO_DATA) -o $(BOARDZERO)/gngeo_data.zip
 	$(ROMTOOL) -b cartridge -f zip -p $(PROM) -v $(VROM) \
+	  -s $(BZ_S) -m $(BZ_M) -c $(BZ_C1) $(BZ_C2) \
 	  -n $(GAMEROM) -x "zip.comment=" -o $(BOARDZERO)/$(GAMEROM).zip
 	cp $(SHAREDIR)/aes.zip $(SHAREDIR)/neogeo.zip $(BOARDZERO)/
 	@echo
-	@echo "board zero set built in $(BOARDZERO) - P and V only, no C/S/M"
-	@echo "run it with:  make boardzero-run"
+	@echo "board zero set built - real P and V, empty S/M/C"
+	@echo "run:  make boardzero-run"
 
 boardzero-run: boardzero
 	$(GNGEO) --scale 3 --no-resize --system home -i $(BOARDZERO) \
