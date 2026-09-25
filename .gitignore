@@ -24,3 +24,6 @@ sim/*_tb
 *.c2
 *.v1
 *.fix
+
+# Python bytecode from running the tools' self-tests
+__pycache__/

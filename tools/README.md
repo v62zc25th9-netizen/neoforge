@@ -190,6 +190,47 @@ per title, and no way to derive either from region sizes. Exactly the database
 keyed by game that `rominfo` says it would need and does not have. The honest
 refusal holds.
 
+## `neoforge-netcheck`
+
+```sh
+tools/neoforge-netcheck board.net              # check every connector found
+tools/neoforge-netcheck board.net --ref J1     # just this designator
+tools/neoforge-netcheck board.net --json
+```
+
+Reads a KiCad netlist and asserts every cartridge-connector pin carries the net
+[`../docs/data/aes-cartridge-pinout.csv`](../docs/data/aes-cartridge-pinout.csv)
+says it should. Exit 1 on any mismatch, with "Do not fabricate."
+
+**Why it exists.** The CSV generates the KiCad symbol and is now verified pin
+for pin against two independent sources. None of that protects a *schematic*
+from wiring the right pin to the wrong net - one transposition out of 200 on a
+5V edge connector, which is the error that costs a board spin and possibly a
+console. This closes the loop: CSV → symbol → schematic → netlist → back to the
+CSV.
+
+It checks for missing pins, pins the pinout does not contain, wrong nets, and
+**NC pins that are quietly connected** - that last being the kind of thing that
+only shows up as smoke.
+
+Net names are compared leniently, because schematics legitimately decorate them.
+Case is ignored; a leading `/` or `Net-` is stripped; `nAS`, `/AS`, `AS_N` and
+`~AS` all equal `AS`; and power nets match as families, so `VCC`/`+5V`/`VDD` are
+one net and `GND`/`VSS` another.
+
+## `test_netcheck.py`
+
+```sh
+python3 tools/test_netcheck.py
+```
+
+27 checks, 0 failures. `[MEASURED: 2026-09-25]`
+
+Builds synthetic netlists from the real CSV, **damages them in specific ways**,
+and asserts the checker notices: two pins transposed, a pin missing, a pin that
+should not exist, an NC pin wired to something. A checker that only passes good
+input is worth nothing, so most of these tests are failures it must catch.
+
 ## `test_rominfo.py`
 
 ```sh

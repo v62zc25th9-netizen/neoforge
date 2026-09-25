@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 49 |
 | Anecdotal | 20 |
-| Measured | 58 |
+| Measured | 59 |
 | Verified | 127 |
-| **Total** | **254** |
+| **Total** | **255** |
 
 ---
 
@@ -238,7 +238,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 58
+## Measured — 59
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -364,7 +364,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ### `rom/Makefile`
 
-- **L149** — *2026-09-20*  
+- **L182** — *2026-09-20*  
   difference cost us an evening:
 
 ### `rom/README.md`
@@ -408,7 +408,9 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   At exactly 2 MB of P, **`romtool.py` and `neosdconv` produce different `.neo` files from identical input** — `neosdconv` swaps the two megabytes and `romtool.py` does not. Verified by experiment, not by reading.
 - **L153**  
   Walks the tree and collects every / / /
-- **L199** — *2026-09-15*  
+- **L227** — *2026-09-25*  
+  27 checks, 0 failures.
+- **L240** — *2026-09-15*  
   37 checks, 0 failures.
 
 ### `tools/neoforge-evidence`

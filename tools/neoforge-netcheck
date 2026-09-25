@@ -1,0 +1,243 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+"""Check a KiCad netlist against the AES cartridge pinout CSV.
+
+    tools/neoforge-netcheck board.net                  # check every connector found
+    tools/neoforge-netcheck board.net --ref J1         # only this designator
+    tools/neoforge-netcheck board.net --board PROG     # assume this board
+    tools/neoforge-netcheck board.net --json
+
+Exit 0 if every connector pin carries the net the CSV says it should, 1 otherwise.
+
+WHY THIS EXISTS
+---------------
+`hardware/lib/neoforge-aes.kicad_sym` is generated from
+docs/data/aes-cartridge-pinout.csv, and that CSV is now verified pin for pin
+against two independent sources. None of that protects a *schematic* from
+connecting the right pin to the wrong net - one transposition out of 200 on a
+5V edge connector, which is the error that costs a board spin and possibly a
+console.
+
+So this closes the loop: the CSV generates the symbol, the schematic uses the
+symbol, and this asserts the schematic's netlist still agrees with the CSV.
+
+WHAT IT CHECKS
+--------------
+For each connector instance it finds:
+  * every pin in the CSV is present in the netlist        (missing pin)
+  * no pin exists that the CSV does not know about        (unexpected pin)
+  * each pin's net name matches the CSV signal            (wrong net)
+
+Net names are compared leniently, because schematics legitimately decorate
+them: case is ignored, a leading "/" or "Net-" is stripped, and the active-low
+spellings NEO uses interchangeably - nAS, /AS, AS_N, ~AS - all compare equal to
+AS. Power nets are matched as a family: VCC, +5V, +5VDC and VDD are one net, as
+are GND, GNDD and VSS.
+
+A pin the CSV calls NC must be unconnected or on a net whose name looks like a
+no-connect. Anything else is reported, because an NC pin quietly wired to
+something is exactly the sort of thing that only shows up as smoke.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import re
+import sys
+from collections import defaultdict
+
+CSV_DEFAULT = "docs/data/aes-cartridge-pinout.csv"
+
+POWER = {
+    "VCC": {"VCC", "+5V", "+5VDC", "VDD", "5V", "VCC5", "P5V"},
+    "GND": {"GND", "GNDD", "VSS", "AGND", "0V"},
+}
+NC_LIKE = re.compile(r"^(NC|UNCONNECTED|NOCONNECT|NO_CONNECT)", re.I)
+
+
+def canon(net: str) -> str:
+    """Reduce a net name to something comparable."""
+    if net is None:
+        return ""
+    n = net.strip()
+    n = re.sub(r"^/+", "", n)                 # hierarchical leading slash
+    n = re.sub(r"^Net-\(.*?\)$", "", n)       # KiCad's auto names carry no meaning
+    n = re.sub(r"^Net-", "", n)
+    n = n.strip().upper()
+    n = n.replace(" ", "_")
+    # active-low spellings, all equivalent
+    n = re.sub(r"^[N~!/]", "", n)
+    n = re.sub(r"_N$|_L$", "", n)
+    n = n.replace("~", "").replace("{", "").replace("}", "")
+    return n
+
+
+def family(net: str) -> str:
+    """Map a canonical net onto a power family where it belongs to one."""
+    c = canon(net)
+    for fam, members in POWER.items():
+        if c in {canon(m) for m in members}:
+            return fam
+    return c
+
+
+def load_expected(csv_path: str):
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    out = defaultdict(dict)      # (board, connector) -> {pin: signal}
+    for r in rows:
+        out[(r["board"], r["connector"])][r["pin"].strip()] = r["signal"].strip()
+    return out
+
+
+# ---- a small s-expression reader, enough for a KiCad netlist ---------------
+
+def sexp(text: str):
+    tok = re.findall(r'\(|\)|"(?:[^"\\]|\\.)*"|[^\s()]+', text)
+    def parse(i):
+        out = []
+        while i < len(tok):
+            t = tok[i]
+            if t == "(":
+                sub, i = parse(i + 1)
+                out.append(sub)
+            elif t == ")":
+                return out, i + 1
+            else:
+                if t.startswith('"'):
+                    t = t[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+                out.append(t)
+                i += 1
+        return out, i
+    tree, _ = parse(0)
+    return tree
+
+
+def find_all(node, head):
+    """Yield every sub-list whose first element is `head`."""
+    if isinstance(node, list):
+        if node and node[0] == head:
+            yield node
+        for c in node:
+            yield from find_all(c, head)
+
+
+def attr(node, key, default=None):
+    for c in node:
+        if isinstance(c, list) and c and c[0] == key and len(c) > 1:
+            return c[1]
+    return default
+
+
+def load_netlist(path: str):
+    """Return {ref: {pin: netname}} from a KiCad .net file."""
+    with open(path, encoding="utf-8") as f:
+        tree = sexp(f.read())
+    pins = defaultdict(dict)
+    for net in find_all(tree, "net"):
+        name = attr(net, "name")
+        if name is None:
+            continue
+        for node in find_all(net, "node"):
+            ref = attr(node, "ref")
+            pin = attr(node, "pin")
+            if ref and pin:
+                pins[ref][str(pin)] = name
+    return pins
+
+
+# ---- the check -------------------------------------------------------------
+
+def check(expected, actual_pins, ref, board_hint=None):
+    """Score this connector against every candidate board/connector; keep the best."""
+    best = None
+    for (board, conn), want in expected.items():
+        if board_hint and board != board_hint:
+            continue
+        issues = []
+        matched = 0
+        for pin, signal in sorted(want.items()):
+            got = actual_pins.get(pin)
+            if signal.upper() == "NC":
+                if got is not None and not NC_LIKE.match(canon(got)):
+                    issues.append((pin, signal, got, "NC pin is connected"))
+                else:
+                    matched += 1
+                continue
+            if got is None:
+                issues.append((pin, signal, None, "pin missing from netlist"))
+            elif family(got) == family(signal):
+                matched += 1
+            else:
+                issues.append((pin, signal, got, "wrong net"))
+        for pin in sorted(set(actual_pins) - set(want)):
+            issues.append((pin, None, actual_pins[pin], "pin not in the pinout"))
+        cand = {"ref": ref, "board": board, "connector": conn,
+                "pins": len(want), "matched": matched, "issues": issues}
+        if best is None or cand["matched"] > best["matched"]:
+            best = cand
+    return best
+
+
+def main():
+    ap = argparse.ArgumentParser(add_help=True)
+    ap.add_argument("netlist")
+    ap.add_argument("--csv", default=None)
+    ap.add_argument("--ref", action="append", default=None,
+                    help="only check these designators")
+    ap.add_argument("--board", default=None, choices=["PROG", "CHA"])
+    ap.add_argument("--json", action="store_true")
+    a = ap.parse_args()
+
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    csv_path = a.csv or os.path.join(root, CSV_DEFAULT)
+    expected = load_expected(csv_path)
+    nets = load_netlist(a.netlist)
+
+    # A connector is any component carrying a pin name the pinout uses.
+    known_pins = set()
+    for want in expected.values():
+        known_pins |= set(want)
+    candidates = [r for r, p in nets.items()
+                  if len(set(p) & known_pins) >= 20]
+    if a.ref:
+        candidates = [r for r in candidates if r in a.ref]
+
+    results = [check(expected, nets[r], r, a.board) for r in sorted(candidates)]
+    results = [r for r in results if r]
+
+    if a.json:
+        print(json.dumps(results, indent=2))
+        return 1 if any(r["issues"] for r in results) else 0
+
+    if not results:
+        print("netcheck: no connector found in this netlist.")
+        print("          Looked for a component with 20+ pins named like a1..a50 / b1..b50.")
+        return 1
+
+    bad = 0
+    for r in results:
+        head = f"{r['ref']}  ->  {r['board']} {r['connector']}"
+        print(head)
+        print("-" * len(head))
+        print(f"  {r['matched']}/{r['pins']} pins match the pinout")
+        if not r["issues"]:
+            print("  no issues")
+        for pin, signal, got, why in r["issues"]:
+            bad += 1
+            exp = signal if signal is not None else "(not in pinout)"
+            print(f"  {pin:<5} expected {exp:<12} got {got if got else '(unconnected)':<20} {why}")
+        print()
+
+    if bad:
+        print(f"netcheck: {bad} issue(s). Do not fabricate.")
+        return 1
+    print("netcheck: every connector pin matches the pinout.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

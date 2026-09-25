@@ -7,6 +7,8 @@
 #   make            build the cartridge zip
 #   make gngeo      build and run in GnGeo, AES mode
 #   make debug      same, but wait for GDB on localhost:2159
+#   make boardzero  build a P+V only set - no CHA half (see Q1 board zero)
+#   make boardzero-run   ...and run it
 #   make clean
 #
 # Requires ngdevkit on PATH (brew install ngdevkit; brew install ngdevkit-gngeo)
@@ -72,7 +74,7 @@ V_SIZE := 524288
 
 pad = $(PYTHON) -c 'import sys;open(sys.argv[1],"ab").truncate(int(sys.argv[2]))' $(1) $(2)
 
-.PHONY: all gngeo debug clean distclean
+.PHONY: all gngeo debug boardzero boardzero-run clean distclean
 all: $(CART)
 
 $(ROM):
@@ -140,6 +142,37 @@ $(CART): $(PROM) $(SROM) $(MROM) $(CROM1) $(CROM2) $(VROM)
 	cp $(SHAREDIR)/aes.zip $(SHAREDIR)/neogeo.zip $(ROM)/
 	@echo
 	@echo "built $(CART)"
+
+# --- board zero: what a PROG-only cartridge looks like ------------------------
+# docs/open-questions.md Q1 proposes fabricating the PROG board alone as the
+# smallest possible first hardware. PROG carries P and V; C, S and M are all on
+# CHA. So a PROG-only cartridge is this set with no -c, -s or -m.
+#
+# The question this answers is narrow and worth stating exactly: **will the
+# machine hand off to a cartridge with no CHA half present at all?**  If romtool
+# or GnGeo refuses outright, board zero is dead and the first fabrication has to
+# be the PROG/CHA pair.
+#
+# What it CANNOT answer: whether a *real* AES BIOS accepts it. nullbios does not
+# validate a cartridge and a real BIOS may. This test can therefore falsify the
+# idea but not confirm it. Treat a pass as "not ruled out", not as "works".
+BOARDZERO := $(BUILD)/boardzero
+
+boardzero: $(PROM) $(VROM)
+	@mkdir -p $(BOARDZERO)
+	$(ROMTOOL) -b hash -f gngeo -p $(PROM) -v $(VROM) \
+	  -n $(GAMEROM) -l "NeoForge board zero - PROG only" \
+	  -x gngeo.data=$(GNGEO_DATA) -o $(BOARDZERO)/gngeo_data.zip
+	$(ROMTOOL) -b cartridge -f zip -p $(PROM) -v $(VROM) \
+	  -n $(GAMEROM) -x "zip.comment=" -o $(BOARDZERO)/$(GAMEROM).zip
+	cp $(SHAREDIR)/aes.zip $(SHAREDIR)/neogeo.zip $(BOARDZERO)/
+	@echo
+	@echo "board zero set built in $(BOARDZERO) - P and V only, no C/S/M"
+	@echo "run it with:  make boardzero-run"
+
+boardzero-run: boardzero
+	$(GNGEO) --scale 3 --no-resize --system home -i $(BOARDZERO) \
+	  -d $(BOARDZERO)/gngeo_data.zip $(GAMEROM)
 
 # --system home is AES mode
 gngeo: $(CART)

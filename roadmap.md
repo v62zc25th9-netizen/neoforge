@@ -536,6 +536,19 @@ a board that works.
       directions from the cartridge's point of view so ERC can catch bus
       contention. The footprint — pad geometry, pitch, mechanical outline —
       needs measuring off a real cartridge and waits for the teardown.
+- **Decided 2026-09-25: the connector sheet is generated, the logic is drawn.**
+      A hybrid, and the boundary sits exactly where the risk does. The connector
+      is 200 pins of pure data, verified against two independent sources -
+      generating it from the CSV means the schematic *cannot* disagree with the
+      verified pinout, and removes a 200-line transcription whose failure mode
+      is a silent transposition. The logic - decode, wait-state resistors,
+      memory, power - is a couple of dozen parts that need judgement, and a
+      human-drawn sheet is what a reviewer can actually read.
+      **`tools/neoforge-netcheck` validates the join**, so if generating a
+      `.kicad_sch` KiCad will open cleanly turns out to be too fiddly, the
+      fallback is safe: place the generated *symbol* by hand, wire it, and let
+      netcheck catch any error. Building the checker first is what makes the
+      fallback acceptable.
 - [ ] Level translation across 100+ 5V signals — the failure mode that has sunk
       cheap multicarts
 - [ ] EPROM/flash footprints, CPLD serializer, address decoding
