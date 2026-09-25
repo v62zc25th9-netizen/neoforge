@@ -111,6 +111,16 @@ for board in ("PROG", "CHA"):
     check("no pin is labelled with the literal net 'NC'",
           "NC" not in labels.values())
 
+    # The first version shipped an empty lib_symbols and KiCad drew a "??"
+    # placeholder instead of the connector. Guard against that returning.
+    conn = "CN5" if board == "PROG" else "CN4"
+    sym = f"AES_{conn}_{board}"
+    check("symbol definition is embedded in the sheet",
+          f'(symbol "neoforge-aes:{sym}"' in txt)
+    check("the embedded definition carries its pins",
+          txt.count("(pin ") >= 100, f'{txt.count("(pin ")} pin entries')
+    check("lib_symbols is not empty", "(lib_symbols)" not in txt)
+
     check("regenerating is byte-identical", generate(board) == txt)
 
 print()

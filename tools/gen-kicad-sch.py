@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import os
 import re
 import sys
@@ -61,6 +62,7 @@ LABEL_GAP = 2.54      # how far past the pin end the label text starts
 
 LIB = "neoforge-aes"
 CSV_DEFAULT = "docs/data/aes-cartridge-pinout.csv"
+SYMLIB_DEFAULT = "hardware/lib/neoforge-aes.kicad_sym"
 
 # Direction, from the cartridge's point of view, drives the label shape so the
 # sheet reads correctly and ERC has something to check. Mirrors the table in
@@ -87,6 +89,41 @@ def netname(sig: str) -> str:
     n = n.replace("/", "_")          # R/W -> R_W
     n = re.sub(r"\s+", "_", n)       # "L in" -> L_in
     return n
+
+
+def extract_symbol(symlib_path, name):
+    """Pull one (symbol "NAME" ...) block out of the .kicad_sym library.
+
+    The sheet must EMBED the symbols it uses, in its own `lib_symbols` block -
+    that is how KiCad works, and it is why the first version of this generator
+    rendered a "??" placeholder box instead of a connector. An empty
+    `lib_symbols` leaves KiCad with nowhere to resolve `neoforge-aes:AES_CN5_PROG`
+    from unless the project happens to have that library registered.
+
+    Embedding also makes the sheet self-contained: anyone can open it with no
+    library configuration at all, which matters for a repository people are
+    meant to be able to build from.
+
+    Done by brace-matching rather than a full parser, because we are lifting a
+    block verbatim, not interpreting it.
+    """
+    text = io.open(symlib_path, encoding="utf-8").read()
+    start = text.find(f'(symbol "{name}"')
+    if start < 0:
+        raise SystemExit(f"gen-kicad-sch: {name} not found in {symlib_path} - "
+                         f"run tools/gen-kicad-symbol.py first")
+    depth, i = 0, start
+    while i < len(text):
+        if text[i] == "(":
+            depth += 1
+        elif text[i] == ")":
+            depth -= 1
+            if depth == 0:
+                block = text[start:i + 1]
+                # inside a sheet the symbol is named with its library prefix
+                return block.replace(f'(symbol "{name}"', f'(symbol "{LIB}:{name}"', 1)
+        i += 1
+    raise SystemExit(f"gen-kicad-sch: unbalanced parentheses reading {name}")
 
 
 def load(csv_path, board):
@@ -179,7 +216,11 @@ def main():
     out.append('    (comment 2 "Do not hand-edit. Fix the CSV and re-run tools/gen-kicad-sch.py.")\n')
     out.append('    (comment 3 "Verify with tools/neoforge-netcheck before fabricating.")\n')
     out.append('  )\n')
-    out.append('  (lib_symbols)\n')
+    embedded = extract_symbol(os.path.join(root, SYMLIB_DEFAULT), sym)
+    out.append('  (lib_symbols\n')
+    out.append("\n".join("  " + ln if ln.strip() else ln
+                         for ln in embedded.split("\n")))
+    out.append('\n  )\n')
     out.append(f'  (symbol (lib_id "{LIB}:{sym}") (at {ORIGIN_X:g} {ORIGIN_Y:g} 0) (unit 1)\n')
     out.append('    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)\n')
     out.append(f'    (uuid "{sym_uuid}")\n')
