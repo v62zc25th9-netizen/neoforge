@@ -151,6 +151,25 @@ connector left empty on a real AES with a working PROG cartridge in place -
 which is Phase 4, not something we can front-run. Board zero stays an attractive
 idea with an unresolved precondition. `[UNVERIFIED]`
 
+**The weak question is answered: pass.** `[MEASURED: 2026-09-25]` Built with real
+P and V and empty S/M/C, GnGeo loads every region, reaches `Selecting Game
+Vector` - nullbios handing off to the cartridge - and **our P code runs.** The
+screen fills with the backdrop colour our ROM writes to palette entry `0xFFF`,
+and the framed window is absent because the fix tiles that draw it live in the
+empty S ROM.
+
+That is precisely what theory predicts, and the two halves of it are worth
+separating:
+
+- **the backdrop is present** - a palette write from 68000 code, needing no S, M
+  or C
+- **the window is missing** - fix tiles, which need S
+
+So the boot path does not require meaningful S/M/C *content*. It still says
+nothing about the chips being *absent*, or about a real AES BIOS. The
+precondition above stands unchanged; this only removes one way board zero could
+have died cheaply.
+
 ### Still to confirm
 
 - [ ] Update `docs/cartridge-architecture.md` §1, which currently states the

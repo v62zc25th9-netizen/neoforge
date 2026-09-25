@@ -64,6 +64,27 @@ Like the fix tiles, it needs no image tooling: for a tile of one colour the
 block and row interleave cancels out, so C1 and C2 are each 64 bytes of two
 repeating values. `[VERIFIED: wiki Sprite graphics format]`
 
+## A warning before this runs on real hardware `[MEASURED: 2026-09-25]`
+
+**Our backdrop green collides with a known AES fault signature.** On a real
+console a solid green screen with a freeze indicates a **calendar error** -
+battery leakage, the clock crystal, or NEO-BUF. `[VERIFIED: ConsoleMods Neo Geo
+troubleshooting]`
+
+So a tester who sees solid green from this ROM may reasonably conclude their
+console is faulty, when in fact they are looking at palette entry `0xFFF` doing
+exactly its job. The two are unrelated and happen to be the same colour.
+
+Seen for real on 2026-09-25, running the board-zero set (empty S ROM): the
+screen is uniformly green with **no window at all**, because the fix tiles that
+draw the frame live in S. Correct behaviour, and indistinguishable at a glance
+from a dead console.
+
+**Mitigation if this ever ships to testers:** say so in the release notes, or
+pick a backdrop colour no BIOS uses. Not worth changing now - the alternating
+green/red is what the positive control depends on - but worth knowing before
+somebody opens their AES looking for a leaking battery.
+
 ## What a green window does and does not prove
 
 In an emulator the sprite path is modelled correctly, so **alternating green and
