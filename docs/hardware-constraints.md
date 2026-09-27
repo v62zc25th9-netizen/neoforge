@@ -481,6 +481,13 @@ to it.
   ones is itself logic.
 - A 5V CPLD stays attractive for a *small* board (the fix-only development cart,
   the measurement cart) precisely because it deletes the translation problem.
+- **And for a small enough board, no programmable logic is needed at all.**
+  `[2026-09-27]` 5V parallel flash of the right density is still in production
+  (`SST39SF040`: 512K x 8, 19 address lines, 4.5-5.5V single supply, 70 ns, PLCC
+  or DIP), so a PROG-only board presenting the unbanked 1 MiB P window is two
+  flash chips and four resistors, with the console supplying `/ROMOE`, `/ROMOEU`
+  and `/ROMOEL`. See [`board-zero.md`](board-zero.md). The translation problem is
+  real for any board with an FPGA on it, and simply absent from the first one.
 - Two boards means the translation problem exists **twice**, with different
   signal mixes.
 

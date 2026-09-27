@@ -58,6 +58,9 @@ The project is currently in the research and simulation phase. Open source flash
   The harness itself is in [`sim/harness/`](sim/harness/)
 - [The measurement cartridge](docs/measurement-cart.md) — the first board:
   a cartridge that finds out how slow a cartridge is allowed to be
+- [Board zero](docs/board-zero.md) — the smallest cartridge that can fail
+  informatively: two 5V flash chips, four resistors, no logic, no level
+  translation, and the watchdog as the entire test
 - [What the hardware has to do](docs/hardware-constraints.md) — the memory
   budget from real games, the PROG/CHA split, C ROM bandwidth, and why 5V —
   not logic capacity — picks the FPGA

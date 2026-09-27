@@ -170,6 +170,26 @@ nothing about the chips being *absent*, or about a real AES BIOS. The
 precondition above stands unchanged; this only removes one way board zero could
 have died cheaply.
 
+**The board itself is now specified: [`board-zero.md`](board-zero.md).**
+`[2026-09-27]` Writing it out changed what board zero *is*. Two 5V flash chips
+on the two byte lanes, four wait-state resistors, and **no logic of any kind** -
+no bank register, no `/PORTOE` gate, no V ROM select, no level translation.
+5V parallel flash in a socketable package is still in production, which deletes
+the translation problem this project had assumed was unavoidable, and 19
+connector address lines against a 19-address-line part leaves nothing to decode.
+
+It also splits the precondition above into two questions that had been treated
+as one:
+
+- **Will a real AES BIOS hand off to our P code with S/M/C empty?** A ROM-image
+  question, answerable now by running `make boardzero` under an emulator with a
+  real AES BIOS instead of nullbios. Cheap, and it is the finding most likely to
+  invalidate the specification.
+- **Will the console behave the same with the CHA board physically absent?**
+  Still needs hardware, exactly as the correction above says. Unchanged.
+
+The first is worth doing before any PCB is ordered. The second is still Phase 4.
+
 ### Still to confirm
 
 - [ ] Update `docs/cartridge-architecture.md` §1, which currently states the
