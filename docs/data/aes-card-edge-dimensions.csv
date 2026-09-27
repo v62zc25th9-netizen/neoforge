@@ -1,0 +1,33 @@
+id,board,quantity,method,hypothesis_mm,measured_mm,samples,spread_mm,notes
+O1,PROG,row a physical face,continuity from P ROM GND / A0 / D0 - see card-edge.md section 1,,,,,
+O2,PROG,pin 1 end,continuity from P ROM A0: third finger from that end on row b,,,,,
+O3,PROG,row registration a1 vs b1,side edge to centre of finger 1 on both faces; equal means aligned,,,,,
+P1,PROG,pitch,left edge of finger 1 to left edge of finger 50 divided by 49,2.54,,,,decisive test: 124.46 mm span if 2.54 pitch
+P2,PROG,span f1 left to f50 left,single caliper span across the whole row,124.46,,,,raw reading behind P1
+P3,PROG,span f1 left to f50 right,same span plus one finger width,,,,,P3 minus P2 = finger width
+F1,PROG,finger width,direct on three fingers at different places in the row,,,,,must satisfy F1 + F2 = P1
+F2,PROG,gap between fingers,direct on three separate gaps,,,,,must satisfy F1 + F2 = P1
+F3,PROG,finger length,insertion edge to end of copper / start of solder mask,,,,,
+F4,PROG,copper reaches board edge,yes / no,,,,,
+T1,PROG,substrate thickness,bare area away from the fingers,1.6,,,,1.2 mm is possible on retro boards
+T2,PROG,thickness across a finger,over plating both faces,,,,,(T2 - T1) / 2 approximates plating build-up
+T3,PROG,thickness at extreme insertion edge,compare with T2 taken 2 mm inboard,,,,,thinner here means there is a bevel
+T4,PROG,bevel setback from edge,how far the chamfer runs back,,,,,with T2 gives the angle; expect 20 30 or 45 degrees
+E1,PROG,left side edge to centre of finger 1,,,,,,
+E2,PROG,right side edge to centre of finger 50,,,,,,E1 != E2 may be the anti-reversal key
+E3,PROG,overall board width,,,,,,
+E4,PROG,overall board height,insertion edge to far edge,,,,,
+E5,PROG,notch / keyway / cutout / hole,position from a named corner plus its own size,,,,,name the corner used
+E6,PROG,chamfered corners,which corners and how much,,,,,
+P1c,CHA,pitch,as P1,,,,,expected identical to PROG - checking is the point
+F1c,CHA,finger width,as F1,,,,,
+F3c,CHA,finger length,as F3,,,,,
+T1c,CHA,substrate thickness,as T1,,1.55,approx,,bare substrate. consistent with a 1.6 mm board at normal -10pct tolerance
+E3c,CHA,overall board width,as E3,,,,,
+E4c,CHA,overall board height,as E4,,,,,
+S1,both,1200 dpi scan with ruler in frame,lossless PNG committed alongside,,,,,independent re-checkable source - card-edge.md section 7
+T2c,CHA,thickness across a finger,over plating both faces,,1.65,approx,,(T2c-T1c)/2 = 0.05 mm plating per side. 1.65 is the dimension the slot actually grips
+P2c-r1,CHA,raw caliper span along the row a finger field,"photo 1, endpoints not yet defined",,120.83,1,,"AMBIGUOUS - gap count spanned is unknown, see card-edge.md section 2"
+P2c-r2,CHA,raw caliper span along the row a finger field,"photo 2, endpoints not yet defined",,121.83,1,,"AMBIGUOUS - 121.83/48 = 2.538, within 0.002 of 2.54. 121.83/49 = 2.486. cannot choose without a counted span"
+O1c,CHA,row identity and pin 1 end,SNK silkscreen reads A1 at one end of the finger row and A50 at the other,,n/a,,,orientation is printed on the board - no continuity needed. A1 is the NEO-273 end; A50 is the MADE IN JAPAN end
+O4c,CHA,power/ground pads visually distinct,photograph,,n/a,,,"wide pads at BOTH ends and a wide group mid-row match a1-a2, a49-a50 GND and a25-a27 VCC exactly"

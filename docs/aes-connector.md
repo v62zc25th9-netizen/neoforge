@@ -4,7 +4,19 @@ The Neo Geo AES cartridge edge connector: every pin, with authoritative pin
 numbers, cross-checked against three independent sources.
 
 - Machine-readable: [`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv)
-- Pin pitch 0.1 in (2.54 mm) · board thickness 1.6 mm
+- **Board thickness 1.6 mm** `[MEASURED: 2026-09-27]` — 1.55 mm bare substrate,
+  1.65 mm across a gold finger, on a `NEO-AEG CHA42G-4`. 1.55 sits inside the
+  normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the
+  console's slot actually grips.** Order 1.6 mm.
+- **Pin pitch 0.1 in (2.54 mm)** `[UNVERIFIED]` — **this number has carried no
+  source since the day this file was written.** It is the only unsourced claim
+  on a page that cross-checks everything else three ways, and the one most
+  likely to have been carried over from an *MVS* page — this file's own history
+  is that MVS and AES were confused about pin numbering until we caught it. A
+  first measurement on 2026-09-27 came back consistent with 2.54 mm *and* with
+  2.5 mm, depending on how many gaps the span covered; see
+  [`card-edge.md`](card-edge.md) §2. Nothing should be fabricated against it
+  until that is resolved.
 - 50 pins per face, 100 per board, **200 per cartridge**
 
 A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**

@@ -75,6 +75,9 @@ The project is currently in the research and simulation phase. Open source flash
   invent one
 - [AES cartridge connector](docs/aes-connector.md) — the pinout as text, plus
   [machine-readable CSV](docs/data/aes-cartridge-pinout.csv)
+- [The AES card edge](docs/card-edge.md) — the *physical* half of the connector:
+  how to measure pitch, finger geometry, thickness and bevel off a real
+  cartridge, and [the worksheet](docs/data/aes-card-edge-dimensions.csv)
 - [Why the serializer moved](docs/why-the-split.md) — why AES puts it in the
   cartridge and MVS on the board, and why we don't think it was anti-piracy
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the

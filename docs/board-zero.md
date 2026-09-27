@@ -234,7 +234,8 @@ it.
 
 That is one evening with a pair of calipers and the one cartridge in the house,
 and it is the only thing standing between this specification and a board file.
-[`measurement-cart.md`](measurement-cart.md) is where those numbers go.
+**The protocol is [`card-edge.md`](card-edge.md)** and the numbers go in
+[`data/aes-card-edge-dimensions.csv`](data/aes-card-edge-dimensions.csv).
 
 Secondary, and cheaper to close:
 
