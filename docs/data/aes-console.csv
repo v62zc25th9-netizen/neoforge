@@ -1,0 +1,15 @@
+id,subject,quantity,measured,notes
+C1,68000,manufacturer,,Toshiba / Hitachi / Motorola - decides which column of the timing budget applies
+C2,68000,full part number,,e.g. TMP68HC000N-12 HD68HC000PS12 MC68HC000FN12
+C3,68000,speed suffix,,-12 or -16. hardware-constraints.md section 1 assumes 12.5 MHz
+C4,68000,date code,,Motorola AC specs improve for 8827 and later
+C5,crystal,marked frequency,,wiki says 24.167829 MHz - every timing number derives from it
+C6,crystal,bare crystal or can oscillator,,
+C7,BIOS ROM,part number and region,,decides which BIOS a real-BIOS emulator test would have to use
+C8,motherboard,revision marking,,the label every other number here is filed under
+C9,slot,CHA to PROG connector centre-to-centre,,NO SOURCE ANYWHERE - the board pair cannot be drawn without it
+C10,slot,connectors parallel and coplanar,,
+C11,slot,insertion depth,,
+C12,slot,contacts per connector per face,,counted. confirms 50 independently of the cartridge silkscreen
+C13,slot,key / rib / asymmetry preventing reversed insertion,,
+C14,slot,pitch across 16 connector contacts,,independent confirmation of 2.54 mm from a different object

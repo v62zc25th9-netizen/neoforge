@@ -78,6 +78,10 @@ The project is currently in the research and simulation phase. Open source flash
 - [The AES card edge](docs/card-edge.md) — the *physical* half of the connector:
   how to measure pitch, finger geometry, thickness and bevel off a real
   cartridge, and [the worksheet](docs/data/aes-card-edge-dimensions.csv)
+- [Opening the AES](docs/teardown-aes-console.md) — four numbers the timing
+  budget rests on that are printed on chips inside the console: the 68000's
+  manufacturer and speed grade, the crystal, the BIOS region, and the slot
+  dimensions nothing here records
 - [Why the serializer moved](docs/why-the-split.md) — why AES puts it in the
   cartridge and MVS on the board, and why we don't think it was anti-piracy
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the

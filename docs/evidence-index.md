@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 51 |
-| Anecdotal | 20 |
-| Measured | 74 |
+| Unverified | 52 |
+| Anecdotal | 22 |
+| Measured | 76 |
 | Verified | 128 |
-| **Total** | **273** |
+| **Total** | **278** |
 
 ---
 
-## Unverified — 51
+## Unverified — 52
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -47,7 +47,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L192**  
   One choice to confirm before fabrication.** The `/CE` ← `/ROMOE`, `/OE` ← `/ROMOEU`/`/ROMOEL` assignment above is the conventional one, and the reverse also works electrically. PROGBK1's jumper matrix *selects* which signal drives `/CE` and `/OE`, which tells us SNK treated it as a configuration choice rather than a fixed requirement — so both are probably fine, but the PROGBK1 schematic should ...
-- **L244**  
+- **L254**  
   order; [`hardware-constraints.md`](hardware-constraints.md) §2c has JLCPCB's rules but not its gold-finger constraints.
 
 ### `docs/cartridge-architecture.md`
@@ -61,9 +61,9 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L83**  
   — this is the rate during active pixel output. Whether the LSPC
-- **L325**  
-  The speed grade is assumed, not established.** The 12.5 MHz column is the conservative choice for a part clocked at 12.084 MHz, but we do not know what SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several contemporary systems used one - some specs improve. The wiki says only "runs at 12MHz" and does not name the part. **The Fatal Fury Special teardown settles this by ...
-- **L470**  
+- **L332**  
+  Correction 2026-09-28: this file said "the Fatal Fury Special teardown settles this by reading the lid". It cannot. The 68000 is in the console, not on the cartridge** — no cartridge teardown will ever show it, and the sentence has been pointing at the wrong piece of hardware since this section was written. The part that settles it is **an AES console with its lid off**, which is Phase 4 and is ...
+- **L477**  
   — and there is a cheap way to settle it that does not need our
 
 ### `docs/measurement-cart.md`
@@ -125,6 +125,11 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 - **L165**  
   The registers have no reset.** `zmc.v` carries the comment `// Initialize ?` and models them as X. A Z80 program must therefore program all four registers before executing from any banked window, or stay entirely inside the pass-through region. on real silicon — the chip may well power up
 
+### `docs/teardown-aes-console.md`
+
+- **L119**  
+  — 12.5 MHz speed grade assumed | settled by a suffix |
+
 ### `docs/why-the-split.md`
 
 - **L10**  
@@ -178,7 +183,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 20
+## Anecdotal — 22
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
 
@@ -201,7 +206,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L278**  
   throughout: these figures are relayed from a forum comparison of
-- **L496** — *2026-09-23*  
+- **L503** — *2026-09-23*  
   2b. Power: a constraint we had not written down at all
 
 ### `docs/open-questions.md`
@@ -226,6 +231,13 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 - **L287** — *AssemblerGames thread*  
   Historical note:** PRO-CT0's logic was reverse-engineered and published to the dev wiki by Calpis, which is what made non-donor converters possible in the first place. NeoForge exists downstream of
 
+### `docs/teardown-aes-console.md`
+
+- **L33**  
+  It is . We are relaying a forum comparison of three datasheets we
+- **L118**  
+  — three 68000s, relayed from a forum | for the one console we can test on |
+
 ### `roadmap.md`
 
 - **L272**  
@@ -245,7 +257,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 74
+## Measured — 76
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -294,9 +306,9 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   There are three different 68000s, and we must budget for the slowest
 - **L284** — *2026-09-24*  
   AES is the harder timing environment, and both factors push the same way
-- **L377** — *2026-09-23*  
+- **L384** — *2026-09-23*  
   The part, named
-- **L402** — *2026-09-23*  
+- **L409** — *2026-09-23*  
   And somebody did it on an AES cartridge
 
 ### `docs/open-questions.md`
@@ -351,6 +363,13 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   an `output` in the port list and again as a `wire` in the body. Icarus rejects it outright, so **the model as shipped does not compile with Icarus at all.** Deleting the redundant `wire` line fixes it.
 - **L55** — *2026-09-12*  
   fx68k** — Jorge Cwik's cycle-accurate 68000 in SystemVerilog — lints clean under **Verilator 5** with `--timing`, given the usual warning suppressions.
+
+### `docs/teardown-aes-console.md`
+
+- **L112**  
+  Numbers go in [`data/aes-console.csv`](data/aes-console.csv). Nothing here is until that file has values.
+- **L118**  
+  — three 68000s, relayed from a forum | for the one console we can test on |
 
 ### `docs/teardown-fatal-fury-special.md`
 
@@ -551,17 +570,17 @@ Traced to a source that is not us.
   NEO-D0 divides it by 2, 4 and 8 for the 12 MHz
 - **L140** — *Toshiba datasheet*  
   One of these is now known to be wrong.** A Fatal Fury Special cartridge in hand carries a **`TC531001CP-12`** at M1 - the `-12` is a 120 ns speed suffix - against the 100 ns this
-- **L362** — *NESdev, Implementing Mappers In Hardware*  
+- **L369** — *NESdev, Implementing Mappers In Hardware*  
   For the easy direction, the relevant thresholds are:
-- **L382** — *TI SN74LVC4245A datasheet*  
+- **L389** — *TI SN74LVC4245A datasheet*  
   A Darksoft AES multi board (`PCB00246-01`) carries several TSSOP packages marked **`LJ245A`**, which is **`SN74LVC4245A`** - a part TI's own datasheet titles *"Octal Bus Transceiver and 3.3V to 5V Shifter With 3-State Outputs"*.
-- **L411** — *LatticeXP2 family product brief*  
+- **L418** — *LatticeXP2 family product brief*  
   A clear photograph of a **NeoSD Pro AES PROG board** (`NEOSD_PRO_AES_PROG`, Rev.B) shows a **`LATTICE LFXP2-5E 5QN208C`** and, silkscreened beside two regulators, the rails **`VCC 3V3`** and **`1V2`**. LatticeXP2 runs a 1.2V core and tops out at LVCMOS 3.3 / LVTTL, with no 5V tolerance stated in the family datasheet.
-- **L427** — *FusionConverter BOM*  
+- **L434** — *FusionConverter BOM*  
   Somebody already did it, and it works
-- **L440** — *Lattice DS1022, ispMACH 4000ZE family*  
+- **L447** — *Lattice DS1022, ispMACH 4000ZE family*  
   The LC4064ZE is a **1.8 V core part with 3.3 V I/O**, and its datasheet states that inputs "can be safely driven up to 5.5 V when an I/O bank is configured for 3.3 V operation."
-- **L519** — *JLCPCB design rules*  
+- **L526** — *JLCPCB design rules*  
   2c. Manufacturing limits, from a fab's own rules
 
 ### `docs/measurement-cart.md`

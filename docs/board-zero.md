@@ -215,6 +215,16 @@ the distinction matters because we have already conflated them once.**
   connector. This is the correction recorded in
   [`open-questions.md`](open-questions.md) Q1 and it still stands.
 
+**`[2026-09-28]` The second one is now reachable.** There is an AES in the
+house. That does not make board zero testable today — it still needs a
+fabricated board, and dumping this console's BIOS for the first test needs a
+flash cart or a desoldering iron, neither of which is here yet. But the whole
+question stops being hypothetical, and **which 68000 this particular console
+contains decides how much a board-zero pass is worth**: a pass on a Hitachi
+machine, the one reportedly glitchy with multicarts, is far stronger evidence
+than a pass on a Toshiba. That is a screwdriver and a photograph away — see
+[`teardown-aes-console.md`](teardown-aes-console.md).
+
 If the answerable half comes back "the BIOS refuses", board zero grows a CHA
 board and stops being board zero. That is the single finding most likely to
 invalidate this file, which is a good reason to go looking for it before

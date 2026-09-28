@@ -321,8 +321,15 @@ it meets the others.
 conservative choice for a part clocked at 12.084 MHz, but we do not know what
 SNK actually fitted. If it is a 16.67 MHz-rated part - plausible, and several
 contemporary systems used one - some specs improve. The wiki says only "runs at
-12MHz" and does not name the part. **The Fatal Fury Special teardown settles
-this by reading the lid.** `[UNVERIFIED]`
+12MHz" and does not name the part.
+
+**Correction 2026-09-28: this file said "the Fatal Fury Special teardown settles
+this by reading the lid". It cannot. The 68000 is in the console, not on the
+cartridge** — no cartridge teardown will ever show it, and the sentence has been
+pointing at the wrong piece of hardware since this section was written. The
+part that settles it is **an AES console with its lid off**, which is Phase 4
+and is now reachable: see
+[`teardown-aes-console.md`](teardown-aes-console.md). `[UNVERIFIED]`
 
 **The datasheet carries a date-code condition.** The table footnote reads:
 *"These specifications represent an improvement over previously published
