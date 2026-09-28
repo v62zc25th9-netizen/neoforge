@@ -137,6 +137,48 @@ same kind of pad. Do it twice, at two different places in the row. If both read
 25.4, the pitch claim holds and the whole-row span was 48 gaps; if both read
 25.0, the claim in `aes-connector.md` is wrong and always has been.
 
+### Better: stop counting, and read it in inches `[2026-09-28]`
+
+The counted span above has two ways to go wrong, and the second attempt hit both
+at once. A span on PROG read either **30.08** or **38.08 mm** — the middle
+segment of a seven-segment digit is not reliably legible in a photograph — and
+the number of gaps it covered could not be counted from the same photograph.
+The arithmetic is unhelpfully symmetric:
+
+| If the reading is | over | pitch |
+|---|---|---|
+| 38.08 mm | 15 gaps | **2.539 mm** — 2.54 to within 0.02 |
+| 30.08 mm | 12 gaps | **2.507 mm** — 2.50 to within 0.08 |
+
+Two unknowns, one equation. Each reading lands cleanly on a *different* answer,
+which is the worst possible outcome and a sign the method is still wrong.
+
+**The method that has neither problem: switch the caliper to inches.**
+
+If the pitch is 0.1 inch, then **any** span of N gaps reads as exactly
+**N/10 inches** — 1.200, 1.500, 0.900 — dead round, to as many decimals as the
+display has. If the pitch is 2.5 mm, the same spans read **1.1811** and
+**1.4764**: ragged, and never round.
+
+| Span | at 2.54 mm | at 2.50 mm |
+|---|---|---|
+| 12 gaps | **1.200 in** | 1.1811 in |
+| 15 gaps | **1.500 in** | 1.4764 in |
+| any N gaps | **N/10 exactly** | never round |
+
+**So you do not have to count the fingers, and you do not have to read the
+number precisely.** You only have to see whether it is round. Put the jaws
+anywhere across the uniform part of the row, press `inch/F` until it shows
+decimal inches rather than fractions, and look at the last two digits. Round
+means imperial means 2.54 mm. Ragged means metric means the claim in
+`aes-connector.md` has been wrong since the day it was written.
+
+That is a yes/no question answered by glancing at a display, instead of two
+measurements that have to be right simultaneously. It should have been the first
+thing suggested: SNK were building in 1990 to a card-edge standard, and card-edge
+standards of that era are imperial by default — which makes "is it round in
+inches" the natural discriminator rather than an afterthought.
+
 ## 3. Finger geometry
 
 | Quantity | How |
