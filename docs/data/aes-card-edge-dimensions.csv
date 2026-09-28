@@ -2,12 +2,12 @@ id,board,quantity,method,hypothesis_mm,measured_mm,samples,spread_mm,notes
 O1,PROG,row a physical face,continuity from P ROM GND / A0 / D0 - see card-edge.md section 1,,,,,
 O2,PROG,pin 1 end,continuity from P ROM A0: third finger from that end on row b,,,,,
 O3,PROG,row registration a1 vs b1,side edge to centre of finger 1 on both faces; equal means aligned,,,,,
-P1,PROG,pitch,left edge of finger 1 to left edge of finger 50 divided by 49,2.54,,,,decisive test: 124.46 mm span if 2.54 pitch
+P1,PROG,pitch,left edge of finger 1 to left edge of finger 50 divided by 49,2.54,3.00-3.05,two independent routes,,PROVISIONAL. route 1: F1+F2 = 3.00-3.05. route 2: 30.08/10 = 3.008. BLOCKED on E-field below - 49 gaps at 3.0 needs a 147 mm finger field
 P2,PROG,span f1 left to f50 left,single caliper span across the whole row,124.46,,,,raw reading behind P1
 P3,PROG,span f1 left to f50 right,same span plus one finger width,,,,,P3 minus P2 = finger width
-F1,PROG,finger width,direct on three fingers at different places in the row,,,,,must satisfy F1 + F2 = P1
-F2,PROG,gap between fingers,direct on three separate gaps,,,,,must satisfy F1 + F2 = P1
-F3,PROG,finger length,insertion edge to end of copper / start of solder mask,,,,,
+F1,PROG,finger width,direct on three fingers at different places in the row,,1.6-1.65,approx,,direct. with F2 gives pitch 3.00-3.05 mm
+F2,PROG,gap between fingers,direct on three separate gaps,,1.4,approx,,direct. with F1 gives pitch 3.00-3.05 mm - does NOT support the 2.54 claim
+F3,PROG,finger length,insertion edge to end of copper / start of solder mask,,10.8,approx,,"finger length, insertion edge to end of copper"
 F4,PROG,copper reaches board edge,yes / no,,,,,
 T1,PROG,substrate thickness,bare area away from the fingers,1.6,,,,1.2 mm is possible on retro boards
 T2,PROG,thickness across a finger,over plating both faces,,,,,(T2 - T1) / 2 approximates plating build-up
@@ -31,5 +31,7 @@ P2c-r1,CHA,raw caliper span along the row a finger field,"photo 1, endpoints not
 P2c-r2,CHA,raw caliper span along the row a finger field,"photo 2, endpoints not yet defined",,121.83,1,,"AMBIGUOUS - 121.83/48 = 2.538, within 0.002 of 2.54. 121.83/49 = 2.486. cannot choose without a counted span"
 O1c,CHA,row identity and pin 1 end,SNK silkscreen reads A1 at one end of the finger row and A50 at the other,,n/a,,,orientation is printed on the board - no continuity needed. A1 is the NEO-273 end; A50 is the MADE IN JAPAN end
 O4c,CHA,power/ground pads visually distinct,photograph,,n/a,,,"wide pads at BOTH ends and a wide group mid-row match a1-a2, a49-a50 GND and a25-a27 VCC exactly"
-P2p-r1,PROG,counted multi-finger span along row A,"caliper, mm mode, span across the uniform stretch",,30.08 or 38.08 - digit not resolvable from the photograph,1,,38.08/15 = 2.539 (2.54 pitch). 30.08/12 = 2.507 (2.50 pitch). BOTH land clean under different readings - see card-edge.md section 2
+P2p-r1,PROG,counted multi-finger span along row A,"caliper, mm mode, span across the uniform stretch",,30.08,1,,"digit resolved by F1+F2: 30.08/10 = 3.008, which matches width+gap. 38.08 matches nothing. So the reading was 30.08 over a 10-finger span"
 O1p,PROG,row identity and pin 1 end,"SNK silkscreen: A1 at one end of the finger row, A50 at the other",,n/a,,,"same convention as CHA, so the silkscreen labelling holds across both boards. LS08, LS32 and jumpers J6-J10 visible, consistent with a PROGBK1-family board"
+F5,PROG,mini finger at the middle of each finger,visual,,present,,,UNEXPLAINED. a smaller finger at the exact midpoint of each 10.8 mm finger. geometry and whether it is a separate contact not yet established - needs a close-up
+E-field,PROG,"full finger field, finger 1 to finger 50","single span, with the finger count stated",147.0,,,,THE DECIDING MEASUREMENT. 49 gaps x 3.0 mm = 147.0. earlier undescribed spans of 120.83/121.83 imply 2.486 mm and cannot both be right

@@ -179,6 +179,67 @@ thing suggested: SNK were building in 1990 to a card-edge standard, and card-edg
 standards of that era are imperial by default — which makes "is it round in
 inches" the natural discriminator rather than an afterthought.
 
+### The validity check fired, and the pitch is probably not 2.54 mm `[2026-09-28]`
+
+§3 says `width + gap` must equal the pitch, and calls it "a free validity check".
+It fired.
+
+| Measured directly, on PROG | |
+|---|---|
+| Finger width | **1.6–1.65 mm** |
+| Gap between fingers | **1.4 mm** |
+| **Implied pitch** | **3.00–3.05 mm** |
+| Finger length | 10.8 mm |
+
+**Two independent routes now agree on ~3.0 mm, and neither is 2.54.** The
+second route also resolves the unreadable digit from the previous attempt: the
+span was **30.08**, not 38.08, because `30.08 / 10 = 3.008` matches the
+width-plus-gap figure while 38.08 matches nothing. A ten-finger span is what had
+been asked for, and ten is what it was.
+
+So the long-unsourced claim in [`aes-connector.md`](aes-connector.md) is
+**probably wrong** — and wrong in the direction that would have been expensive.
+A board drawn at 2.54 mm would have accumulated 0.46 mm of error per position
+and been unusable within a few fingers of the end.
+
+**It is only "probably", because a third measurement disagrees.** Two earlier
+spans across the finger field read **120.83** and **121.83 mm**. With 50
+positions those imply a pitch of **2.486 mm**, not 3.0. The three numbers cannot
+all be right:
+
+| Pitch | 49 gaps spans | Consistent with |
+|---|---|---|
+| 2.486 mm | 121.8 mm | the field spans, not the finger geometry |
+| **3.00 mm** | **147.0 mm** | the finger geometry and the 10-gap span, not the field spans |
+
+The field spans were taken before there was any agreed definition of where the
+jaws go, and they are the only readings here whose endpoints were never written
+down — so they are the weakest of the three, not the tie-breaker. **But 49 gaps
+at 3.0 mm needs a 147 mm finger field to exist**, and a 121.8 mm reading is not a
+rounding error away from that.
+
+**The deciding measurement is therefore the full field**: first finger to
+fiftieth, in one span, with the count of 50 confirmed by eye rather than assumed
+from the silkscreen.
+
+- **~147 mm** → pitch is 3.0 mm, and the earlier spans did not cover the whole row
+- **~122 mm** → the finger geometry is over-measured and something is wrong with
+  how a 1.4 mm gap and a 1.6 mm finger are being read
+- anything else → the row is not 50 evenly spaced positions, which would be the
+  most interesting outcome of the three
+
+150 mm calipers reach 147 mm with almost nothing to spare, so it may want a steel
+rule or the scan in §7 instead.
+
+### One observation with no explanation yet
+
+**Each finger has a smaller finger at its exact midpoint.** Recorded as `F5` in
+the worksheet, unexplained. It matters because it may not be decoration: if that
+mini finger is a *separate contact* rather than a feature of the same pad, the
+contact pitch is not the finger pitch, and every number above is describing the
+wrong thing. A close-up photograph of six or so fingers, straight down, would
+settle what it is.
+
 ## 3. Finger geometry
 
 | Quantity | How |

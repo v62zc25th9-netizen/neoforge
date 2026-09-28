@@ -8,15 +8,15 @@ numbers, cross-checked against three independent sources.
   1.65 mm across a gold finger, on a `NEO-AEG CHA42G-4`. 1.55 sits inside the
   normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the
   console's slot actually grips.** Order 1.6 mm.
-- **Pin pitch 0.1 in (2.54 mm)** `[UNVERIFIED]` — **this number has carried no
-  source since the day this file was written.** It is the only unsourced claim
-  on a page that cross-checks everything else three ways, and the one most
-  likely to have been carried over from an *MVS* page — this file's own history
-  is that MVS and AES were confused about pin numbering until we caught it. A
-  first measurement on 2026-09-27 came back consistent with 2.54 mm *and* with
-  2.5 mm, depending on how many gaps the span covered; see
-  [`card-edge.md`](card-edge.md) §2. Nothing should be fabricated against it
-  until that is resolved.
+- **Pin pitch: ~~0.1 in (2.54 mm)~~ probably ~3.0 mm** `[UNVERIFIED — and now
+  actively contradicted, 2026-09-28]` — the 2.54 figure carried no source from
+  the day this file was written, and direct measurement of a PROG board now
+  disagrees with it: finger width **1.6–1.65 mm** plus gap **1.4 mm** gives a
+  pitch of **3.00–3.05 mm**, confirmed independently by a ten-finger span of
+  30.08 mm. A third reading across the finger field disagrees with *both*, so
+  the number is not settled — but **nothing should be drawn at 2.54 mm.** At 50
+  positions that error accumulates to 23 mm, so a board fabricated on it would
+  not have fitted at all. See [`card-edge.md`](card-edge.md) §2.
 - 50 pins per face, 100 per board, **200 per cartridge**
 
 A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**

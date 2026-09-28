@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 52 |
+| Unverified | 51 |
 | Anecdotal | 20 |
 | Measured | 71 |
 | Verified | 128 |
-| **Total** | **271** |
+| **Total** | **270** |
 
 ---
 
-## Unverified — 52
+## Unverified — 51
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -30,8 +30,6 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/aes-connector.md`
 
-- **L11**  
-  normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the console's slot actually grips.** Order 1.6 mm. - **Pin pitch 0.1 in (2.54 mm)** — **this number has carried no
 - **L111**  
   One residual oddity, not a problem.** The *order* within the group differs: MVS runs ROMWAIT, PWAIT0, PWAIT1, PDTACK; ours runs ROMWAIT, PDTACK, PWAIT0, PWAIT1. Different connectors may simply be laid out differently, and our AES data comes from a machine-extracted AES 3.5 schematic. Worth a glance if anyone is ever checking the AES pinout for other reasons, but nothing here contradicts it.
 - **L149**  
