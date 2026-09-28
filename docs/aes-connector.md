@@ -8,15 +8,16 @@ numbers, cross-checked against three independent sources.
   1.65 mm across a gold finger, on a `NEO-AEG CHA42G-4`. 1.55 sits inside the
   normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the
   console's slot actually grips.** Order 1.6 mm.
-- **Pin pitch: ~~0.1 in (2.54 mm)~~ probably ~3.0 mm** `[UNVERIFIED — and now
-  actively contradicted, 2026-09-28]` — the 2.54 figure carried no source from
-  the day this file was written, and direct measurement of a PROG board now
-  disagrees with it: finger width **1.6–1.65 mm** plus gap **1.4 mm** gives a
-  pitch of **3.00–3.05 mm**, confirmed independently by a ten-finger span of
-  30.08 mm. A third reading across the finger field disagrees with *both*, so
-  the number is not settled — but **nothing should be drawn at 2.54 mm.** At 50
-  positions that error accumulates to 23 mm, so a board fabricated on it would
-  not have fitted at all. See [`card-edge.md`](card-edge.md) §2.
+- **Pin pitch 0.1 in (2.54 mm)** `[MEASURED: 2026-09-28]` — a 15-gap span across
+  16 fingers on a PROG board reads **38.08 mm**, so **2.5387 mm per gap**:
+  0.0013 mm off 0.1 inch, and 1.4992 in against a predicted 1.5000. The claim
+  carried no source for most of this project's life and is now measured. An
+  intermediate correction on the same day, asserting the pitch was ~3.0 mm and
+  that "nothing should be drawn at 2.54 mm", **was wrong** — see
+  [`card-edge.md`](card-edge.md) §2 for what went wrong and why the
+  `width + gap` check appeared to fail.
+- Predicted full finger field, position 1 to position 50: **124.46 mm**
+  `[UNVERIFIED — the one remaining dimensional check]`
 - 50 pins per face, 100 per board, **200 per cartridge**
 
 A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**

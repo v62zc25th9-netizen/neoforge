@@ -179,7 +179,7 @@ thing suggested: SNK were building in 1990 to a card-edge standard, and card-edg
 standards of that era are imperial by default — which makes "is it round in
 inches" the natural discriminator rather than an afterthought.
 
-### The validity check fired, and the pitch is probably not 2.54 mm `[2026-09-28]`
+### The validity check fired, and I read it backwards `[wrong — corrected below]`
 
 §3 says `width + gap` must equal the pitch, and calls it "a free validity check".
 It fired.
@@ -231,14 +231,76 @@ from the silkscreen.
 150 mm calipers reach 147 mm with almost nothing to spare, so it may want a steel
 rule or the scan in §7 instead.
 
-### One observation with no explanation yet
+### Correction, same evening: the pitch is 2.54 mm after all `[MEASURED: 2026-09-28]`
 
-**Each finger has a smaller finger at its exact midpoint.** Recorded as `F5` in
-the worksheet, unexplained. It matters because it may not be decoration: if that
-mini finger is a *separate contact* rather than a feature of the same pad, the
-contact pitch is not the finger pitch, and every number above is describing the
-wrong thing. A close-up photograph of six or so fingers, straight down, would
-settle what it is.
+The span was **38.08 mm**, and it covered **16 fingers — 15 gaps.**
+
+| | |
+|---|---|
+| 38.08 / 15 | **2.5387 mm** |
+| against 0.1 in (2.54 mm) | **−0.0013 mm per gap** |
+| the same span in inches | **1.4992 in**, against 1.5000 for fifteen 0.1 in gaps |
+
+**The original claim in [`aes-connector.md`](aes-connector.md) was right.** The
+inch test from the previous section also passes, cleanly — it only ever needed
+the reading, which is what it was designed not to depend on, and then the
+reading is what decided it anyway.
+
+**Everything above this heading is my error, and it is a specific one: I
+inverted the reliability ordering.** A fifteen-gap span divides caliper error by
+fifteen; a 1.4 mm gap and a 1.6 mm finger are the two smallest features on the
+board measured with the least suitable instrument. The whole reason §2 says to
+span many fingers is that spanning many fingers is more trustworthy than
+measuring one. I then let the two single-feature readings overturn the
+multi-gap span — and, worse, wrote "nothing should be drawn at 2.54 mm" into the
+connector document on that basis. Had a board been ordered in between, it would
+have been ordered wrong, from a correction rather than from the original claim.
+
+### And the mini finger explains the discrepancy exactly
+
+**The mini fingers split the big fingers at their midpoint and are part of the
+same pad** — so they are a shape, not extra contacts, and contact pitch *is*
+finger pitch. The earlier worry that "every number above is describing the wrong
+thing" is retired.
+
+But the shape is the whole explanation for `width + gap = 3.0`. **Each pad is
+wide at one part of its length and narrow at another, so width and gap are only
+complementary if both are measured at the same cross-section**, and they were
+not:
+
+| Measured where | Width | Gap | Sum |
+|---|---|---|---|
+| across the wide section | **1.6** | 0.94 | 2.54 |
+| across the mini-finger section | 1.14 | **1.4** | 2.54 |
+| **what was actually recorded** | **1.6** (wide) | **1.4** (narrow) | **3.0** ✗ |
+
+So `width + gap = pitch` never failed. It was applied across two different
+cross-sections of a pad that is not a plain rectangle, which is a real trap and
+now a documented one: **measure width and gap at the same distance from the
+board edge, and say which distance.**
+
+Two falsifiable predictions fall out, both cheap:
+
+- gap between the **wide** sections ≈ **0.94 mm**
+- width of the **mini-finger** section ≈ **1.14 mm**
+
+If those hold, the footprint has its full profile and §2 is closed.
+
+### What is now settled, and what the numbers predict
+
+| | |
+|---|---|
+| Pitch | **2.54 mm (0.1 in)** `[MEASURED: 2026-09-28]` |
+| Substrate thickness | 1.55 mm bare, **1.65 mm across a finger** — order 1.6 mm |
+| Finger length | 10.8 mm |
+| Pad profile | wide section + a narrower "mini finger" at the midpoint, one pad |
+| **Predicted full field**, finger 1 to finger 50 | **124.46 mm** |
+
+That last line is the remaining check. The two earlier undefined spans read
+120.83 and 121.83 mm; **121.83 / 2.54 = 47.96, which is 48 gaps** — one gap short
+of the full row, exactly what you would expect from jaws landing inside the wide
+GND pad at one end instead of on its outer edge. Consistent, and no longer a
+contradiction.
 
 ## 3. Finger geometry
 

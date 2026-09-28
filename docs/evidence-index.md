@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 51 |
 | Anecdotal | 20 |
-| Measured | 71 |
+| Measured | 74 |
 | Verified | 128 |
-| **Total** | **270** |
+| **Total** | **273** |
 
 ---
 
@@ -30,17 +30,17 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/aes-connector.md`
 
-- **L111**  
+- **L112**  
   One residual oddity, not a problem.** The *order* within the group differs: MVS runs ROMWAIT, PWAIT0, PWAIT1, PDTACK; ours runs ROMWAIT, PDTACK, PWAIT0, PWAIT1. Different connectors may simply be laid out differently, and our AES data comes from a machine-extracted AES 3.5 schematic. Worth a glance if anyone is ever checking the AES pinout for other reasons, but nothing here contradicts it.
-- **L149**  
+- **L150**  
   Read the wiki's **MVS cartridge pinout** page and confirm it puts ROMWAIT on B25, PWAIT0 on B26, PWAIT1 on B27 and PDTACK on B28. If it does, the conflict dissolves entirely and the table below becomes a note about vocabulary rather than a warning. The page was unreachable from here tonight - robots and a permission prompt - so **this is downgraded, not closed.
-- **L209**  
+- **L210**  
   Until then, treat the wait-state pins in the CSV as and do not
-- **L280**  
+- **L281**  
   What is still not established** is which physical end SNK's own numbering calls pin 1. This document uses Board-Folk's, which is internally consistent and tied to a real footprint, but that is a reproduction's convention and not necessarily SNK's. It does not affect wiring — the signal at each
-- **L307**  
+- **L308**  
   Row `a` = top face, `b` = bottom | — inferred from signal content matching A's face labels. Consistent across all four faces, but not independently stated |
-- **L459**  
+- **L460**  
   The other four — `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom) — are almost certainly a limitation of the extraction, not real. The sheet carries 74LS04 and 74HC04 inverters, and those four are inverted or buffered clocks whose labels sit on the far side of an IC the wire-tracer does not cross. Do not treat them as no-connects.
 
 ### `docs/board-zero.md`
@@ -245,7 +245,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 71
+## Measured — 74
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -258,11 +258,13 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 - **L7** — *2026-09-27*  
   Board thickness 1.6 mm** — 1.55 mm bare substrate,
-- **L116** — *2026-09-24*  
+- **L11** — *2026-09-28*  
+  normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the console's slot actually grips.** Order 1.6 mm. - **Pin pitch 0.1 in (2.54 mm)** — a 15-gap span across
+- **L117** — *2026-09-24*  
   Superseded: the downgrade
-- **L127** — *read off the scan, 2026-09-24*  
+- **L128** — *read off the scan, 2026-09-24*  
   pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering` publishes MIT-licensed 4103x3184 scans of a 161-in-1 v3 board. Its PROG edge is silkscreened **`J5`** and numbered **60, 55, 50 ... 10, 5**, running right to left: **sixty pins per row, one connector.
-- **L156** — *2026-09-23*  
+- **L157** — *2026-09-23*  
   Superseded alarm, retained for the record
 
 ### `docs/card-edge.md`
@@ -273,6 +275,10 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   The pin numbering is silkscreened on the board.
 - **L106** — *2026-09-27*  
   The trap in the whole-row span, found the hard way
+- **L234** — *2026-09-28*  
+  Correction, same evening: the pitch is 2.54 mm after all
+- **L293** — *2026-09-28*  
+  Pitch | **2.54 mm (0.1 in)** |
 
 ### `docs/hardware-constraints.md`
 
@@ -476,27 +482,27 @@ Traced to a source that is not us.
 
 ### `docs/aes-connector.md`
 
-- **L27** — *wiki AES cartridge pinout, 2026-09-24*  
+- **L28** — *wiki AES cartridge pinout, 2026-09-24*  
   VERIFIED END TO END: all 200 pins, against the wiki's own images
-- **L73** — *wiki MVS cartridge pinout, 2026-09-24*  
+- **L74** — *wiki MVS cartridge pinout, 2026-09-24*  
   Also resolved: the MVS numbering
-- **L212** — *wiki Cartridge orientation*  
+- **L213** — *wiki Cartridge orientation*  
   Which board goes where, physically
-- **L247** — *cross-check, 2026-09-07*  
+- **L248** — *cross-check, 2026-09-07*  
   Detected by scoring both directions against machine-extracted schematic nets: PROG top matched 6 signals forward and 24 reversed; CHA top 6 and 18; both bottom faces matched forward (20 and 17) against 6 reversed. Not ambiguous.
-- **L250** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
+- **L251** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
   The comparison is fair, because rows `a` and `b` are numbered from the same physical end. From Board-Folk's footprint:
-- **L302**  
-  Signal → board face | — A, B and C agree |
 - **L303**  
-  Signal names | — all three agree |
+  Signal → board face | — A, B and C agree |
 - **L304**  
-  Active-low polarity | — from B |
+  Signal names | — all three agree |
 - **L305**  
-  Pin numbers and ordering** | — from C, machine-extracted, and A agrees once orientation is corrected |
+  Active-low polarity | — from B |
 - **L306**  
+  Pin numbers and ordering** | — from C, machine-extracted, and A agrees once orientation is corrected |
+- **L307**  
   Which end is pin 1** | — C's numbering is authoritative |
-- **L318**  
+- **L319**  
   The audio-loop duplication was real, not a misreading.** A shows `L in`/`L out` on both top faces and `R out`/`R in` on both bottom faces. C shows all four pairs **unconnected** on the AES 3.5 — corroborating the wiki's note that these loops are "only used on the NEO-AES board revision." Two sources, agreeing, on a detail that looked like a transcription error.
 
 ### `docs/board-zero.md`
