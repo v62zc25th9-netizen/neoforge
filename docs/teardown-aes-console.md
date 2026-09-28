@@ -97,6 +97,45 @@ With the console open and the slot visible:
 pitch as the fingers. Measuring across sixteen of *them* is an independent
 confirmation of the 2.54 mm result from a different physical object.
 
+### First attempt, and the validity check that catches it `[2026-09-28]`
+
+Reported: **8 mm** between the slots at the near edge of the casing separator,
+**10 mm** far edge to far edge. Read the obvious way — 8 is the separator and 10
+spans both slots — those two numbers say each slot opening is
+`(10 − 8) / 2 = ` **1.00 mm wide**, and the board that has to go into it is
+**1.65 mm** thick. That cannot be right, so at least one endpoint is not where I
+think it is.
+
+**The free check, and it is the same shape as `width + gap = pitch`:**
+
+> outer-to-outer **minus** inner-to-inner **must equal two board thicknesses**,
+> which is **3.30 mm**. And a slot opening can never measure less than 1.65.
+
+Run that on any pair of readings before reporting them and a mis-set jaw shows
+up immediately.
+
+| If | then | and centre-to-centre is |
+|---|---|---|
+| inner-face gap is **8.0** | outer-to-outer is **11.30** | 9.65 |
+| outer-to-outer is **10.0** | inner-face gap is **6.70** | 8.35 |
+
+### Three numbers, defined so there is nothing to interpret
+
+- **C9a** — inner face of one board's slot to the inner face of the other's.
+  The thickness of the plastic between them.
+- **C9b** — outer face to outer face, across everything. **This is the one the
+  footprint pair needs.**
+- **C9c** — the width of a single slot opening, on its own. Sanity only; it must
+  be ≥ 1.65.
+
+### Easier: measure the cartridge, not the console
+
+The spacing is fixed by the cartridge as much as by the console, and a cartridge
+sits on the bench where calipers can reach it. **Put the two boards back in the
+shell and measure across the two protruding edges, outer face to outer face.**
+That is `C9b` directly, without reaching into a slot at an angle, and it is
+recorded as `C9d` so the two routes can be compared rather than conflated.
+
 ## 5. The board revision
 
 The AES motherboard is marked with a revision. Console revisions differ in

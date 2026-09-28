@@ -127,7 +127,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/teardown-aes-console.md`
 
-- **L119**  
+- **L158**  
   — 12.5 MHz speed grade assumed | settled by a suffix |
 
 ### `docs/why-the-split.md`
@@ -235,7 +235,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L33**  
   It is . We are relaying a forum comparison of three datasheets we
-- **L118**  
+- **L157**  
   — three 68000s, relayed from a forum | for the one console we can test on |
 
 ### `roadmap.md`
@@ -366,9 +366,9 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ### `docs/teardown-aes-console.md`
 
-- **L112**  
+- **L151**  
   Numbers go in [`data/aes-console.csv`](data/aes-console.csv). Nothing here is until that file has values.
-- **L118**  
+- **L157**  
   — three 68000s, relayed from a forum | for the one console we can test on |
 
 ### `docs/teardown-fatal-fury-special.md`
