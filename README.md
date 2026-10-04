@@ -84,6 +84,9 @@ The project is currently in the research and simulation phase. Open source flash
   dimensions nothing here records
 - [Why the serializer moved](docs/why-the-split.md) — why AES puts it in the
   cartridge and MVS on the board, and why we don't think it was anti-piracy
+- [What a cartridge has to contain](docs/block-diagram.md) — the block diagram:
+  every chip tagged by where the part comes from, and the three SNK customs that
+  are the whole problem
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the
   serializer, connectors, protection hardware
 - [Open questions](docs/open-questions.md) — unresolved decisions, what would

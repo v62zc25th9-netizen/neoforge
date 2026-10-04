@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 52 |
-| Anecdotal | 22 |
-| Measured | 76 |
-| Verified | 128 |
-| **Total** | **278** |
+| Unverified | 53 |
+| Anecdotal | 23 |
+| Measured | 78 |
+| Verified | 131 |
+| **Total** | **285** |
 
 ---
 
-## Unverified — 52
+## Unverified — 53
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -42,6 +42,11 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   Row `a` = top face, `b` = bottom | — inferred from signal content matching A's face labels. Consistent across all four faces, but not independently stated |
 - **L460**  
   The other four — `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom) — are almost certainly a limitation of the extraction, not real. The sheet carries 74LS04 and 74HC04 inverters, and those four are inverted or buffered clocks whose labels sit on the far side of an IC the wire-tracer does not cross. Do not treat them as no-connects.
+
+### `docs/block-diagram.md`
+
+- **L105**  
+  Open an issue, or correct us anywhere. Everything in this repository carries an evidence tag saying how strongly it is held — , , , — and the weak ones are listed first in
 
 ### `docs/board-zero.md`
 
@@ -183,9 +188,14 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 22
+## Anecdotal — 23
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
+
+### `docs/block-diagram.md`
+
+- **L105**  
+  Open an issue, or correct us anywhere. Everything in this repository carries an evidence tag saying how strongly it is held — , , , — and the weak ones are listed first in
 
 ### `docs/cartridge-architecture.md`
 
@@ -257,7 +267,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 76
+## Measured — 78
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -278,6 +288,13 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering` publishes MIT-licensed 4103x3184 scans of a 161-in-1 v3 board. Its PROG edge is silkscreened **`J5`** and numbered **60, 55, 50 ... 10, 5**, running right to left: **sixty pins per row, one connector.
 - **L157** — *2026-09-23*  
   Superseded alarm, retained for the record
+
+### `docs/block-diagram.md`
+
+- **L32** — *teardown of a Fatal Fury Special AES cartridge, 2026-09-21*  
+  — see
+- **L104**  
+  Open an issue, or correct us anywhere. Everything in this repository carries an evidence tag saying how strongly it is held — , ,
 
 ### `docs/card-edge.md`
 
@@ -490,7 +507,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 128
+## Verified — 131
 
 Traced to a source that is not us.
 
@@ -523,6 +540,15 @@ Traced to a source that is not us.
   Which end is pin 1** | — C's numbering is authoritative |
 - **L319**  
   The audio-loop duplication was real, not a misreading.** A shows `L in`/`L out` on both top faces and `R out`/`R in` on both bottom faces. C shows all four pairs **unconnected** on the AES 3.5 — corroborating the wiki's note that these loops are "only used on the NEO-AES board revision." Two sources, agreeing, on a detail that looked like a transcription error.
+
+### `docs/block-diagram.md`
+
+- **L41** — *NeoGeoFPGA-sim neo_273.v*  
+  Two banks of edge-triggered latches: 20 bits of C address on `PCK1B`, 16 bits of S address on `PCK2B`, each with a nibble rotation that is **pure wiring, not logic**.
+- **L52** — *NeoGeoFPGA-sim neo_zmc2.v*  
+  Two unrelated blocks in one package :
+- **L104**  
+  Open an issue, or correct us anywhere. Everything in this repository carries an evidence tag saying how strongly it is held — , ,
 
 ### `docs/board-zero.md`
 
