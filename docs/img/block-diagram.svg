@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1010" viewBox="0 0 1240 1010" role="img" aria-label="NeoForge AES cartridge block diagram">
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1092" viewBox="0 0 1240 1092" role="img" aria-label="NeoForge AES cartridge block diagram">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/></marker></defs>
-<rect width="1240" height="1010" fill="#ffffff"/>
+<rect width="1240" height="1092" fill="#ffffff"/>
 <text x="28" y="40" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="23" font-weight="800" fill="#111827">What a NeoForge AES cartridge has to contain</text>
 <text x="28" y="63" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#6b7280">Every block tagged by where the part comes from. Blocks marked ● 0 are the only ones board zero fits.</text>
 <rect x="28" y="84" width="1184" height="86" rx="7" fill="#e5e7eb" stroke="#111827" stroke-width="1.5"/>
@@ -54,7 +54,7 @@
 <rect x="310" y="500" width="200" height="76" rx="7" fill="#fee2e2" stroke="#7f1d1d" stroke-width="1.5"/>
 <text x="410.0" y="522" text-anchor="middle" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#7f1d1d">NEO-PCM</text>
 <text x="410.0" y="539" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" fill="#7f1d1d" opacity="0.85">SNK custom</text>
-<text x="410.0" y="567" text-anchor="middle" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#7f1d1d" opacity="0.75">de-multiplexes the ADPCM bus</text>
+<text x="410.0" y="567" text-anchor="middle" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="10.5" fill="#7f1d1d" opacity="0.75">in the ADPCM sample path</text>
 <line x1="308" y1="538" x2="272" y2="538" stroke="#4b5563" stroke-width="1.6" marker-end="url(#a)"/>
 <text x="290.0" y="531.0" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#374151">V address</text>
 <rect x="70" y="592" width="440" height="50" rx="7" fill="#dcfce7" stroke="#14532d" stroke-width="1.5"/>
@@ -115,19 +115,28 @@
 <circle cx="38" cy="794" r="8" fill="#111827"/>
 <text x="38" y="798" text-anchor="middle" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff">0</text>
 <text x="56" y="798" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">on board zero — everything else is deliberately absent from the first board</text>
-<rect x="28" y="828" width="1184" height="150" rx="9" fill="#fef2f2" stroke="#7f1d1d" stroke-width="1.5"/>
-<text x="48" y="856" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#7f1d1d">The three SNK customs, and what replacing each one costs</text>
-<text x="48" y="882" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-273</text>
-<text x="200" y="882" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">CHA</text>
-<text x="258" y="882" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">20-bit C + 16-bit S address latches off PBUS, with nibble rotations</text>
-<text x="1192" y="882" text-anchor="end" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#7f1d1d">S half is 2 × 74HCT374. The rotations are wiring.</text>
-<text x="48" y="913" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-ZMC2 · dot</text>
-<text x="200" y="913" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">CHA</text>
-<text x="258" y="913" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">serializes 32 bits of C into GAD/GBD + DOTA/DOTB at 12 MHz</text>
-<text x="1192" y="913" text-anchor="end" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#7f1d1d">programmable logic, or buy a replacement board</text>
-<text x="48" y="944" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-PCM</text>
-<text x="200" y="944" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">PROG</text>
-<text x="258" y="944" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">services the YM2610&#x27;s multiplexed ADPCM address bus</text>
-<text x="1192" y="944" text-anchor="end" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#7f1d1d">NOT YET ANALYSED — the least understood part of the cartridge</text>
-<text x="28" y="996" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#9ca3af">Generated by tools/gen-block-diagram.py · github.com/v62zc25th9-netizen/neoforge · sources in docs/teardown-fatal-fury-special.md, serializer.md, cartridge-architecture.md, board-zero.md</text>
+<rect x="28" y="828" width="1184" height="232" rx="9" fill="#fef2f2" stroke="#7f1d1d" stroke-width="1.5"/>
+<text x="48" y="856" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#7f1d1d">The three SNK customs — and all three are sold assembled</text>
+<text x="258" y="876" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#991b1b" opacity="0.8">WHAT IT DOES</text>
+<text x="712" y="876" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#991b1b" opacity="0.8">IF WE BUILD IT</text>
+<text x="1192" y="876" text-anchor="end" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#991b1b" opacity="0.8">IF WE BUY IT</text>
+<text x="48" y="902" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-273</text>
+<text x="196" y="902" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">CHA</text>
+<text x="258" y="902" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">20-bit C + 16-bit S address latches off PBUS, nibble rotations</text>
+<text x="712" y="902" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">build: 2 × 74HCT374 for the S half</text>
+<text x="1192" y="902" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#7f1d1d">$8.42</text>
+<text x="48" y="931" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-ZMC2 · dot</text>
+<text x="196" y="931" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">CHA</text>
+<text x="258" y="931" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">serializes 32 bits of C into GAD/GBD + DOTA/DOTB at 12 MHz</text>
+<text x="712" y="931" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">build: a CPLD — 71 I/Os is the constraint</text>
+<text x="1192" y="931" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#7f1d1d">$17.40</text>
+<text x="48" y="960" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="700" fill="#7f1d1d">NEO-PCM</text>
+<text x="196" y="960" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#991b1b">PROG</text>
+<text x="258" y="960" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">the ADPCM sample path — mechanism still not analysed</text>
+<text x="712" y="960" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">build: nothing designed yet</text>
+<text x="1192" y="960" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="700" fill="#7f1d1d">$17.40</text>
+<line x1="48" y1="1002" x2="1192" y2="1002" stroke="#7f1d1d" stroke-width="1" opacity="0.3"/>
+<text x="48" y="1021" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">All three sold pre-assembled and pre-programmed by Furrtek (neogeodev/NeoChips, GPL-2.0), checked 2026-10-04 — <tspan font-weight="700" fill="#7f1d1d">$43.22 for the whole custom-silicon problem.</tspan></text>
+<text x="48" y="1042" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#374151">Usable as components; their HDL is not readable into ours. They are repair parts, so a board that uses one has to present the original chip's footprint.</text>
+<text x="28" y="1078" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#9ca3af">Generated by tools/gen-block-diagram.py · github.com/v62zc25th9-netizen/neoforge · sources in docs/teardown-fatal-fury-special.md, serializer.md, cartridge-architecture.md, board-zero.md</text>
 </svg>

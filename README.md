@@ -89,6 +89,8 @@ The project is currently in the research and simulation phase. Open source flash
   are the whole problem
 - [Cartridge architecture](docs/cartridge-architecture.md) — MVS vs AES, the
   serializer, connectors, protection hardware
+- [What to buy, and in what order](docs/what-to-buy.md) — the spending
+  decision: why a flash cartridge is out of reach and a board of our own is not
 - [Open questions](docs/open-questions.md) — unresolved decisions, what would
   settle each, and what changes either way
 - [Prior art directory](docs/prior-art.md) — existing open and commercial work,

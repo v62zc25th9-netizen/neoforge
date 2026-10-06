@@ -61,19 +61,84 @@ Two unrelated blocks in one package `[VERIFIED: NeoGeoFPGA-sim neo_zmc2.v]`:
 and checked with self-checking testbenches. No datasheet for this part is
 public.
 
-### NEO-PCM — not analysed at all
+### NEO-PCM — still not analysed, but no longer undocumented
 
-**This is the gap.** The PROG board carries a chip marked `SNK CORP PCM`, and
+**This was the gap.** The PROG board carries a chip marked `SNK CORP PCM`, and
 [`cartridge-architecture.md`](cartridge-architecture.md) has carried the open
 question *"How does the YM2610's independent ADPCM address bus get serviced?"*
 without an answer. The connector gives the cartridge `SDRAD0-7`, `SDRA8-9`,
 `SDRA20-23`, `SDRMPX` and `/SDROE` — a **multiplexed** address bus — and
 somewhere on the board that has to become a flat address into the V ROM.
 
-We believe NEO-PCM is what does it. We have not traced it, simulated it, or
-found documentation for it. **Drawing this diagram is what made it obvious that
-it is the least understood part of the cartridge**, which is a reasonable
-argument for drawing diagrams.
+**The first functional statement we have about it comes from the person selling
+a replacement:** *"A faulty PCM chip causes silent or glitchy sound samples in
+sound effects or music."* `[VERIFIED: Furrtek's Lectronz shop listing, read
+2026-10-04]`
+
+That places it squarely in the ADPCM sample path and is consistent with the
+de-multiplexing hypothesis, but **it does not establish the mechanism** and
+nothing here should be read as if it does. We still have not traced it,
+simulated it, or found a pinout. What has changed is that it is no longer a
+chip nobody will talk about — it is a chip with a product page.
+
+**Drawing this diagram is what made it obvious that it was the least understood
+part of the cartridge**, which is a reasonable argument for drawing diagrams.
+And the follow-up is a second argument for the same thing:
+[`prior-art.md`](prior-art.md) has recorded since the project started that
+`neogeodev/NeoChips` contains a folder named `PCM`. **That fact and this open
+question have been in the repository together for weeks without anybody putting
+them side by side** — which is exactly the failure the diagram was drawn to
+catch, happening one level up.
+
+## All three are purchasable, for $43.22
+
+`[VERIFIED: Furrtek's Lectronz shop, prices and stock read 2026-10-04]`
+
+| Chip | Price | Stock when checked |
+|---|---|---|
+| [NEO-273](https://www.lectronz.com/products/neo-273-reproduction-chip) | **$8.42** | 1 |
+| [NEO-ZMC2](https://www.lectronz.com/products/1414) | **$17.40** | 10 |
+| [PCM](https://www.lectronz.com/products/pcm-reproduction-chip) | **$17.40** | 10 |
+
+All pre-assembled and pre-programmed, shipping from France. **That is the
+entire custom-silicon problem, in stock, for the price of one game.**
+
+Four things worth saying plainly about that:
+
+1. **It does not make the analysis unnecessary.** A bought part makes a working
+   cartridge; understanding the chip is what lets NeoForge be an open design
+   rather than a board that wraps someone else's. Both are legitimate, and they
+   are different projects.
+2. **The licence boundary does not move.** `NeoChips` is GPL-2.0-only and our
+   HDL is GPL-3.0-or-later. Buying a board and fitting it is not a licence
+   event — the GPL governs distributing source, not using a component. Reading
+   their HDL into ours remains off-limits, as
+   [`contributing.md`](../contributing.md) says.
+3. **They are repair parts.** Each is a small board shaped to drop into the
+   original chip's footprint on an existing cartridge. **A new board that uses
+   one has to present that footprint**, which is a real layout constraint and
+   not one we have designed around.
+4. **Stock is thin on NEO-273** — one unit when checked. Anyone planning
+   around it should treat availability as a question, not a given.
+
+### Two notes from the same reading
+
+**The wiki is out of date on this.** The NeoGeo Development Wiki's
+*Replacement chip* page lists NEO-273 and PCM as *"only used in cartridges,
+rarely dies"* with replacements considered impractical. Both are now sold.
+`[VERIFIED: wiki Replacement chip page vs. the shop listings, 2026-10-04]`
+
+**And it gives the build route a number.** The same page proposes an **Altera
+EPM3128 in TQFP100 for NEO-ZMC2, at 71 I/Os.** That is a concrete target for
+anyone implementing the serializer rather than buying it, and it independently
+confirms what [`hardware-constraints.md`](hardware-constraints.md) §2 argues
+from a different direction: **the part is chosen for I/O count, not logic
+capacity.**
+
+**One trap, recorded so nobody falls in it.** The NEO-ZMC2 shop listing's
+symptom sentence is copy-pasted from the PCM listing and describes *sound*
+faults. NEO-ZMC2 is the sprite serializer and has nothing to do with sound.
+Do not read that sentence as evidence about ZMC2.
 
 ## What board zero fits, and what it leaves out
 
@@ -89,7 +154,9 @@ this diagram that it omits is something that could otherwise have been the cause
 ## Things we would like to be corrected on
 
 1. **Is NEO-273 really just five octal latches plus routing?**
-2. **What does NEO-PCM actually do**, and is there a 74-series equivalent?
+2. **What does NEO-PCM actually do?** We now know a failure makes samples
+   silent or glitchy, and that a replacement exists. We do not know the
+   mechanism, the pinout, or whether a 74-series equivalent is possible.
 3. **Is the C ROM bandwidth achievable with modern parallel flash**, or does it
    force the shadow-into-RAM architecture that
    [`open-questions.md`](open-questions.md) Q4 argues a 2026 commercial cart is

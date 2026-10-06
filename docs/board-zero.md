@@ -230,6 +230,53 @@ board and stops being board zero. That is the single finding most likely to
 invalidate this file, which is a good reason to go looking for it before
 spending money on a PCB.
 
+## 8a. Make the silence say how far it got `[2026-10-06]`
+
+**We are not getting a BIOS this round** — the AES BIOS is soldered to the
+motherboard and the cheapest flash cartridge that could dump it is about $660.
+See [`what-to-buy.md`](what-to-buy.md).
+
+That removes the cheap test above, and it leaves board zero's result ambiguous
+in a way the whole design was meant to avoid: if it clicks, is that wiring, the
+ROM, the BIOS handoff, or timing? Four suspects and one bit of output.
+
+**The fix costs nothing and lives in the ROM.** §0 of this file says the test is
+audible because the watchdog is. Extend that: instead of kicking the watchdog
+for a fixed interval and stopping, kick it for a *different* interval depending
+on how far the code got, and **the length of the silence before the clicking
+starts becomes a diagnostic code.**
+
+| Silence | Reached |
+|---|---|
+| **none** — clicks from power-on | the BIOS never handed over, or the board is dead |
+| **2 s** | our entry point is executing |
+| **4 s** | work RAM reads back what was written |
+| **6 s** | a known signature at the **last** word of P, `$0FFFFE`, reads correctly — `A19` and the top of the map are good |
+| **8 s** | a walking-ones pass over all 19 address lines reads the right signature at every `2^n` offset |
+| **10 s** | a checksum of the whole 1 MiB matches |
+
+Then it clicks. Count the seconds on a phone.
+
+**Why these stages and not others.** They are ordered by what actually goes
+wrong on a hand-assembled board: a swapped or open address line is the most
+likely single fault, and the walking-ones stage is the test that finds it and
+*names which line*. A swapped data line shows up one stage earlier, in the
+signature compare. Nothing here needs an instrument, because each stage's
+failure is distinguishable by ear.
+
+**One deliberate elegance:** the intervals are counted by the kick loop itself,
+so they are derived from the console's own clock. A board that runs but runs at
+the wrong rate produces silences of the wrong length, and that is a timing
+result arriving for free out of a test built for continuity.
+
+**It does not recover everything.** The top row stays ambiguous — "BIOS refused"
+and "board dead" both click immediately. **That is why the multimeter in
+[`what-to-buy.md`](what-to-buy.md) §4 is part of the experiment rather than part
+of the toolbox:** a board whose continuity has been checked against
+[`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv) before it is
+ever inserted makes "dead" the unlikely branch, and leaves the BIOS as the
+named suspect.
+
 ## 9. What actually blocks this
 
 Not the parts. Not the logic. Not the timing. Not the ROM.
