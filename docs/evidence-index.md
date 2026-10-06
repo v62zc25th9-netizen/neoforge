@@ -13,9 +13,9 @@ the file carrying it. Weakest first, because those have work attached.
 |---|---|
 | Unverified | 54 |
 | Anecdotal | 23 |
-| Measured | 78 |
-| Verified | 136 |
-| **Total** | **291** |
+| Measured | 79 |
+| Verified | 138 |
+| **Total** | **294** |
 
 ---
 
@@ -52,8 +52,6 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L192**  
   One choice to confirm before fabrication.** The `/CE` ← `/ROMOE`, `/OE` ← `/ROMOEU`/`/ROMOEL` assignment above is the conventional one, and the reverse also works electrically. PROGBK1's jumper matrix *selects* which signal drives `/CE` and `/OE`, which tells us SNK treated it as a configuration choice rather than a fixed requirement — so both are probably fine, but the PROGBK1 schematic should ...
-- **L301**  
-  order; [`hardware-constraints.md`](hardware-constraints.md) §2c has JLCPCB's rules but not its gold-finger constraints.
 
 ### `docs/cartridge-architecture.md`
 
@@ -61,6 +59,11 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   — Because NEO-CMC-era cartridges carry the multiplexer
 - **L181**  
   — Whether that specific mismatch is the cause of the
+
+### `docs/fabrication.md`
+
+- **L72**  
+  — [`board-zero.md`](board-zero.md) §9 listed these as .
 
 ### `docs/hardware-constraints.md`
 
@@ -272,7 +275,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ---
 
-## Measured — 78
+## Measured — 79
 
 We ran it, built it, or read it off a part. Reproducible by someone who repeats what we did.
 
@@ -313,6 +316,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   Correction, same evening: the pitch is 2.54 mm after all
 - **L293** — *2026-09-28*  
   Pitch | **2.54 mm (0.1 in)** |
+
+### `docs/fabrication.md`
+
+- **L92** — *1.55 mm bare, 1.65 mm across a finger*  
+  Thickness | **1.6 mm** |
 
 ### `docs/hardware-constraints.md`
 
@@ -512,7 +520,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 136
+## Verified — 138
 
 Traced to a source that is not us.
 
@@ -563,6 +571,8 @@ Traced to a source that is not us.
 
 - **L189** — *wiki PROGBK1*  
   One choice to confirm before fabrication.** The `/CE` ← `/ROMOE`, `/OE` ← `/ROMOEU`/`/ROMOEL` assignment above is the conventional one, and the reverse also works electrically. PROGBK1's jumper matrix *selects* which signal drives `/CE` and `/OE`, which tells us SNK treated it as a
+- **L299** — *2026-10-06*  
+  ~~Gold-finger constraints unknown~~ **closed** —
 
 ### `docs/cartridge-architecture.md`
 
@@ -594,6 +604,11 @@ Traced to a source that is not us.
   Terraonion NeoSD** (MVS and AES versions, plus Pro): 768 MB flash, ARM Cortex-M4 at 168 MHz with 1 MB flash and 128 MB RAM, **two Lattice XP2 FPGAs**.
 - **L145** — *multiple community sources*  
   Darksoft multi**: MVS and AES (MultiAES) versions. Uses a different ROM file format than NeoSD.
+
+### `docs/fabrication.md`
+
+- **L71** — *JLCPCB gold-finger documentation, read 2026-10-06*  
+  —
 
 ### `docs/hardware-constraints.md`
 

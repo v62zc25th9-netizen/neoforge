@@ -296,9 +296,11 @@ and it is the only thing standing between this specification and a board file.
 
 Secondary, and cheaper to close:
 
-- Gold fingers are a paid option at most fabs and may carry their own minimum
-  order; [`hardware-constraints.md`](hardware-constraints.md) §2c has JLCPCB's
-  rules but not its gold-finger constraints. `[UNVERIFIED]`
+- ~~Gold-finger constraints unknown~~ **closed** `[VERIFIED: 2026-10-06]` —
+  ENIG required, bevel 30° or 45°, no copper in the bevel region, solder mask
+  fully opened over the fingers, and chamfering needs a board at least 50 mm on
+  a side. See [`fabrication.md`](fabrication.md) §4, which also covers how a
+  design becomes boards and why board zero should be hand-assembled.
 - The `-70` speed grade's full read-cycle table, per §1.
 - The `/CE`/`/OE` strap, per §7.
 
