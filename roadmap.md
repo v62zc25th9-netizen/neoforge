@@ -712,6 +712,60 @@ Replace fixed logic with an FPGA. Now a scale-up of proven work, not a redesign.
 
 ---
 
+### Revision, 2026-10-06 — a menu cartridge is reachable long before Phase 10
+
+**The claim:** the menu-driven multi-ROM cartridge this phase describes does not
+need an FPGA, a serializer, or any custom silicon. It is reachable as the board
+*after* board zero, built entirely from flash and 74-series parts.
+
+Three things already established, never put together:
+
+1. **A menu needs only P and S.** *"For the menu to work fine, you only need P
+   and S. If S is missing or wrong, the menu will work but with no graphics."*
+   `[ANECDOTAL: people building multicart menus — cartridge-architecture.md]`
+2. **A fix-layer-only cartridge needs no serializer** — hold `DOTA`/`DOTB` low
+   and nothing can latch a sprite pixel. `open-questions.md` Q1, answered in
+   simulation.
+3. **But it does need NEO-273's S half, and that is 2 × 74HCT374** — two octal
+   latches and some wiring, no gates. `serializer.md`.
+
+So the parts list for a cartridge that boots to a menu and launches a game:
+
+| | |
+|---|---|
+| P flash | larger than 1 MiB, with the upper address bits driven from a latch |
+| S flash | one device, for the menu's text |
+| **2 × 74HCT374** | the S-side address latch — the only thing standing in for a custom chip |
+| bank latch | 74LS74 family, written through `/PORTWEL` |
+| the board-zero basics | wait-state network, decoupling, card edge |
+
+**No NEO-ZMC2, no NEO-273, no NEO-PCM, no CPLD.** That is a cartridge somebody
+would actually want, two revisions after a board whose only output is a sound.
+
+### The one part that is not solved
+
+**Remapping the *fixed* window.** [`prom-banking.md`](prom-banking.md) §3 records
+that `$000000`–`$0FFFFF` is never bankswitched — only the `$200000` window moves.
+A menu has to break that: it must change what appears at `$000000` in order to
+launch a game, then get out of the way.
+
+Mechanically it looks straightforward. The connector supplies only `A1`–`A19`,
+one megabyte's worth, so the cartridge already has to supply every address bit
+above that; a latch driving them, cleared by `/RESET` to the menu's own bank, is
+the same trick PROGBK1 uses on `$200000` pointed at a different window.
+
+**What is not known is whether anything objects** — the BIOS, the game's own
+assumptions about its fixed bank, or the timing of the extra logic now sitting
+in the `/ROMOE`-to-data path. That last one is worth flagging: it adds delay
+inside the ~56 ns budget that `hardware-constraints.md` §1 says a Hitachi AES
+allows, **and multicarts are precisely the thing reported to glitch on Hitachi
+AES consoles.** Those two facts may be the same fact. `[UNVERIFIED — a
+hypothesis from two of our own findings, not evidence]`
+
+**So the menu is a parts problem that is already solved and a decode problem
+that is not.** Which is a far better position than this phase assumed, and
+names exactly what to study next: how a real multicart remaps the fixed bank.
+
 ## Phase 10 — Multi-Game Platform
 
 **Status: ⚪ Planned**

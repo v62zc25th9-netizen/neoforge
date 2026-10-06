@@ -12,10 +12,10 @@ the file carrying it. Weakest first, because those have work attached.
 | Standard | Count |
 |---|---|
 | Unverified | 55 |
-| Anecdotal | 23 |
+| Anecdotal | 24 |
 | Measured | 79 |
 | Verified | 147 |
-| **Total** | **304** |
+| **Total** | **305** |
 
 ---
 
@@ -198,7 +198,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ---
 
-## Anecdotal — 23
+## Anecdotal — 24
 
 Reported by somebody, believed by nobody in particular. Useful as a lead, not as a basis.
 
@@ -262,6 +262,8 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L272**  
   → [`docs/evidence-index.md`](docs/evidence-index.md), which carries the current counts. Deliberately not repeated here: writing a tally into a tracked file changes the tally. `--check` fails on a stale index. Original note follows. - [x] ~~**An evidence index.**~~ The / / /
+- **L725** — *people building multicart menus — cartridge-architecture.md*  
+  and S. If S is missing or wrong, the menu will work but with no graphics."
 
 ### `tools/README.md`
 
