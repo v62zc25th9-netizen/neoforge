@@ -113,6 +113,28 @@ This was handled the way it should be: the repository was cloned, the file
 listing read, the licence checked, and the clone deleted **without opening the
 HDL**. If you find yourself in the same position, do the same and say so.
 
+### And one we *can* read, which is worth stating too `[2026-10-06]`
+
+**`Board-Folk/NeoGeoAES-3.5`** - a recreation of the AES main board - carries no
+formal licence either, but says something different from silence: the authors
+**disclaim copyright** and dedicate the schematics and layouts to the public
+domain, permitting production and sale at your own risk.
+
+That is *looser* than GPL-2.0, not stricter, so the rule above does not apply to
+it. **We may read it.** Two cautions that are ours to keep, not theirs to
+impose:
+
+- The dedication is informal and sits oddly beside "solely for the purposes of
+  study and historical preservation". Cite it as the source of anything taken
+  from it, so that if the terms are ever clarified we know what is affected.
+- It is a reproduction built from scanned copper and third-party schematics. It
+  is a **second source to cross-check against, never an authority** - which is
+  the same standard this project already applies to the wiki.
+
+The point of listing it here beside the two we cannot read: **"no licence file"
+is not one situation.** Read the actual words before deciding, because
+`VTXCart` and `NeoGeoAES-3.5` both lack a `LICENSE` and land in opposite places.
+
 Flag the origin and licence of anything you derive from, and we will sort out
 compatibility before merging rather than after.
 

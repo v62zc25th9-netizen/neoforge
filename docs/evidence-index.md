@@ -14,8 +14,8 @@ the file carrying it. Weakest first, because those have work attached.
 | Unverified | 55 |
 | Anecdotal | 23 |
 | Measured | 79 |
-| Verified | 140 |
-| **Total** | **297** |
+| Verified | 141 |
+| **Total** | **298** |
 
 ---
 
@@ -106,19 +106,19 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
   [Board-Folk/NeoGeoAES-3.5](https://github.com/Board-Folk/NeoGeoAES-3.5) | Schematics and PCB for the AES 3.5 motherboard. | The console side of the connector. Needed to understand what the cart is actually being driven by, including loading and termination. |
 - **L24**  
   [NeoGeo AES 3-5 reproduction main PCB (PCBWay)](https://www.pcbway.com/project/shareproject/NeoGeo_AES_3_5_reproduction_main_PCB_179da741.html) | A shared reproduction of the AES mainboard. | Secondary cross-check on the above. |
-- **L45** — *URL not re-checked this pass*  
+- **L46** — *URL not re-checked this pass*  
   [furrtek/Neogeo_MiSTer](https://github.com/MiSTer-devel/NeoGeo_MiSTer) | Full FPGA core for the whole system. | Not a cartridge project, but the most complete open model of NeoGeo behaviour in existence. Where the wiki is silent, the core is the answer. |
-- **L58** — *404 as of 2026-09-05*  
+- **L59** — *404 as of 2026-09-05*  
   fliperama86/neopico-cart` | Appears in search indexes; the repository currently returns 404. | Possibly renamed, made private, or withdrawn. Worth asking the author about — a Pico-based NeoGeo cart is squarely NeoForge's problem space. |
-- **L79** — *found via search, contents not reviewed*  
+- **L80** — *found via search, contents not reviewed*  
   [city41/neosdconv](https://github.com/city41/neosdconv) | Converts homebrew NeoGeo ROMs into TerraOnion's NeoSD `.neo` format. | Documents a competitor's cartridge file format in working code. Directly informative for NeoForge's own on-card format decision. |
-- **L89**  
+- **L90**  
   NeoGeo MiSTer core** | An FPGA implementation, so it models timing in a way software emulators do not. The closest thing to hardware that is not hardware. |
-- **L105** — *that no multislot-cabinet support exists; only that the manual does not mention it*  
+- **L106** — *that no multislot-cabinet support exists; only that the manual does not mention it*  
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
-- **L257**  
+- **L258**  
   MAX3000A really is 3.3V core with 5V-tolerant I/O, it is a candidate for Q2's "5V-tolerant CPLD". **Not verified** - check the datasheet before repeating it.
-- **L350**  
+- **L351**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to
 
 ### `docs/rom-format.md`
@@ -240,15 +240,15 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 ### `docs/prior-art.md`
 
-- **L103**  
+- **L104**  
   SNK / PLAION NEOGEO AES+** (announced 2026; **delayed 2026-09-09 from 12 Nov 2026 to 16 Sept 2027**, component shortage) | Custom-ASIC reimplementation, not emulation. $249 console, $90 cartridges, ten launch titles. Stated backward-compatible with original AES cartridges; HDMI out, overclocking, memory-card high scores. | The first new AES-compatible hardware in three decades, and a second ...
-- **L107** — *community sources*  
+- **L108** — *community sources*  
   Generic "161-in-1" style multicarts | Community reports a persistent 3V3-vs-5V flash issue in current revisions. | A worked example of the electrical mistake NeoForge must not make. |
-- **L109** — *public product photo, 2026-09-22*  
+- **L110** — *public product photo, 2026-09-22*  
   What a NeoSD board actually looks like
-- **L261** — *arcade-museum forum thread*  
+- **L262** — *arcade-museum forum thread*  
   Field report worth heeding:** NeoSD MVS was reported to be picky about motherboard revision — corruption and resets on NEO-MVH boards while working on MVS-1A/1B/1C. Whatever the true
-- **L288** — *AssemblerGames thread*  
+- **L289** — *AssemblerGames thread*  
   Historical note:** PRO-CT0's logic was reverse-engineered and published to the dev wiki by Calpis, which is what made non-donor converters possible in the first place. NeoForge exists downstream of
 
 ### `docs/teardown-aes-console.md`
@@ -364,11 +364,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ### `docs/prior-art.md`
 
-- **L136** — *2026-09-23*  
+- **L137** — *2026-09-23*  
   A NeoSD Pro **AES** PROG board, legible
-- **L171** — *2026-09-23*  
+- **L172** — *2026-09-23*  
   A Darksoft AES multi board, and it names the translator
-- **L206** — *2026-09-23*  
+- **L207** — *2026-09-23*  
   Vortex / VTXCart - a third architecture we had not catalogued
 
 ### `docs/rom-format.md`
@@ -522,7 +522,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 140
+## Verified — 141
 
 Traced to a source that is not us.
 
@@ -695,63 +695,65 @@ Traced to a source that is not us.
   [neogeodev/FusionConverter](https://github.com/neogeodev/FusionConverter) | Design files for the open-hardware MVS→AES converter. Verilog. | A working serializer implementation in exactly NeoForge's context: taking a cartridge that lacks a serializer and making an AES accept it. Read before writing any HDL. |
 - **L43** — *repo exists, Verilog*  
   [neogeodev/NeoGeoFPGA-sim](https://github.com/neogeodev/NeoGeoFPGA-sim) | Simulation-only NeoGeo hardware definition in Verilog. `neo_zmc2.v` (largely by Kyuusaku) and `zmc2_dot.v` are the serializer core. | The reference model to validate our own implementation against. Simulation-only means it is a specification, not a synthesizable design — that gap is work NeoForge can do. |
-- **L44** — *repo listing*  
+- **L44** — *repo README and licence statement, 2026-10-06*  
+  [Board-Folk/NeoGeoAES-3.5](https://github.com/Board-Folk/NeoGeoAES-3.5) | A recreation of the **AES main board** PCB — KiCad schematic and layout, Gerbers, PDF schematics, BOM (CSV and PDF) and an interactive BOM. Built from "available schematics" plus reverse engineering of scanned copper layers. | **The first third-party hardware source this project is allowed to read.** No formal licence, but ...
+- **L45** — *repo listing*  
   [neogeodev/SNKVerilog](https://github.com/neogeodev/SNKVerilog) | Verilog definitions of custom SNK chips, for repairs and preservation. | Overlaps NeoChips and NeoGeoFPGA-sim; worth diffing all three before trusting any one. |
-- **L46** — *repo listing*  
-  [neogeodev/YM2610](https://github.com/neogeodev/YM2610) | Sound chip reverse-engineering effort, Verilog. | Not on the cartridge. Listed so nobody wastes time on it thinking it is. |
 - **L47** — *repo listing*  
+  [neogeodev/YM2610](https://github.com/neogeodev/YM2610) | Sound chip reverse-engineering effort, Verilog. | Not on the cartridge. Listed so nobody wastes time on it thinking it is. |
+- **L48** — *repo listing*  
   [neogeodev/SVGPinout](https://github.com/neogeodev/SVGPinout) | SVG pinout generator and pinout definitions for SNK chips. Python. | Free, correct pinout diagrams for our own documentation. Use it rather than drawing pinouts by hand. |
-- **L55** — *repo listing, GPL-3.0*  
+- **L56** — *repo listing, GPL-3.0*  
   [neogeodev/NeoMemCard2](https://github.com/neogeodev/NeoMemCard2) | Open-hardware NeoGeo memory card. GPL-3.0. | Closest existing example of open NeoGeo-bus hardware done properly. Study its licensing, its build documentation and its level-shifting approach before designing anything. |
-- **L56** — *via RetroRGB article*  
+- **L57** — *via RetroRGB article*  
   [NEO-JAMMA/Neo-Geo_MVS_Projects](https://github.com/NEO-JAMMA/Neo-Geo_MVS_Projects) | Cyril Venditti's collection: battery holder, SNES→NeoGeo controller adapter, supergun, GBS-Control design. GPL-3.0. | Peripheral rather than cartridge work, but an example of a maintained open NeoGeo hardware collection. |
-- **L57** — *repo exists, described in RetroRGB coverage*  
+- **L58** — *repo exists, described in RetroRGB coverage*  
   [fliperama86/neopico-hd](https://github.com/fliperama86/neopico-hd) | Digital video and audio capture with HDMI output for NeoGeo MVS, using a Raspberry Pi Pico 2. | Not a cartridge, but direct evidence that an RP2350-class microcontroller can be clocked onto NeoGeo digital buses in real time. Relevant to any future "cheap MCU instead of FPGA" argument. |
-- **L69** — *repo README*  
+- **L70** — *repo README*  
   [dciabrin/ngdevkit](https://github.com/dciabrin/ngdevkit) | Open-source NeoGeo dev kit: m68k toolchain (GCC 15.3 + newlib 4.0), SDCC 4.4 for the Z80, C headers, ROM helpers, graphics tools, an open BIOS replacement, GDB source-level debugging, and a modified GnGeo with remote debugging. LGPL-3.0+. Targets **AES or MVS**. | The default answer for the hello-world ROM. Actively maintained — ...
-- **L70** — *repo listing*  
-  [dciabrin/ngdevkit-examples](https://github.com/dciabrin/ngdevkit-examples) | Homebrew ROMs built with ngdevkit. | Working code to build and boot on day one, before writing anything original. |
 - **L71** — *repo listing*  
+  [dciabrin/ngdevkit-examples](https://github.com/dciabrin/ngdevkit-examples) | Homebrew ROMs built with ngdevkit. | Working code to build and boot on day one, before writing anything original. |
+- **L72** — *repo listing*  
   [dciabrin/ngdevkit-toolchain](https://github.com/dciabrin/ngdevkit-toolchain) | The prebuilt toolchain component. | Saves a source build of GCC. |
-- **L72** — *repo listing, license*  
+- **L73** — *repo listing, license*  
   [neogeodev/NGAcidTests](https://github.com/neogeodev/NGAcidTests) | NeoGeo accuracy tests, assembly. Folders: LagTest, MemEdit, SpriteTest, VideoDump. **Unlicense** (public domain). | The emulator-validation milestone in one repo. Establishes which emulator we can trust before we trust it about hardware. Public domain means we can vendor and extend freely. |
-- **L73** — *build output, 2026-09-05*  
+- **L74** — *build output, 2026-09-05*  
   [neogeodev/neopenbios](https://github.com/neogeodev/neopenbios) | Open-source BIOS for the NeoGeo, assembly. Related: ngdevkit ships its own `nullbios`, confirmed in use — every example build copies `aes.zip`/`neogeo.zip` from the ngdevkit share dir, so the whole toolchain runs with no copyrighted BIOS. | Matters more than it looks: a cart that boots depends on BIOS behaviour, and an open BIOS is ...
-- **L73** — *repo listing*  
+- **L74** — *repo listing*  
   [neogeodev/neopenbios](https://github.com/neogeodev/neopenbios) | Open-source BIOS for the NeoGeo, assembly. Related: ngdevkit ships its own `nullbios`, confirmed in use — every example build copies `aes.zip`/`neogeo.zip` from the ngdevkit share dir, so the whole toolchain runs with no copyrighted BIOS. | Matters more than it looks: a cart that boots depends on BIOS behaviour, and an open BIOS is ...
-- **L74** — *observed in ngdevkit-examples build output, 2026-09-05*  
+- **L75** — *observed in ngdevkit-examples build output, 2026-09-05*  
   romtool.py`** (ships with ngdevkit) | Assembles P/C/S/M/V components into a cartridge zip and emits both MAME and GnGeo ROM descriptions. LGPL. | **Directly overlaps roadmap Phase 2.** It already models a Neo Geo cartridge as its component ROMs — the write direction of what `neoforge-rominfo` was going to do from scratch. Read it before writing our own tool; Phase 2 may reduce to adding an ...
-- **L75** — *repo listing*  
-  [neogeodev/GFXCodec](https://github.com/neogeodev/GFXCodec) | Tile and pixel conversion for NeoGeo graphics. C. | Needed to produce C-ROM data, which is what the serializer serializes. |
 - **L76** — *repo listing*  
-  [neogeodev/NeoADPCMEx](https://github.com/neogeodev/NeoADPCMEx) | GUI tool for extracting ADPCM samples from V ROMs. Python. | Prior art for the ROM-analysis tooling in roadmap Phase 2. |
+  [neogeodev/GFXCodec](https://github.com/neogeodev/GFXCodec) | Tile and pixel conversion for NeoGeo graphics. C. | Needed to produce C-ROM data, which is what the serializer serializes. |
 - **L77** — *repo listing*  
-  [neogeodev/IDANeoGeo](https://github.com/neogeodev/IDANeoGeo) | NeoGeo binary loader and helper for IDA. Python. | Useful if we ever need to read a commercial cart's behaviour to understand a mapper. |
+  [neogeodev/NeoADPCMEx](https://github.com/neogeodev/NeoADPCMEx) | GUI tool for extracting ADPCM samples from V ROMs. Python. | Prior art for the ROM-analysis tooling in roadmap Phase 2. |
 - **L78** — *repo listing*  
+  [neogeodev/IDANeoGeo](https://github.com/neogeodev/IDANeoGeo) | NeoGeo binary loader and helper for IDA. Python. | Useful if we ever need to read a commercial cart's behaviour to understand a mapper. |
+- **L79** — *repo listing*  
   [neogeodev/mslug-disasm](https://github.com/neogeodev/mslug-disasm) | Metal Slug disassembly. | A worked example of what a real cart's software expects from its hardware. |
-- **L87** — *cited in docs/cartridge architecture*  
+- **L88** — *cited in docs/cartridge architecture*  
   MAME** (`neogeo.cpp` / `neogeo.c` driver) | The accuracy reference. Its chip notes encode protection and decryption algorithms that exist nowhere else in readable form. When the wiki and a forum disagree, MAME's source is the tiebreaker. |
-- **L88** — *ngdevkit README*  
+- **L89** — *ngdevkit README*  
   GnGeo (ngdevkit fork)** | Fast iteration with GDB remote debugging attached. The development loop, not the accuracy authority. |
-- **L103** — *announcement; product not yet shipped*  
+- **L104** — *announcement; product not yet shipped*  
   SNK / PLAION NEOGEO AES+** (announced 2026; **delayed 2026-09-09 from 12 Nov 2026 to 16 Sept 2027**, component shortage) | Custom-ASIC reimplementation, not emulation. $249 console, $90 cartridges, ten launch titles. Stated backward-compatible with original AES cartridges; HDMI out, overclocking, memory-card high scores. | The first new AES-compatible hardware in three decades, and a second ...
-- **L104** — *Terraonion product pages*  
+- **L105** — *Terraonion product pages*  
   Terraonion NeoSD / NeoSD Pro** (MVS and AES versions) | 768 MB flash, ARM Cortex-M4 @ 168 MHz, 1 MB flash, 128 MB RAM, **two Lattice XP2 FPGAs**. Advertises running unpatched games by emulating original cartridge protections rather than pre-decrypting. | The two-FPGA split maps onto PROG/CHA, which is a strong hint about the right architecture. Also the compatibility bar the community will ...
-- **L105** — *NeoSD and NeoSD Pro manuals*  
+- **L106** — *NeoSD and NeoSD Pro manuals*  
   Terraonion NeoSD, revision arc** | **Original:** one game at a time, written to internal flash, persistent - "it will instantly boot every time your NeoGeo board is turned on." **Pro:** five slots - **four FLASH (slower to write, survive power-off) and one RAM (faster to write, lost on power-off)**. | Explains the specs in the row above: 128 MB RAM is the one RAM slot (a maximum-size game fits), ...
-- **L106** — *multiple community sources*  
+- **L107** — *multiple community sources*  
   Darksoft multi / MultiAES** (MVS and AES) | Different ROM file format from NeoSD. | Second data point on cart file formats and on what "acceptable compatibility" looks like. |
-- **L154** — *LatticeXP2 family product brief*  
+- **L155** — *LatticeXP2 family product brief*  
   The rails are the find.** LatticeXP2 runs a **1.2V core** and tops out at **LVCMOS 3.3 / LVTTL** on its I/O, with no 5V tolerance stated anywhere in the family datasheet. The silkscreen
-- **L182** — *TI SN74LVC4245A datasheet*  
+- **L183** — *TI SN74LVC4245A datasheet*  
   Level translation** | several TSSOP packages marked **`LJ245A`** = **`SN74LVC4245A`**, whose TI datasheet is titled *"Octal Bus Transceiver and 3.3V to 5V Shifter"* |
-- **L280** — *thread read*  
+- **L281** — *thread read*  
   [development cartridge thread](https://www.yaronet.com/topics/171618-development-cartridge-for-neo-geo-aes-mvs) documents the donor-cart-plus-EPROM approach with photos of working AES dev carts on NEO-AEG PROGGS / NEO-AEG CHA42G-4 boards.
-- **L282** — *article read*  
+- **L283** — *article read*  
   they appear; useful for staying current.
-- **L315** — *neogeoforever thread 652*  
+- **L316** — *neogeoforever thread 652*  
   closed commercial carts exist. A published board that anyone can order and populate does not. **Qualified 2026-09-23.** Still true of a *complete* cartridge PCB, but no longer true of Neo Geo cartridge hardware in general: `jwestfall69/neogeo-161in1-dual-daughterboard` publishes full KiCad sources for a flash daughterboard under the Unlicense. A daughterboard is not a cartridge - it has no edge ...
-- **L351**  
+- **L352**  
   Add an entry the moment a project is discovered, even if it is only skimmed — an line is more useful than a missing one. Promote it to only after actually reading the repository.
 
 ### `docs/prom-banking.md`
