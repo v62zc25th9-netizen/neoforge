@@ -11,15 +11,15 @@ the file carrying it. Weakest first, because those have work attached.
 
 | Standard | Count |
 |---|---|
-| Unverified | 54 |
+| Unverified | 55 |
 | Anecdotal | 23 |
 | Measured | 79 |
-| Verified | 138 |
-| **Total** | **294** |
+| Verified | 140 |
+| **Total** | **297** |
 
 ---
 
-## Unverified — 54
+## Unverified — 55
 
 Claims we have not checked. Each one is a question with nobody assigned to it.
 
@@ -64,6 +64,8 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L72**  
   — [`board-zero.md`](board-zero.md) §9 listed these as .
+- **L126**  
+  PCBWay Shared Projects** | publish an open-source design; other people order it directly from the page | **Neo Geo hardware is already there** — a `NeoGeo AES 3-5 reproduction main PCB` is a published shared project . A commission or credit model is widely described but **we have not confirmed the terms** |
 
 ### `docs/hardware-constraints.md`
 
@@ -520,7 +522,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 138
+## Verified — 140
 
 Traced to a source that is not us.
 
@@ -609,6 +611,10 @@ Traced to a source that is not us.
 
 - **L71** — *JLCPCB gold-finger documentation, read 2026-10-06*  
   —
+- **L126** — *2026-10-06*  
+  PCBWay Shared Projects** | publish an open-source design; other people order it directly from the page | **Neo Geo hardware is already there** — a `NeoGeo AES 3-5 reproduction main PCB` is a published shared project . A commission or credit model is widely described but **we have not confirmed the terms** |
+- **L127** — *pcbway.com/sponsor.html, 2026-10-06*  
+  PCBWay sponsorship** | free or discounted boards in return for a writeup | **Probably not us** — the published programme is student and educator focused, requiring an institutional email |
 
 ### `docs/hardware-constraints.md`
 

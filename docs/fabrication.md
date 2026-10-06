@@ -112,3 +112,44 @@ Three things come first, and the first two are free:
 **Order 5, expect to use 2 or 3.** The first article is for checking against the
 cartridge and the console slot *without any chips fitted* — it either slides in
 or it does not, and that costs nothing to find out.
+
+## 7. Working with a fab that already knows this hardware
+
+**The idea:** rather than treating a fab as a vending machine, find one with Neo
+Geo experience and work with them — open source gives them something to sell,
+which gives them a reason to help.
+
+**It is a real model, and the platform for it already exists.**
+
+| | What it is | Fit |
+|---|---|---|
+| **PCBWay Shared Projects** | publish an open-source design; other people order it directly from the page | **Neo Geo hardware is already there** — a `NeoGeo AES 3-5 reproduction main PCB` is a published shared project `[VERIFIED: 2026-10-06]`. A commission or credit model is widely described but **we have not confirmed the terms** `[UNVERIFIED]` |
+| **PCBWay sponsorship** | free or discounted boards in return for a writeup | **Probably not us** — the published programme is student and educator focused, requiring an institutional email `[VERIFIED: pcbway.com/sponsor.html, 2026-10-06]` |
+| **Lectronz** | open-hardware marketplace | **The strongest channel.** It is where Furrtek sells the NEO-273, NEO-ZMC2 and PCM replacements, so the Neo Geo repair audience is already shopping there |
+
+### What we would be offering, and when
+
+**Not yet.** Approaching anyone before board zero runs is asking them to take a
+risk on an idea. After it runs, the offer changes completely:
+
+- a design that **demonstrably works on real AES hardware**
+- a repository where every claim carries an evidence tag and the weak ones are
+  listed first — [`evidence-index.md`](evidence-index.md)
+- a pinout verified against three sources and a netlist checked 100/100
+- a licence that lets them manufacture and sell
+
+**That last point is the actual offer.** A fab or a seller does not need our
+permission under GPL-3.0 — they need a design worth making and documentation
+good enough that supporting it is not a burden. The documentation is the pitch,
+and it is the part that already exists.
+
+### The order of operations
+
+1. Board zero works.
+2. Publish the result, with the board files.
+3. *Then* approach PCBWay Shared Projects and Lectronz — with a thing, not a plan.
+
+**One caution.** A partner who sells the boards has an interest in them shipping,
+and this project's whole method is refusing to claim more than has been
+measured. Those pull in opposite directions, and the time to notice that is
+before there is money involved rather than after.

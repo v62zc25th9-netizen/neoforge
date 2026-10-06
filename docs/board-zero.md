@@ -304,6 +304,70 @@ Secondary, and cheaper to close:
 - The `-70` speed grade's full read-cycle table, per §1.
 - The `/CE`/`/OE` strap, per §7.
 
+## 9a. Why not RAM, asked and answered `[2026-10-06]`
+
+**Proposed: make board zero a RAM board instead — one slot, no flash.** It is a
+reasonable-sounding simplification and it is the wrong way round, so it is
+recorded here rather than re-litigated later.
+
+**A RAM cartridge is empty at power-on, and on an AES nothing can fill it.**
+There is no host, no loader, no storage. Something on the cartridge has to hold
+the console off, read a program in from somewhere, write it into the RAM, and
+only then let the 68000 see it. That is a microcontroller or an FPGA, a storage
+medium, and a reset or bus-arbitration scheme — and it is **the hardest
+subsystem in the entire project**, which is why it sits in Phase 9.
+
+Flash avoids all of it with one trick: **the chips are programmed offline in a
+$70 programmer**, so the board itself does nothing but present them to the bus.
+That is the only reason board zero is two chips and four resistors.
+
+| | flash | RAM |
+|---|---|---|
+| Content at power-on | **there** | empty |
+| Needs a loader | no | **yes** |
+| Needs bus arbitration | no | **yes** |
+| Survives a power cycle | **yes** | no |
+| Failure modes added to board zero | 0 | **3** |
+
+That last row is the argument. **Board zero's value is not capability, it is
+diagnostic isolation** — it exists so that a failure has one plausible cause.
+A loader adds three new ones, to the board whose entire purpose is to have none.
+
+### But the instinct is correct about where this goes
+
+Loading into RAM is not a bad idea, it is **the** idea:
+
+- **The Neo Geo CD is SNK's own proof it works** — slow media, shadowed into
+  RAM, feeding the same 68000 at the same clock, shipping in 1994.
+- **NeoSD Pro advertises "one RAM slot for instant game loading."**
+- [`open-questions.md`](open-questions.md) Q4 argues a 2026 commercial AES cart
+  must be doing it, because serial NOR cannot feed a 68000 bus.
+
+So it is the right architecture, arriving in the wrong order. Board zero first,
+because a RAM loader that fails tells you nothing until you already know the
+bus side works.
+
+### What the proposal is actually asking for, and a cheaper way to get it
+
+The real appeal is **iteration speed** — pulling a PLCC chip, programming it,
+reseating it, every time the ROM changes. That is a genuine irritation and it
+does not need RAM to fix.
+
+**Board one: board zero, plus `/WE` brought out to a header.** §6 ties `/WE`
+directly to VCC so the board physically cannot write its own flash. Bring it to
+a jumper instead, add the few control lines, and a **$4 Raspberry Pi Pico can
+reprogram the flash in place on the bench** — non-volatile, no loader at boot,
+no arbitration, and the console side is byte-for-byte identical to board zero,
+so it does not invalidate the result board zero just produced.
+
+That is the upgrade worth making. RAM is the one after it.
+
+### One reading of the proposal that is already true
+
+If "one slot only" meant *one memory region, no banking* rather than *RAM*,
+then **that is board zero exactly as specified** — the fixed 1 MiB window, no
+bank register, no second P ROM. §3 is that argument.
+
 ## 10. Why this is worth writing down before it is worth building
 
 Board zero as specified is **two chips and four resistors**. No programmable
