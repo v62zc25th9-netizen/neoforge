@@ -18,6 +18,14 @@ numbers, cross-checked against three independent sources.
   `width + gap` check appeared to fail.
 - Predicted full finger field, position 1 to position 50: **124.46 mm**
   `[UNVERIFIED — the one remaining dimensional check]`
+- **Full finger field, position 1 to position 50: 124.46 mm**
+  `[VERIFIED: 2026-10-06]` — predicted from the pitch, then confirmed exactly by
+  the `CN4-5` footprint in `Board-Folk/NeoGeoAES-3.5`.
+- **The two slots sit 10.03 mm centre to centre**, parallel and coplanar, `CN5`
+  (PROG) and `CN4` (CHA) — the dimension nothing in this repository used to
+  record. `[VERIFIED: Board-Folk motherboard layout, 2026-10-06]`
+- Mating connector: **EDAC `395-100-524-204`**, 0.100 in contact spacing,
+  0.200 in row spacing, accepting a **0.054–0.070 in (1.37–1.78 mm)** board.
 - 50 pins per face, 100 per board, **200 per cartridge**
 
 A cartridge is two boards — **PROG** (68000 bus, P ROM, V ROMs) and **CHA**

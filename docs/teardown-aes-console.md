@@ -119,6 +119,14 @@ up immediately.
 | inner-face gap is **8.0** | outer-to-outer is **11.30** | 9.65 |
 | outer-to-outer is **10.0** | inner-face gap is **6.70** | 8.35 |
 
+
+**§4 is now closed from a reference design, not from calipers**
+`[VERIFIED: 2026-10-06]`: the two connectors are **10.03 mm centre to centre**,
+same x, zero rotation, so parallel and coplanar; 50 contacts per row; and the
+part is an **EDAC `395-100-524-204`**. See [`card-edge.md`](card-edge.md).
+The measurements below are still worth taking as a check on *this* console, but
+they no longer block a board.
+
 ### Three numbers, defined so there is nothing to interpret
 
 - **C9a** — inner face of one board's slot to the inner face of the other's.

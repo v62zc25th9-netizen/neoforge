@@ -96,6 +96,32 @@ at order time.
 | Quantity | 5 — the minimum, and more than we need |
 | Panelising | none |
 
+### The thickness trap, which is tighter than it looks `[VERIFIED: 2026-10-06]`
+
+The slot connector is an **EDAC `395-100-524-204`**, and its datasheet accepts a
+**0.062 in (1.57 mm) nominal board, range 0.054–0.070 in = 1.37–1.78 mm.**
+
+Now put that against how PCBs are actually made:
+
+| | mm |
+|---|---|
+| Ordered thickness | 1.60 |
+| Fab tolerance, typically ±10% | 1.44 – **1.76** |
+| Plus plating over the fingers, ~0.05 per side | up to **1.86** |
+| **Connector maximum** | **1.78** |
+
+**A nominal 1.6 mm board that lands on the high side of tolerance will not go
+into the slot.** That is a first-board-fails-and-nobody-knows-why failure, and
+it is invisible unless you read the connector datasheet.
+
+**The real cartridge agrees.** Ours measured **1.55 mm bare, 1.65 across a
+finger** — deliberately on the *low* side of 1.6, with the finished dimension
+comfortably mid-range. SNK aimed low, and so should we.
+
+Action at order time: ask for 1.6 mm and ask the fab what tolerance they hold,
+or specify the low side if they allow it. Measure the first board before
+inserting it.
+
 ## 6. Sequencing: do not order yet
 
 Three things come first, and the first two are free:

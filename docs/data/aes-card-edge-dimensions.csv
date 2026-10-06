@@ -1,8 +1,8 @@
 id,board,quantity,method,hypothesis_mm,measured_mm,samples,spread_mm,notes
 O1,PROG,row a physical face,continuity from P ROM GND / A0 / D0 - see card-edge.md section 1,,,,,
 O2,PROG,pin 1 end,continuity from P ROM A0: third finger from that end on row b,,,,,
-O3,PROG,row registration a1 vs b1,side edge to centre of finger 1 on both faces; equal means aligned,,,,,
-P1,PROG,pitch,left edge of finger 1 to left edge of finger 50 divided by 49,2.54,2.5387,1 span of 15 gaps,,SETTLED. 38.08 mm across 16 fingers / 15 gaps. 0.0013 mm off 0.1 inch; 1.4992 in vs 1.5000 predicted
+O3,PROG,row registration a1 vs b1,side edge to centre of finger 1 on both faces; equal means aligned,,aligned,,,"CONFIRMED. a1 and b1 share the same x in the reference footprint, so the two rows are not offset"
+P1,PROG,pitch,left edge of finger 1 to left edge of finger 50 divided by 49,2.54,2.5400,1 span of 15 gaps,,CONFIRMED THREE WAYS. our 15-gap span 2.5387; Board-Folk footprint exactly 2.5400 on both rows; EDAC 395 series datasheet 0.100 in (2.54 mm) contact spacing
 P2,PROG,span f1 left to f50 left,single caliper span across the whole row,124.46,,,,raw reading behind P1
 P3,PROG,span f1 left to f50 right,same span plus one finger width,,,,,P3 minus P2 = finger width
 F1,PROG,finger width,direct on three fingers at different places in the row,,1.6-1.65,approx,,measured across the WIDE section. complementary gap there should be 0.94 - see F6
@@ -34,7 +34,7 @@ O4c,CHA,power/ground pads visually distinct,photograph,,n/a,,,"wide pads at BOTH
 P2p-r1,PROG,counted multi-finger span along row A,"caliper, mm mode, span across the uniform stretch",,38.08,1,,"16 fingers, 15 gaps, counted by the person who held the calipers. this is the measurement that settles the pitch"
 O1p,PROG,row identity and pin 1 end,"SNK silkscreen: A1 at one end of the finger row, A50 at the other",,n/a,,,"same convention as CHA, so the silkscreen labelling holds across both boards. LS08, LS32 and jumpers J6-J10 visible, consistent with a PROGBK1-family board"
 F5,PROG,mini finger at the middle of each finger,visual,,part of the same pad,,,"RESOLVED. the mini finger splits each big finger at its midpoint and is the same pad, so contact pitch = finger pitch. it is why width and gap appeared not to sum to the pitch: they were read at different cross-sections"
-E-field,PROG,"full finger field, finger 1 to finger 50","single span, with the finger count stated",124.46,,,,"49 gaps x 2.54. earlier spans of 120.83/121.83 correspond to 48 gaps, one short of the full row"
+E-field,PROG,"full finger field, finger 1 to finger 50","single span, with the finger count stated",124.46,124.46,reference design,,"CONFIRMED. Board-Folk CN4-5 footprint: a1 at x=-62.65, a50 at x=+61.81, span exactly 124.46 - the value predicted from a 2.54 pitch over 49 gaps"
 F6,PROG,gap between the WIDE sections,same cross-section as F1,0.94,,,,prediction from pitch minus F1
 F7,PROG,width of the MINI-FINGER section,same cross-section as F2,1.14,,,,prediction from pitch minus F2
 F8,PROG,distance from board edge to the mini-finger step,"along the finger, from the insertion edge",5.4,,,,midpoint of a 10.8 mm finger if the split is central; needed to draw the pad profile

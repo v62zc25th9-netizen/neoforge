@@ -7,13 +7,15 @@ C5,crystal,marked frequency,,wiki says 24.167829 MHz - every timing number deriv
 C6,crystal,bare crystal or can oscillator,,
 C7,BIOS ROM,part number and region,,decides which BIOS a real-BIOS emulator test would have to use
 C8,motherboard,revision marking,,the label every other number here is filed under
-C9,slot,CHA to PROG connector centre-to-centre,8 / 10 - endpoints not yet defined,"AMBIGUOUS. read as inner-gap 8 and outer-to-outer 10, those imply a 1.00 mm slot for a 1.65 mm board, which is impossible. see teardown-aes-console.md section 4"
-C10,slot,connectors parallel and coplanar,,
+C9,slot,CHA to PROG connector centre-to-centre,10.03,"CLOSED. centre-to-centre, from the Board-Folk motherboard layout: CN5 at y=128.08, CN4 at y=138.11, same x. CN5 is PROG and CN4 is CHA, matching our pinout CSV"
+C10,slot,connectors parallel and coplanar,yes,"identical x and zero rotation on both, so parallel and coplanar"
 C11,slot,insertion depth,,
-C12,slot,contacts per connector per face,,counted. confirms 50 independently of the cartridge silkscreen
+C12,slot,contacts per connector per face,"50 per row, 100 per connector","reference footprint has 100 signal pads plus 2 mounting holes, labelled a1-a50 and b1-b50"
 C13,slot,key / rib / asymmetry preventing reversed insertion,,
-C14,slot,pitch across 16 connector contacts,,independent confirmation of 2.54 mm from a different object
+C14,slot,pitch across 16 connector contacts,2.5400,"reference footprint, both rows; EDAC 395 datasheet says 0.100 in contact spacing"
 C9a,slot,inner face of board A to inner face of board B (the separator width),,if 8.0 then C9b must be 11.30
 C9b,slot,outer face of board A to outer face of board B,,THE ONE THAT MATTERS. C9b - C9a must equal two board thicknesses = 3.30
 C9c,slot,width of one slot opening,,must be at least 1.65. if it reads ~1.0 the jaws are not in the opening
 C9d,cartridge shell,outer face to outer face across the two assembled board edges,,"EASIER ROUTE to the same number as C9b - measured on the cartridge, not inside the console"
+C15,slot,connector part number,EDAC 395-100-524-204,"Mouser 587-395-100-524-204. 0.100 in (2.54 mm) contact spacing, 0.200 in (5.08 mm) row spacing, gold on the mating area"
+C16,slot,board thickness the connector accepts,"1.57 nominal, 1.37-1.78 range","EDAC 395 datasheet: accepts 0.062 in nominal, accommodates 0.054-0.070 in. Our measured 1.65 across a finger sits inside it. SEE fabrication.md - 1.6 mm at +10% plus plating does NOT"

@@ -302,6 +302,40 @@ of the full row, exactly what you would expect from jaws landing inside the wide
 GND pad at one end instead of on its outer edge. Consistent, and no longer a
 contradiction.
 
+### Closed by a second source, and one of my verdicts was wrong `[VERIFIED: 2026-10-06]`
+
+`Board-Folk/NeoGeoAES-3.5` is a recreation of the AES **motherboard**, and it is
+readable (see [`../contributing.md`](../contributing.md)). Its `CN4-5` footprint
+is the cartridge slot connector, and it answers three of this file's questions
+outright:
+
+| | Reference design | Ours |
+|---|---|---|
+| Pitch, row a | **2.5400 mm** | 2.5387 measured |
+| Pitch, row b | **2.5400 mm** | |
+| `a1` → `a50` span | **124.46 mm** | 124.46 **predicted** |
+| `a1` vs `b1` x position | **identical** | rows aligned, §5 answered |
+
+**The predicted full field was exactly right**, to the hundredth. That is our
+caliper work and an independent reconstruction agreeing on a number neither
+derived from the other.
+
+And a third source agrees: the connector is an **EDAC `395-100-524-204`**
+`[VERIFIED: Board-Folk BOM, Mouser 587-395-100-524-204]`, and the EDAC 345/395
+ordering guide states **0.100 in (2.54 mm) contact spacing**. Pitch is now
+confirmed from calipers, from a reconstruction, and from the mating connector's
+own datasheet.
+
+**The correction I owe.** When the slot spacing came back as "8 mm at the
+separator, 10 mm far edge to far edge", I said the pair was impossible because
+it implied a 1.00 mm slot for a 1.65 mm board. The reference says the two
+connectors sit **10.03 mm centre to centre**. With a 1.65 mm board that puts the
+inner faces **8.38 mm** apart — so **both readings were good measurements**, and
+what was wrong was my assumption that "far edge to far edge" meant outer face to
+outer face. The pair differ by one board thickness, not two, which is the
+signature of an inner-face-to-centre measurement. The arithmetic check in §4 was
+fine; the endpoint definition I applied it with was not.
+
 ## 3. Finger geometry
 
 | Quantity | How |

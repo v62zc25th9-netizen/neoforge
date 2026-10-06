@@ -14,8 +14,8 @@ the file carrying it. Weakest first, because those have work attached.
 | Unverified | 55 |
 | Anecdotal | 23 |
 | Measured | 79 |
-| Verified | 141 |
-| **Total** | **298** |
+| Verified | 147 |
+| **Total** | **304** |
 
 ---
 
@@ -30,17 +30,17 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/aes-connector.md`
 
-- **L112**  
+- **L120**  
   One residual oddity, not a problem.** The *order* within the group differs: MVS runs ROMWAIT, PWAIT0, PWAIT1, PDTACK; ours runs ROMWAIT, PDTACK, PWAIT0, PWAIT1. Different connectors may simply be laid out differently, and our AES data comes from a machine-extracted AES 3.5 schematic. Worth a glance if anyone is ever checking the AES pinout for other reasons, but nothing here contradicts it.
-- **L150**  
+- **L158**  
   Read the wiki's **MVS cartridge pinout** page and confirm it puts ROMWAIT on B25, PWAIT0 on B26, PWAIT1 on B27 and PDTACK on B28. If it does, the conflict dissolves entirely and the table below becomes a note about vocabulary rather than a warning. The page was unreachable from here tonight - robots and a permission prompt - so **this is downgraded, not closed.
-- **L210**  
+- **L218**  
   Until then, treat the wait-state pins in the CSV as and do not
-- **L281**  
+- **L289**  
   What is still not established** is which physical end SNK's own numbering calls pin 1. This document uses Board-Folk's, which is internally consistent and tied to a real footprint, but that is a reproduction's convention and not necessarily SNK's. It does not affect wiring — the signal at each
-- **L308**  
+- **L316**  
   Row `a` = top face, `b` = bottom | — inferred from signal content matching A's face labels. Consistent across all four faces, but not independently stated |
-- **L460**  
+- **L468**  
   The other four — `PCK1B`, `PCK2B` (CHA top) and `8M`, `4MB` (CHA/PROG bottom) — are almost certainly a limitation of the extraction, not real. The sheet carries 74LS04 and 74HC04 inverters, and those four are inverted or buffered clocks whose labels sit on the far side of an IC the wire-tracer does not cross. Do not treat them as no-connects.
 
 ### `docs/block-diagram.md`
@@ -64,7 +64,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 - **L72**  
   — [`board-zero.md`](board-zero.md) §9 listed these as .
-- **L126**  
+- **L152**  
   PCBWay Shared Projects** | publish an open-source design; other people order it directly from the page | **Neo Geo hardware is already there** — a `NeoGeo AES 3-5 reproduction main PCB` is a published shared project . A commission or credit model is widely described but **we have not confirmed the terms** |
 
 ### `docs/hardware-constraints.md`
@@ -137,7 +137,7 @@ Claims we have not checked. Each one is a question with nobody assigned to it.
 
 ### `docs/teardown-aes-console.md`
 
-- **L158**  
+- **L166**  
   — 12.5 MHz speed grade assumed | settled by a suffix |
 
 ### `docs/what-to-buy.md`
@@ -255,7 +255,7 @@ Reported by somebody, believed by nobody in particular. Useful as a lead, not as
 
 - **L33**  
   It is . We are relaying a forum comparison of three datasheets we
-- **L157**  
+- **L165**  
   — three 68000s, relayed from a forum | for the one console we can test on |
 
 ### `roadmap.md`
@@ -292,11 +292,11 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
   Board thickness 1.6 mm** — 1.55 mm bare substrate,
 - **L11** — *2026-09-28*  
   normal -10% tolerance on a 1.6 mm board, and **1.65 mm is the dimension the console's slot actually grips.** Order 1.6 mm. - **Pin pitch 0.1 in (2.54 mm)** — a 15-gap span across
-- **L117** — *2026-09-24*  
+- **L125** — *2026-09-24*  
   Superseded: the downgrade
-- **L128** — *read off the scan, 2026-09-24*  
+- **L136** — *read off the scan, 2026-09-24*  
   pluger/NeoGeo-161-in-1-v3-MVS-PCB-inverse-ingenering` publishes MIT-licensed 4103x3184 scans of a 161-in-1 v3 board. Its PROG edge is silkscreened **`J5`** and numbered **60, 55, 50 ... 10, 5**, running right to left: **sixty pins per row, one connector.
-- **L157** — *2026-09-23*  
+- **L165** — *2026-09-23*  
   Superseded alarm, retained for the record
 
 ### `docs/block-diagram.md`
@@ -398,9 +398,9 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ### `docs/teardown-aes-console.md`
 
-- **L151**  
+- **L159**  
   Numbers go in [`data/aes-console.csv`](data/aes-console.csv). Nothing here is until that file has values.
-- **L157**  
+- **L165**  
   — three 68000s, relayed from a forum | for the one console we can test on |
 
 ### `docs/teardown-fatal-fury-special.md`
@@ -522,7 +522,7 @@ We ran it, built it, or read it off a part. Reproducible by someone who repeats 
 
 ---
 
-## Verified — 141
+## Verified — 147
 
 Traced to a source that is not us.
 
@@ -533,27 +533,31 @@ Traced to a source that is not us.
 
 ### `docs/aes-connector.md`
 
-- **L28** — *wiki AES cartridge pinout, 2026-09-24*  
+- **L22** — *2026-10-06*  
+  — predicted from the pitch, then confirmed exactly by
+- **L26** — *Board-Folk motherboard layout, 2026-10-06*  
+  (PROG) and `CN4` (CHA) — the dimension nothing in this repository used to record.
+- **L36** — *wiki AES cartridge pinout, 2026-09-24*  
   VERIFIED END TO END: all 200 pins, against the wiki's own images
-- **L74** — *wiki MVS cartridge pinout, 2026-09-24*  
+- **L82** — *wiki MVS cartridge pinout, 2026-09-24*  
   Also resolved: the MVS numbering
-- **L213** — *wiki Cartridge orientation*  
+- **L221** — *wiki Cartridge orientation*  
   Which board goes where, physically
-- **L248** — *cross-check, 2026-09-07*  
+- **L256** — *cross-check, 2026-09-07*  
   Detected by scoring both directions against machine-extracted schematic nets: PROG top matched 6 signals forward and 24 reversed; CHA top 6 and 18; both bottom faces matched forward (20 and 17) against 6 reversed. Not ambiguous.
-- **L251** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
+- **L259** — *NeoGeoAES3_5.kicad_pcb, 2026-09-08*  
   The comparison is fair, because rows `a` and `b` are numbered from the same physical end. From Board-Folk's footprint:
-- **L303**  
+- **L311**  
   Signal → board face | — A, B and C agree |
-- **L304**  
+- **L312**  
   Signal names | — all three agree |
-- **L305**  
+- **L313**  
   Active-low polarity | — from B |
-- **L306**  
+- **L314**  
   Pin numbers and ordering** | — from C, machine-extracted, and A agrees once orientation is corrected |
-- **L307**  
+- **L315**  
   Which end is pin 1** | — C's numbering is authoritative |
-- **L319**  
+- **L327**  
   The audio-loop duplication was real, not a misreading.** A shows `L in`/`L out` on both top faces and `R out`/`R in` on both bottom faces. C shows all four pairs **unconnected** on the AES 3.5 — corroborating the wiki's note that these loops are "only used on the NEO-AES board revision." Two sources, agreeing, on a detail that looked like a transcription error.
 
 ### `docs/block-diagram.md`
@@ -575,6 +579,13 @@ Traced to a source that is not us.
   One choice to confirm before fabrication.** The `/CE` ← `/ROMOE`, `/OE` ← `/ROMOEU`/`/ROMOEL` assignment above is the conventional one, and the reverse also works electrically. PROGBK1's jumper matrix *selects* which signal drives `/CE` and `/OE`, which tells us SNK treated it as a
 - **L299** — *2026-10-06*  
   ~~Gold-finger constraints unknown~~ **closed** —
+
+### `docs/card-edge.md`
+
+- **L305** — *2026-10-06*  
+  Closed by a second source, and one of my verdicts was wrong
+- **L324** — *Board-Folk BOM, Mouser 587-395-100-524-204*  
+  And a third source agrees: the connector is an **EDAC `395-100-524-204`** , and the EDAC 345/395
 
 ### `docs/cartridge-architecture.md`
 
@@ -611,9 +622,11 @@ Traced to a source that is not us.
 
 - **L71** — *JLCPCB gold-finger documentation, read 2026-10-06*  
   —
-- **L126** — *2026-10-06*  
+- **L99** — *2026-10-06*  
+  The thickness trap, which is tighter than it looks
+- **L152** — *2026-10-06*  
   PCBWay Shared Projects** | publish an open-source design; other people order it directly from the page | **Neo Geo hardware is already there** — a `NeoGeo AES 3-5 reproduction main PCB` is a published shared project . A commission or credit model is widely described but **we have not confirmed the terms** |
-- **L127** — *pcbway.com/sponsor.html, 2026-10-06*  
+- **L153** — *pcbway.com/sponsor.html, 2026-10-06*  
   PCBWay sponsorship** | free or discounted boards in return for a writeup | **Probably not us** — the published programme is student and educator focused, requiring an institutional email |
 
 ### `docs/hardware-constraints.md`
@@ -794,6 +807,11 @@ Traced to a source that is not us.
   But it does need NEO-273
 - **L298** — *wiki MVS + AES cartridge pinouts, 2026-09-24*  
   The MVS and AES connectors prove the argument
+
+### `docs/teardown-aes-console.md`
+
+- **L124** — *2026-10-06*  
+  §4 is now closed from a reference design, not from calipers** : the two connectors are **10.03 mm centre to centre**,
 
 ### `docs/what-to-buy.md`
 
