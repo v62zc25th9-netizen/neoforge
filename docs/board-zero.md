@@ -143,6 +143,8 @@ almost nothing on it to get wrong.
 | R1–R4 | 220 Ω, 0805 | wait-state network, §4 |
 | C1, C2 | 100 nF, 0805 | one per flash, at the device |
 | C3 | 10 µF | bulk, at the card edge |
+| U3 | 74LS04 hex inverter | **optional** — LED driver, §8b |
+| D1–D3 | LED + 1 kΩ | **optional** — `/ROMOE`, `/RESET`, `/PORTOEL`, §8b |
 | — | PCB with a 2 × 50 gold-finger edge | **the blocking unknown, §9** |
 
 **Sockets, deliberately.** PLCC-32 through-hole sockets are hand-solderable, and
@@ -276,6 +278,55 @@ of the toolbox:** a board whose continuity has been checked against
 [`data/aes-cartridge-pinout.csv`](data/aes-cartridge-pinout.csv) before it is
 ever inserted makes "dead" the unlikely branch, and leaves the BIOS as the
 named suspect.
+
+## 8b. Three LEDs fix the one row §8a could not `[2026-10-15]`
+
+A GitHub sweep turned up **[`jwestfall69/neogeo-diag-mvs-prog`](https://github.com/jwestfall69/neogeo-diag-mvs-prog)**:
+a custom MVS PROG board, built for diagnostics, **Unlicense — public domain.**
+It is board zero's MVS cousin, and it does one thing we had not thought of.
+
+**It puts LEDs on the chip selects.** Three of them, on `/ROMOE`, `PORTADDR`
+and `SLOTCS`, which light while the bus tests run.
+
+That is the missing row of §8a's table. "Clicks immediately" is ambiguous
+between *the BIOS never handed over* and *the board is dead* — and an LED on
+`/ROMOE` separates them **live, with no multimeter and no inference**:
+
+| `/ROMOE` LED | Clicking | Means |
+|---|---|---|
+| dark | yes | the console never addressed the cartridge — **the BIOS, not us** |
+| lit | yes | the console is reading us and getting something wrong — **the board** |
+| lit | no | pass |
+
+**For AES the three to pick are different**, because `SLOTCS` is MVS-only:
+
+- **`/ROMOE`** (`b22`) — the console is reading the P1 region
+- **`/RESET`** (`a33`) — the watchdog, made *visible* as well as audible, so the
+  reset rate can be seen and counted rather than only heard
+- **`/PORTOEL`** (`a29`) — the console touching the PORT region
+
+**Drive them from a buffer, not from the signal.** An LED and resistor hung
+directly on `/ROMOE` adds capacitance inside the ~56 ns budget §4 is built on.
+The diagnostic board's BOM carries a **74LS04** — and reading it as an LED
+driver rather than as decode logic is what makes the idea safe to copy. One
+hex inverter, three LEDs, three 1 kΩ resistors, well under a dollar.
+
+**Make the footprints populate-optional.** A build with the LEDs is the
+diagnostic board; a build without them is the timing board, electrically
+identical to §6. Having both from one PCB order costs nothing and means the
+timing result is never argued about.
+
+### What else that repository confirms
+
+Its README specifies **JLCPCB, 1.6 mm, ENIG** — the same order parameters
+[`fabrication.md`](fabrication.md) §5 arrived at independently. Two people
+building a Neo Geo PROG board reaching the same fab spec is weak evidence, but
+it is evidence, and it was free.
+
+**And one idea we are deliberately not taking.** That board replaces the P ROM
+with **SRAM**, so the diag BIOS can test it as writable memory. Clever, and
+exactly the RAM proposal §9a declines — it works there because the *BIOS* is the
+loader. We have no diag BIOS, so we have no loader, so §9a stands.
 
 ## 9. What actually blocks this
 
